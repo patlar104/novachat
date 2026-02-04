@@ -136,7 +136,15 @@ app/
 
 ## Troubleshooting
 
-### "On-device AI is not available"
+### Build Issues
+
+#### "Plugin was not found" or repository errors
+This app requires access to Google's Maven repository. If you're building in a restricted network environment:
+1. Ensure your firewall allows access to `dl.google.com`
+2. Check your proxy settings if behind a corporate firewall
+3. Try using a VPN if the repository is geo-blocked
+
+#### "On-device AI is not available"
 - Ensure your device runs Android 15 or later
 - Not all devices support Google AICore
 - Try using Online mode instead
