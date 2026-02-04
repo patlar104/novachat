@@ -5,7 +5,7 @@ This is an Android application repository using Gradle as the build system. Plea
 ## Code Standards
 
 ### Required Before Each Commit
-- Run `./gradlew ktlintFormat` or `./gradlew spotlessApply` before committing any changes to ensure proper code formatting (if configured)
+- If code formatting tools are configured, run `./gradlew ktlintFormat` or `./gradlew spotlessApply` before committing changes
 - Ensure all code follows Android and Kotlin best practices
 
 ### Development Flow
@@ -54,10 +54,10 @@ This is an Android application repository using Gradle as the build system. Plea
    - Check for security vulnerabilities before adding new dependencies
 
 6. **Git Practices**
-   - Never commit sensitive data (API keys, credentials, google-services.json)
+   - Never commit sensitive data (API keys, credentials, `google-services.json`)
    - Keep commits focused and atomic
    - Write clear commit messages
-   - Don't commit build artifacts or IDE-specific files (already in .gitignore)
+   - Don't commit build artifacts or IDE-specific files (already in `.gitignore`)
 
 7. **Documentation**
    - Add KDoc comments for public APIs and complex logic
