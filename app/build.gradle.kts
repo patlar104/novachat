@@ -1,7 +1,15 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    // Note: kotlin.android plugin is no longer needed in AGP 9.0.0 - Kotlin support is built-in
     id("org.jetbrains.kotlin.plugin.compose")
+}
+
+// Configure Kotlin compiler options for AGP 9.0+
+kotlin {
+    compilerOptions {
+        // Set JVM target to Java 17
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }
 
 android {
@@ -36,10 +44,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-    
     buildFeatures {
         compose = true
     }
@@ -58,7 +62,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.3")
     
     // Compose BOM for version management
-    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    implementation(platform("androidx.compose:compose-bom:2026.01.01"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -79,7 +83,10 @@ dependencies {
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
     
     // AICore for on-device AI
-    implementation("androidx.ai.edge.aicore:aicore:1.0.0-alpha01")
+    // NOTE: AICore is experimental and not yet publicly available on Maven (as of Jan 2026)
+    // For now, this dependency is commented out. On-device AI will be unavailable.
+    // When AICore becomes available, uncomment this line:
+    // implementation("androidx.ai.edge.aicore:aicore:1.0.0-alpha01")
     
     // DataStore for preferences
     implementation("androidx.datastore:datastore-preferences:1.1.1")
@@ -91,7 +98,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2026.01.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
