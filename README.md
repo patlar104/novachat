@@ -14,19 +14,19 @@ NovaChat is a modern Android AI chatbot application that supports both online (c
 
 ## Technologies Used
 
-- **Language**: Kotlin 2.1.0
-- **UI Framework**: Jetpack Compose (BOM 2024.12.01)
-- **Build System**: Gradle 8.7.3
+- **Language**: Kotlin 2.3.0 (via Compose Compiler Plugin)
+- **UI Framework**: Jetpack Compose (BOM 2026.01.01)
+- **Build System**: Gradle 9.1.0 with Android Gradle Plugin 9.0.0
 - **Architecture**: MVVM with ViewModels
 - **AI Libraries**:
   - Google Generative AI SDK 0.9.0 (Gemini)
-  - Google AICore 1.0.0-alpha01 (On-device AI)
+  - Google AICore (Not yet available - offline mode disabled)
 - **Data Storage**: DataStore Preferences
 - **Async**: Kotlin Coroutines
 
 ## Requirements
 
-- Android Studio Ladybug or newer
+- Android Studio Otter or newer (for AGP 9.0.0 support)
 - JDK 17
 - Android SDK 35 (Android 16)
 - Minimum device: Android 9 (API 28)
@@ -128,15 +128,19 @@ app/
 - Advanced capabilities and up-to-date knowledge
 
 #### Offline Mode (On-device)
-- Uses Google AICore for on-device processing
+- **Note: Currently Unavailable** - Google AICore is not yet publicly available on Maven (as of January 2026)
+- When available, will use Google AICore for on-device processing
 - No internet required after model download
 - Privacy-focused (data stays on device)
-- Requires Android 15+ with AICore support
-- Note: AICore availability varies by device
+- Will require Android 15+ with AICore support
+- Availability will vary by device
 
 ## Troubleshooting
 
 ### Build Issues
+
+#### "Android Gradle Plugin 9.0.0 requires Gradle 9.1.0"
+The project uses the latest Android Gradle Plugin (9.0.0) which requires Gradle 9.1.0. This is automatically configured in the gradle wrapper.
 
 #### "Plugin was not found" or repository errors
 This app requires access to Google's Maven repository. If you're building in a restricted network environment:
