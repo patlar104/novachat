@@ -1,0 +1,57 @@
+#!/bin/bash
+# Commit message hook for NovaChat
+# Enforces conventional commit format
+
+set -e
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Skip merge commits
+if echo "$COMMIT_MSG" | grep -q "^Merge"; then
+    exit 0
+fi
+
+# Skip automated commits
+if echo "$COMMIT_MSG" | grep -q "^Co-authored-by:"; then
+    exit 0
+fi
+
+# Conventional commit pattern
+# Format: type(scope): subject
+# Example: feat(ui): add chat screen
+PATTERN="^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,}$"
+
+if ! echo "$COMMIT_MSG" | head -1 | grep -qE "$PATTERN"; then
+    echo "❌ Invalid commit message format!"
+    echo ""
+    echo "Commit message must follow Conventional Commits format:"
+    echo "  <type>(<scope>): <subject>"
+    echo ""
+    echo "Types:"
+    echo "  feat:     A new feature"
+    echo "  fix:      A bug fix"
+    echo "  docs:     Documentation changes"
+    echo "  style:    Code style changes (formatting, etc.)"
+    echo "  refactor: Code refactoring"
+    echo "  test:     Adding or updating tests"
+    echo "  chore:    Maintenance tasks"
+    echo "  perf:     Performance improvements"
+    echo "  ci:       CI/CD changes"
+    echo "  build:    Build system changes"
+    echo "  revert:   Reverting a previous commit"
+    echo ""
+    echo "Examples:"
+    echo "  feat(chat): add message sending functionality"
+    echo "  fix(ui): resolve button alignment issue"
+    echo "  docs(readme): update installation instructions"
+    echo ""
+    echo "Your commit message:"
+    echo "  $(head -1 <<< "$COMMIT_MSG")"
+    echo ""
+    echo "To bypass this check (not recommended), use:"
+    echo "  git commit --no-verify"
+    exit 1
+fi
+
+exit 0
