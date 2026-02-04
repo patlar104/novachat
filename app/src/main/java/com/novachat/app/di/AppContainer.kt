@@ -1,6 +1,7 @@
 package com.novachat.app.di
 
 import android.content.Context
+import com.novachat.app.NovaChatApplication
 import com.novachat.app.data.repository.AiRepositoryImpl
 import com.novachat.app.data.repository.MessageRepositoryImpl
 import com.novachat.app.data.repository.PreferencesRepositoryImpl

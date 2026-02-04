@@ -165,7 +165,7 @@ class SettingsViewModel(
             
             result.fold(
                 onSuccess = {
-                    emitEffect(UiEffect.ShowToast("AI mode changed to ${mode.name}"))
+                    emitEffect(UiEffect.ShowToast("AI mode changed to ${AiMode.toString(mode)}"))
                 },
                 onFailure = { exception ->
                     emitEffect(UiEffect.ShowSnackbar(

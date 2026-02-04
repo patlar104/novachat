@@ -1,5 +1,6 @@
 package com.novachat.app.presentation.model
 
+import com.novachat.app.domain.model.AiConfiguration
 import com.novachat.app.domain.model.Message
 import com.novachat.app.domain.model.MessageId
 
@@ -160,43 +161,21 @@ sealed interface SettingsUiState {
     /**
      * Success state with current settings.
      *
-     * @property aiMode Current AI mode (ONLINE or OFFLINE)
-     * @property hasApiKey Whether an API key is configured
-     * @property isOnlineModeAvailable Whether online mode can be used
-     * @property isOfflineModeAvailable Whether offline mode can be used
-     * @property saveSuccess Whether the last save operation succeeded
+     * @property configuration Current AI configuration
      */
     data class Success(
-        val aiMode: com.novachat.app.domain.model.AiMode,
-        val hasApiKey: Boolean,
-        val isOnlineModeAvailable: Boolean,
-        val isOfflineModeAvailable: Boolean,
-        val saveSuccess: Boolean = false
+        val configuration: AiConfiguration
     ) : SettingsUiState {
         /**
          * Checks if the current configuration is valid.
          */
-        fun isValidConfiguration(): Boolean {
-            return when (aiMode) {
-                com.novachat.app.domain.model.AiMode.ONLINE -> hasApiKey && isOnlineModeAvailable
-                com.novachat.app.domain.model.AiMode.OFFLINE -> isOfflineModeAvailable
-            }
-        }
+        fun isValidConfiguration(): Boolean = configuration.validate().isSuccess
 
         /**
          * Gets a user-friendly validation message if configuration is invalid.
          */
-        fun getValidationMessage(): String? {
-            return when {
-                aiMode == com.novachat.app.domain.model.AiMode.ONLINE && !hasApiKey ->
-                    "API key is required for online mode"
-                aiMode == com.novachat.app.domain.model.AiMode.ONLINE && !isOnlineModeAvailable ->
-                    "Online mode is not available. Check your internet connection."
-                aiMode == com.novachat.app.domain.model.AiMode.OFFLINE && !isOfflineModeAvailable ->
-                    "Offline mode is not available on this device"
-                else -> null
-            }
-        }
+        fun getValidationMessage(): String? =
+            configuration.validate().exceptionOrNull()?.message
     }
 
     /**

@@ -25,8 +25,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Check app directory exists
+        id: check_app
+        run: |
+          if [ -d "app" ] && [ -f "gradlew" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
       
       - name: Set up JDK 17
+        if: steps.check_app.outputs.exists == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -34,20 +44,12 @@ jobs:
           cache: 'gradle'
       
       - name: Grant execute permission for gradlew
+        if: steps.check_app.outputs.exists == 'true'
         run: |
           if [ -f "gradlew" ]; then
             chmod +x gradlew
           else
             echo "gradlew not found, skipping"
-          fi
-      
-      - name: Check app directory exists
-        id: check_app
-        run: |
-          if [ -d "app" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
           fi
       
       - name: Run ktlint
@@ -74,8 +76,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Check app directory exists
+        id: check_app
+        run: |
+          if [ -d "app" ] && [ -f "gradlew" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
       
       - name: Set up JDK 17
+        if: steps.check_app.outputs.exists == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -83,20 +95,12 @@ jobs:
           cache: 'gradle'
       
       - name: Grant execute permission for gradlew
+        if: steps.check_app.outputs.exists == 'true'
         run: |
           if [ -f "gradlew" ]; then
             chmod +x gradlew
           else
             echo "gradlew not found, skipping"
-          fi
-      
-      - name: Check app directory exists
-        id: check_app
-        run: |
-          if [ -d "app" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
           fi
       
       - name: Run Detekt
@@ -123,8 +127,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Check app directory exists
+        id: check_app
+        run: |
+          if [ -d "app" ] && [ -f "gradlew" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
       
       - name: Set up JDK 17
+        if: steps.check_app.outputs.exists == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -132,20 +146,12 @@ jobs:
           cache: 'gradle'
       
       - name: Grant execute permission for gradlew
+        if: steps.check_app.outputs.exists == 'true'
         run: |
           if [ -f "gradlew" ]; then
             chmod +x gradlew
           else
             echo "gradlew not found, skipping"
-          fi
-      
-      - name: Check app directory exists
-        id: check_app
-        run: |
-          if [ -d "app" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
           fi
       
       - name: Run Android Lint
@@ -178,8 +184,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Check app directory exists
+        id: check_app
+        run: |
+          if [ -d "app" ] && [ -f "gradlew" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
       
       - name: Set up JDK 17
+        if: steps.check_app.outputs.exists == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -187,20 +203,12 @@ jobs:
           cache: 'gradle'
       
       - name: Grant execute permission for gradlew
+        if: steps.check_app.outputs.exists == 'true'
         run: |
           if [ -f "gradlew" ]; then
             chmod +x gradlew
           else
             echo "gradlew not found, skipping"
-          fi
-      
-      - name: Check app directory exists
-        id: check_app
-        run: |
-          if [ -d "app" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
           fi
       
       - name: Run tests with coverage
