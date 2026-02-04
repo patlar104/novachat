@@ -1,73 +1,183 @@
 # NovaChat - Copilot Instructions
 
-This is an Android application repository using Gradle as the build system. Please follow these guidelines when contributing:
+NovaChat is an Android AI chatbot application built with Jetpack Compose, supporting both online (Google Gemini) and offline (on-device AICore) AI modes. Please follow these guidelines when contributing:
+
+## Project Overview
+
+- **Target SDK**: Android 16 (API 35)
+- **Minimum SDK**: Android 9 (API 28)
+- **UI Framework**: Jetpack Compose with Material Design 3
+- **Architecture**: MVVM with Clean Architecture principles
+- **Build System**: Gradle 9.1.0 with Android Gradle Plugin 9.0.0
+- **Language**: Kotlin 2.3.0 with Compose Compiler Plugin
 
 ## Code Standards
 
 ### Required Before Each Commit
-- If code formatting tools are configured, run `./gradlew ktlintFormat` or `./gradlew spotlessApply` before committing changes
-- Ensure all code follows Android and Kotlin best practices
+- Format code: `./gradlew ktlintFormat` or `./gradlew spotlessApply` (if configured)
+- Ensure all Compose previews work
+- Verify API key handling is secure (never commit API keys)
+- Test on both light and dark themes
 
 ### Development Flow
-- Build: `./gradlew build`
+- Build: `./gradlew assembleDebug`
 - Run tests: `./gradlew test`
-- Run instrumentation tests: `./gradlew connectedAndroidTest`
+- Run instrumented tests: `./gradlew connectedAndroidTest`
 - Clean build: `./gradlew clean build`
-- Check code quality: `./gradlew check`
+- Install on device: `./gradlew installDebug`
 
 ## Repository Structure
-- `app/`: Main Android application module
-- `build/`: Build outputs (auto-generated, not committed)
-- `.gradle/`: Gradle cache files (not committed)
-- `gradle/`: Gradle wrapper files
-- `.idea/`: Android Studio IDE configuration files (mostly not committed)
+```
+app/src/main/java/com/novachat/app/
+├── data/              # Data layer (repositories, models)
+│   ├── repository/    # Repository implementations
+│   ├── mapper/        # Data mappers
+│   └── model/         # Data models
+├── domain/            # Domain layer (use cases, business logic)
+├── presentation/      # Presentation layer (UI state, events)
+├── ui/                # Compose UI screens and theme
+│   ├── theme/         # Material 3 theme
+│   ├── ChatScreen.kt
+│   └── SettingsScreen.kt
+├── viewmodel/         # ViewModels
+├── di/                # Dependency injection
+└── MainActivity.kt
+```
 
 ## Key Guidelines
 
-1. **Follow Android Best Practices**
-   - Follow Material Design guidelines for UI components
-   - Use AndroidX libraries instead of legacy support libraries
-   - Implement proper Activity/Fragment lifecycle management
-   - Use ViewBinding or DataBinding instead of findViewById
+1. **Jetpack Compose UI**
+   - Use @Composable functions for all UI
+   - Follow Material Design 3 guidelines
+   - Use remember and rememberSaveable for state
+   - Leverage ViewModel for business logic
+   - Use LaunchedEffect for side effects
+   - Prefer stateless Composables
 
 2. **Kotlin Coding Standards**
    - Use Kotlin idiomatic patterns (data classes, sealed classes, extension functions)
    - Prefer immutability (val over var)
    - Use null-safety features properly
-   - Follow Kotlin naming conventions
+   - Use sealed classes/interfaces for UI state
+   - Leverage Kotlin coroutines and Flow
 
-3. **Architecture**
-   - Follow recommended Android app architecture (MVVM, MVI, or Clean Architecture)
-   - Separate UI logic from business logic
-   - Use dependency injection (Hilt/Dagger) if configured
-   - Keep Activities/Fragments thin, move logic to ViewModels
+3. **Architecture (MVVM + Clean Architecture)**
+   - **Presentation Layer**: Composables observe ViewModel state
+   - **ViewModel Layer**: Manages UI state with StateFlow, handles user events
+   - **Domain Layer**: Use cases contain business logic
+   - **Data Layer**: Repositories abstract data sources
+   - Never reference Android UI components from ViewModels
+   - Use dependency injection (AppContainer pattern or Hilt)
 
-4. **Testing**
-   - Write unit tests for ViewModels and business logic
-   - Write instrumentation tests for UI interactions
-   - Use MockK or Mockito for mocking in tests
-   - Aim for meaningful test coverage on critical paths
+4. **AI Integration**
+   - Support both online (Gemini API) and offline (AICore) modes
+   - Handle API errors gracefully with user-friendly messages
+   - Never hardcode API keys - use DataStore for storage
+   - Implement proper loading states during AI processing
+   - Respect user's AI mode preference
 
-5. **Dependencies**
-   - Keep dependencies up to date but stable
-   - Avoid adding unnecessary dependencies
-   - Check for security vulnerabilities before adding new dependencies
+5. **State Management**
+   - Use StateFlow in ViewModels for reactive UI updates
+   - Define UI state as sealed classes or data classes
+   - Handle loading, success, and error states
+   - Use DataStore for persistent preferences
+   - Implement proper error handling with Result<T>
 
-6. **Git Practices**
-   - Never commit sensitive data (API keys, credentials, `google-services.json`)
+6. **Testing**
+   - Write unit tests for ViewModels and use cases
+   - Test repositories with fake implementations
+   - Use MockK for mocking in tests
+   - Test state transitions and error handling
+   - Aim for meaningful coverage on critical paths
+
+7. **Dependencies**
+   - Use Compose BOM for version management
+   - Keep Kotlin and AGP versions in sync
+   - Check security vulnerabilities before adding dependencies
+   - Document why each dependency is needed
+
+8. **Git Practices**
+   - Never commit API keys or secrets
+   - API keys should go in local.properties (gitignored)
    - Keep commits focused and atomic
-   - Write clear commit messages
-   - Don't commit build artifacts or IDE-specific files (already in `.gitignore`)
+   - Write descriptive commit messages
+   - Don't commit build/ or .gradle/ directories
 
-7. **Documentation**
-   - Add KDoc comments for public APIs and complex logic
-   - Update README.md when adding new features or changing setup instructions
-   - Document any non-obvious architecture decisions
+9. **Documentation**
+   - Add KDoc for public APIs
+   - Update README.md, API.md, or QUICKSTART.md when adding features
+   - Document AI model limitations
+   - Explain complex state transitions
+
+## NovaChat-Specific Patterns
+
+### UI State Pattern
+```kotlin
+sealed interface ChatUiState {
+    data object Loading : ChatUiState
+    data class Success(val messages: List<ChatMessage>) : ChatUiState
+    data class Error(val message: String) : ChatUiState
+}
+```
+
+### Repository Pattern
+```kotlin
+interface AiRepository {
+    suspend fun sendMessage(message: String, useOnlineMode: Boolean): Result<String>
+}
+```
+
+### ViewModel Pattern
+```kotlin
+class ChatViewModel(
+    private val aiRepository: AiRepository
+) : ViewModel() {
+    private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState.Loading)
+    val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
+    
+    fun sendMessage(message: String) {
+        viewModelScope.launch {
+            // Implementation
+        }
+    }
+}
+```
+
+### Composable Pattern
+```kotlin
+@Composable
+fun ChatScreen(
+    viewModel: ChatViewModel = viewModel(),
+    modifier: Modifier = Modifier
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    // UI implementation
+}
+```
 
 ## Android-Specific Notes
 
-- Minimum SDK version and target SDK version should be specified in build.gradle files
-- Always test on multiple API levels if possible
-- Handle configuration changes properly (screen rotation, etc.)
-- Consider accessibility in UI implementations
-- Follow Android security best practices for data storage and network communication
+- **Target SDK**: 35 (Android 16) - Use latest APIs
+- **Minimum SDK**: 28 (Android 9) - Maintains 95%+ device compatibility
+- **Compose**: All UI built with Jetpack Compose, no XML layouts
+- **Material 3**: Use Material Design 3 components exclusively
+- **Navigation**: Use Compose Navigation for screen transitions
+- **Lifecycle**: Always use lifecycle-aware components
+- **Configuration Changes**: Handled automatically by Compose
+- **Accessibility**: Ensure all Composables have semantic content descriptions
+- **Security**: 
+  - Store API keys in DataStore (encrypted)
+  - Never log sensitive information
+  - Use HTTPS for all network calls
+
+## Multi-Agent System
+
+NovaChat uses a specialized multi-agent development system. See `.github/AGENTS.md` for details on:
+- **Planner Agent**: Task breakdown and architecture decisions
+- **UI Agent**: Jetpack Compose UI implementation  
+- **Backend Agent**: ViewModels, repositories, and business logic
+- **Testing Agent**: Unit and instrumentation tests
+- **Build Agent**: Gradle configuration and dependencies
+- **Reviewer Agent**: Code quality and security review
+
+When working on NovaChat, use the appropriate agent for your task to maintain code quality and prevent scope drift.
