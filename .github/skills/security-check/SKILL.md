@@ -1,17 +1,26 @@
 ---
 name: Security Best Practices
-description: Security checks and best practices for Android development
+description: Complete security implementations for NovaChat (NO placeholders)
 category: security
 applies_to:
   - "**/*.kt"
   - "**/*.java"
   - "**/build.gradle*"
   - "**/AndroidManifest.xml"
+protocol_compliance: true
+note: All examples are COMPLETE implementations - following DEVELOPMENT_PROTOCOL.md zero-elision policy
 ---
 
 # Security Best Practices Skill
 
-This skill provides security guidelines and checks for Android development to prevent common vulnerabilities.
+This skill provides **COMPLETE** security implementations for Android development. All code examples are fully implemented with no placeholders.
+
+> **⚠️ PROTOCOL**: All examples follow [DEVELOPMENT_PROTOCOL.md](../../DEVELOPMENT_PROTOCOL.md)
+> - ✅ Complete security implementations (no `// ... security code` placeholders)
+> - ✅ All imports explicitly shown
+> - ✅ Full encryption examples
+> - ✅ Complete network security configurations
+> - ✅ Full permission handling code
 
 ## Critical Security Checks
 
@@ -395,3 +404,23 @@ Before releasing:
 - Android Security Best Practices (official docs)
 - GitHub Advisory Database
 - CWE (Common Weakness Enumeration)
+
+## Protocol Compliance Checklist
+
+Before submitting security-related code, verify:
+
+- [ ] **Complete implementations** - No `// ... security code` placeholders
+- [ ] **All imports included** - Every security-related import explicitly listed
+- [ ] **Encryption complete** - Full DataStore/encryption setup shown
+- [ ] **Network config complete** - Complete network_security_config.xml
+- [ ] **Permission handling complete** - Full runtime permission request code
+- [ ] **Input validation complete** - All validation logic implemented
+- [ ] **No hardcoded secrets** - All secrets in local.properties or secure storage
+- [ ] **Error handling** - Security failures handled gracefully
+- [ ] **Logging** - No sensitive data logged
+
+**Remember: DEVELOPMENT_PROTOCOL.md prohibits placeholder code in ALL files, including security implementations!**
+
+---
+
+**End of Security Best Practices Skill**
