@@ -89,7 +89,7 @@ jobs:
         if: steps.check_app.outputs.exists == 'true'
         uses: github/codeql-action/init@v3
         with:
-          languages: java
+          languages: java-kotlin
           queries: security-extended
       
       - name: Set up JDK 17
@@ -118,7 +118,7 @@ jobs:
         if: steps.check_app.outputs.exists == 'true'
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:java"
+          category: "/language:java-kotlin"
 
   secret-scanning:
     name: Secret Scanning
