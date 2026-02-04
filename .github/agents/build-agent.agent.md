@@ -258,31 +258,6 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ```
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppCompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
-
-junit = { group = "junit", name = "junit", version = "4.13.2" }
-mockk = { group = "io.mockk", name = "mockk", version = "1.13.8" }
-
-[plugins]
-android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-```
-
-## Security Checks
-
-Before adding any dependency:
-1. **Check GitHub Advisory Database** for known vulnerabilities
-2. **Verify the source** - use well-known, maintained libraries
-3. **Check license compatibility** with the project
-4. **Review dependencies of dependencies** (transitive dependencies)
-
 ## Common Dependencies for Android Chat App
 
 Essential libraries to consider:

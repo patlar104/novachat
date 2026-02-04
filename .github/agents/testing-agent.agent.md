@@ -348,10 +348,6 @@ class FakeAiRepository : AiRepository {
     }
 }
 ```
-            .check(matches(isEnabled()))
-    }
-}
-```
 
 ## Test Coverage Goals
 
