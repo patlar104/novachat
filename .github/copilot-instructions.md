@@ -2,6 +2,13 @@
 
 NovaChat is an Android AI chatbot application built with Jetpack Compose, supporting both online (Google Gemini) and offline (on-device AICore) AI modes. Please follow these guidelines when contributing:
 
+> **⚠️ CRITICAL**: All development work MUST follow the [DEVELOPMENT_PROTOCOL.md](DEVELOPMENT_PROTOCOL.md) guidelines. This includes:
+> - **Zero-Elision Policy**: Never use placeholders like `// ... rest of code`
+> - **Complete Implementations**: Write full, working code only
+> - **Input Disambiguation**: Ask for clarification when requests are ambiguous
+> - **Cross-File Dependencies**: Analyze ripple effects before changes
+> - **Self-Validation**: Check completeness, imports, and syntax before output
+
 ## Project Overview
 
 - **Target SDK**: Android 16 (API 35)
@@ -137,7 +144,18 @@ class ChatViewModel(
     
     fun sendMessage(message: String) {
         viewModelScope.launch {
-            // Implementation
+            _uiState.value = ChatUiState.Loading
+            try {
+                val response = aiRepository.sendMessage(message, useOnlineMode = true)
+                response.onSuccess { result ->
+                    _uiState.value = ChatUiState.Success(listOf(ChatMessage(result, false)))
+                }
+                response.onFailure { error ->
+                    _uiState.value = ChatUiState.Error(error.message ?: "Unknown error")
+                }
+            } catch (e: Exception) {
+                _uiState.value = ChatUiState.Error(e.message ?: "Error sending message")
+            }
         }
     }
 }
@@ -151,8 +169,56 @@ fun ChatScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    // UI implementation
+    
+    Column(modifier = modifier.fillMaxSize()) {
+        when (uiState) {
+            is ChatUiState.Loading -> CircularProgressIndicator()
+            is ChatUiState.Success -> MessageList((uiState as ChatUiState.Success).messages)
+            is ChatUiState.Error -> ErrorMessage((uiState as ChatUiState.Error).message)
+        }
+    }
 }
+```
+
+## Code Quality Requirements (MANDATORY)
+
+### Before ANY Code Output - Self-Validation Checklist
+
+All code submissions MUST pass these checks (from DEVELOPMENT_PROTOCOL.md):
+
+- [ ] **Completeness**: Full file written, NO placeholders like `// ... code`
+- [ ] **Imports**: Every required import explicitly included
+- [ ] **Syntax**: All brackets `{ }` and parentheses `( )` balanced
+- [ ] **Logic**: Implementation is complete and makes sense
+- [ ] **Standards**: Uses 2026 best practices (Kotlin 2.3.0, Compose BOM 2026.01.01)
+- [ ] **Dependencies**: Cross-file impacts analyzed and addressed
+- [ ] **Architecture**: Follows MVVM + Clean Architecture patterns
+
+### Input Handling Protocol
+
+When receiving a request:
+
+1. **Check Current State**: Read existing files FIRST before implementing
+2. **Identify Duplicates**: If feature exists, ask: "This exists in [File]. Modify or add new?"
+3. **Clarify Ambiguity**: If unclear, STOP and ask specific questions
+4. **Plan Dependencies**: List all files that will be affected
+5. **Implement Atomically**: One complete file at a time
+
+### Prohibited Practices
+
+❌ **NEVER** use these patterns:
+```kotlin
+// ... rest of implementation     // FORBIDDEN
+// ... existing code               // FORBIDDEN  
+// TODO: implement                 // FORBIDDEN
+// Add other methods here          // FORBIDDEN
+```
+
+✅ **ALWAYS** write complete implementations:
+```kotlin
+// Every function fully implemented
+// Every import explicitly stated
+// Every bracket properly closed
 ```
 
 ## Android-Specific Notes
@@ -172,7 +238,9 @@ fun ChatScreen(
 
 ## Multi-Agent System
 
-NovaChat uses a specialized multi-agent development system. See `.github/AGENTS.md` for details on:
+NovaChat uses a specialized multi-agent development system with **strict protocol enforcement**. 
+
+See `.github/AGENTS.md` for details on:
 - **Planner Agent**: Task breakdown and architecture decisions
 - **UI Agent**: Jetpack Compose UI implementation  
 - **Backend Agent**: ViewModels, repositories, and business logic
@@ -180,4 +248,20 @@ NovaChat uses a specialized multi-agent development system. See `.github/AGENTS.
 - **Build Agent**: Gradle configuration and dependencies
 - **Reviewer Agent**: Code quality and security review
 
+**All agents MUST follow DEVELOPMENT_PROTOCOL.md** including:
+- Zero-elision policy (no placeholders)
+- Complete implementations only
+- Cross-file dependency analysis
+- Input disambiguation protocols
+- Self-validation before output
+
 When working on NovaChat, use the appropriate agent for your task to maintain code quality and prevent scope drift.
+
+## References
+
+- **[DEVELOPMENT_PROTOCOL.md](DEVELOPMENT_PROTOCOL.md)**: Comprehensive development guidelines (MANDATORY)
+- **[AGENTS.md](AGENTS.md)**: Multi-agent system documentation
+- **Skills**: Reusable patterns in `.github/skills/`
+  - `android-testing/`: Testing patterns and examples
+  - `material-design/`: Compose UI patterns
+  - `security-check/`: Security best practices
