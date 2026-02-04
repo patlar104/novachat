@@ -13,11 +13,24 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.novachat.app.di.appContainer
+import com.novachat.app.presentation.model.NavigationDestination
+import com.novachat.app.presentation.viewmodel.ChatViewModel
+import com.novachat.app.presentation.viewmodel.SettingsViewModel
+import com.novachat.app.presentation.viewmodel.ViewModelFactory
 import com.novachat.app.ui.ChatScreen
 import com.novachat.app.ui.SettingsScreen
 import com.novachat.app.ui.theme.NovaChatTheme
-import com.novachat.app.viewmodel.ChatViewModel
 
+/**
+ * Main activity for NovaChat application.
+ *
+ * This activity sets up the navigation and theme for the app.
+ * It uses the new architecture with dependency injection and
+ * proper ViewModel creation.
+ *
+ * @since 1.0.0
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,27 +48,41 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Main composable for the NovaChat app.
+ *
+ * Sets up navigation between chat and settings screens,
+ * creates ViewModels with proper dependency injection.
+ */
 @Composable
 fun NovaChatApp() {
     val navController = rememberNavController()
-    val viewModel: ChatViewModel = viewModel()
+    
+    // Create ViewModelFactory from app container
+    val viewModelFactory = ViewModelFactory(
+        container = (navController.context as ComponentActivity).appContainer
+    )
     
     NavHost(
         navController = navController,
-        startDestination = "chat"
+        startDestination = NavigationDestination.Chat.route
     ) {
-        composable("chat") {
+        composable(NavigationDestination.Chat.route) {
+            val chatViewModel: ChatViewModel = viewModel(factory = viewModelFactory)
+            
             ChatScreen(
-                viewModel = viewModel,
+                viewModel = chatViewModel,
                 onNavigateToSettings = {
-                    navController.navigate("settings")
+                    navController.navigate(NavigationDestination.Settings.route)
                 }
             )
         }
         
-        composable("settings") {
+        composable(NavigationDestination.Settings.route) {
+            val settingsViewModel: SettingsViewModel = viewModel(factory = viewModelFactory)
+            
             SettingsScreen(
-                viewModel = viewModel,
+                viewModel = settingsViewModel,
                 onNavigateBack = {
                     navController.popBackStack()
                 }
