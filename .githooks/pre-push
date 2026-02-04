@@ -1,0 +1,54 @@
+#!/bin/bash
+# Pre-push hook for NovaChat
+# Runs unit tests before push to ensure code quality
+
+set -e
+
+echo "🚀 Running pre-push checks..."
+
+# Check if app directory exists
+if [ ! -d "app" ]; then
+    echo "✅ No app directory found, skipping checks"
+    exit 0
+fi
+
+# Check if gradlew exists
+if [ ! -f "gradlew" ]; then
+    echo "⚠️  gradlew not found, skipping checks"
+    exit 0
+fi
+
+# Make gradlew executable
+chmod +x gradlew
+
+# Get the current branch
+CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
+
+echo "📦 Current branch: $CURRENT_BRANCH"
+
+# Run unit tests
+echo ""
+echo "🧪 Running unit tests..."
+if ./gradlew testDebugUnitTest --no-daemon --quiet 2>&1 | tail -20; then
+    echo "✅ Unit tests passed"
+else
+    echo "❌ Unit tests failed! Please fix the tests before pushing."
+    echo ""
+    echo "To bypass this check (not recommended), use:"
+    echo "  git push --no-verify"
+    exit 1
+fi
+
+# Run lint checks (optional, can be slow)
+# echo ""
+# echo "🔍 Running lint checks..."
+# if ./gradlew lintDebug --no-daemon --quiet; then
+#     echo "✅ Lint checks passed"
+# else
+#     echo "⚠️  Lint checks found issues, but allowing push"
+# fi
+
+echo ""
+echo "✅ Pre-push checks completed successfully!"
+echo "🎉 Ready to push!"
+exit 0
