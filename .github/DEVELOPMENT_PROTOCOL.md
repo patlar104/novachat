@@ -13,7 +13,7 @@ This document defines the comprehensive development protocol for NovaChat to ens
 ## I. Context & State Management
 
 ### Current Project State
-- **Language**: Kotlin 2.3.0 (2026 standard)
+- **Language**: Kotlin 2.2.21 (CodeQL-compatible baseline)
 - **Build System**: Gradle 9.1.0 with AGP 9.0.0
 - **UI Framework**: Jetpack Compose with Material Design 3
 - **Architecture**: MVVM + Clean Architecture
@@ -318,7 +318,7 @@ Did you mean to:
 ### Technology Standards
 
 #### Kotlin
-- **Version**: 2.3.0 (latest stable as of 2026)
+- **Version**: 2.2.21 (project baseline for CodeQL compatibility)
 - **Compiler Plugin**: Compose Compiler Plugin (not separate plugin)
 - **Coroutines**: 1.10.1+
 - **Features**: Use context receivers, value classes where appropriate
@@ -331,7 +331,7 @@ Did you mean to:
 
 #### Jetpack Compose
 - **BOM**: 2026.01.01 or later
-- **Compiler**: Integrated with Kotlin 2.3.0
+- **Compiler**: Integrated with Kotlin 2.2.21
 - **Material 3**: Exclusive (no Material 2)
 - **Navigation**: Compose Navigation 2.8.0+
 

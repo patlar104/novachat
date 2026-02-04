@@ -2,6 +2,6 @@
 plugins {
     id("com.android.application") version "9.0.0" apply false
     // Note: Kotlin Android plugin is now built into AGP 9.0.0
-    // Compose compiler plugin for Kotlin 2.3.0
-    id("org.jetbrains.kotlin.plugin.compose") version "2.3.0" apply false
+    // Compose compiler plugin for Kotlin 2.2.21 (CodeQL-compatible)
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.21" apply false
 }

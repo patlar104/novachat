@@ -4,6 +4,8 @@
 
 Successfully updated the NovaChat Android project to use the **latest stable versions** of all build tools and dependencies as of **January 2026**, verified through web research rather than relying on cached/outdated knowledge.
 
+**Note**: Kotlin is pinned to **2.2.21** for CodeQL compatibility (downgraded from 2.3.0).
+
 ## What Was Done
 
 ### 1. Research Phase
@@ -25,9 +27,9 @@ Successfully updated the NovaChat Android project to use the **latest stable ver
 - **Source**: Official Gradle compatibility matrix
 
 #### Kotlin
-- **Updated**: 2.0.20 → **2.3.0**
+- **Updated**: 2.0.20 → **2.2.21**
 - **Method**: Via Compose Compiler Plugin
-- **Source**: [JetBrains Kotlin Blog](https://blog.jetbrains.com/kotlin/2025/12/kotlin-2-3-0-released/)
+- **Source**: [Kotlin Releases](https://kotlinlang.org/docs/releases.html)
 
 #### Jetpack Compose
 - **Updated**: BOM 2024.12.01 → **2026.01.01**
@@ -146,7 +148,7 @@ Results: 0 errors, 37 warnings (cosmetic only)
 |-----------|--------|-------|--------|
 | AGP | 8.5.2 | 9.0.0 | ✅ Latest |
 | Gradle | 8.11.1 | 9.1.0 | ✅ Latest |
-| Kotlin | 2.0.20 | 2.3.0 | ✅ Latest |
+| Kotlin | 2.0.20 | 2.2.21 | ✅ Pinned |
 | Compose BOM | 2024.12.01 | 2026.01.01 | ✅ Latest |
 | compileSdk | 35 | 36 | ✅ Latest |
 | Build Status | ❌ Network blocked | ✅ Successful | ✅ Fixed |
@@ -181,14 +183,14 @@ Results: 0 errors, 37 warnings (cosmetic only)
 All information sourced from official documentation:
 
 1. [Android Gradle Plugin 9.0.0 Release Notes](https://developer.android.com/build/releases/agp-9-0-0-release-notes)
-2. [Kotlin 2.3.0 Release](https://blog.jetbrains.com/kotlin/2025/12/kotlin-2-3-0-released/)
+2. [Kotlin Releases](https://kotlinlang.org/docs/releases.html)
 3. [Jetpack Compose Releases](https://developer.android.com/jetpack/androidx/releases/compose)
 4. [Gradle Releases](https://github.com/gradle/gradle/releases)
 5. [Update Kotlin projects for AGP 9.0](https://blog.jetbrains.com/kotlin/2026/01/update-your-projects-for-agp9/)
 
 ## Conclusion
 
-The NovaChat Android project is now using the **absolute latest stable versions** of all build tools and dependencies, verified through web research on January 2026 documentation. The build is successful, reproducible, and ready for development.
+The NovaChat Android project is now using the **absolute latest stable versions** of all build tools and dependencies, verified through web research on January 2026 documentation. Kotlin is pinned to **2.2.21** for CodeQL compatibility. The build is successful, reproducible, and ready for development.
 
 **Status**: ✅ COMPLETE  
 **Build**: ✅ SUCCESSFUL  

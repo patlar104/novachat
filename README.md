@@ -14,7 +14,7 @@ NovaChat is a modern Android AI chatbot application that supports both online (c
 
 ## Technologies Used
 
-- **Language**: Kotlin 2.3.0 (via Compose Compiler Plugin)
+- **Language**: Kotlin 2.2.21 (via Compose Compiler Plugin)
 - **UI Framework**: Jetpack Compose (BOM 2026.01.01)
 - **Build System**: Gradle 9.1.0 with Android Gradle Plugin 9.0.0
 - **Architecture**: MVVM with ViewModels
@@ -190,7 +190,7 @@ NovaChat is a modern Android AI chatbot that demonstrates:
 - **Jetpack Compose** with Material Design 3
 - **Dual AI Integration**: Google Gemini API (online) and AICore (offline)
 - **MVVM + Clean Architecture** with proper separation of concerns
-- **Modern Android Development**: Kotlin 2.3.0, Coroutines, StateFlow, DataStore
+- **Modern Android Development**: Kotlin 2.2.21, Coroutines, StateFlow, DataStore
 
 **Current Status**: This branch contains the multi-agent development system configuration. See the `copilot/create-ai-chatbot-app` branch for the full application implementation.
 

@@ -8,7 +8,7 @@
 ### Build Tools
 - **Android Gradle Plugin**: 9.0.0 (released January 2026)
 - **Gradle**: 9.1.0 (required for AGP 9.0.0)
-- **Kotlin**: 2.3.0 (via Compose Compiler Plugin)
+- **Kotlin**: 2.2.21 (via Compose Compiler Plugin)
 - **JDK**: 17
 
 ### Android Configuration
