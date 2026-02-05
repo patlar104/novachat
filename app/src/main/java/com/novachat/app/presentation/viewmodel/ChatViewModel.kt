@@ -57,8 +57,8 @@ class ChatViewModel(
     private val _uiEffect = Channel<UiEffect>(Channel.BUFFERED)
     val uiEffect = _uiEffect.receiveAsFlow()
     
-    private companion object {
-        private const val KEY_DRAFT_MESSAGE = "draft_message"
+    companion object {
+        internal const val KEY_DRAFT_MESSAGE = "draft_message"
     }
     
     val draftMessage: StateFlow<String> = savedStateHandle.getStateFlow(

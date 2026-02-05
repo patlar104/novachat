@@ -1,0 +1,56 @@
+* 2957659 (HEAD -> copilot/create-ai-chatbot-app, origin/copilot/create-ai-chatbot-app, codex/kotlin-2-2) feat(ui,docs): add preview annotations and enhance UI components with string resources
+* c1a91a8 chore(app): update docs and launcher icons
+* cf9365b chore(preview): add preview agent docs and stabilize previews/tests
+* 4ba90ef refactor: remove legacy repository and ViewModel files from old architecture
+* 5f36a3d docs: add comprehensive codebase vs copilot-instructions analysis
+* 6459745 docs(copilot): comprehensive update with agent-specific guidance and testing patterns
+* 37889a1 test: add comprehensive unit tests for core components
+* b66be57 build: add testing dependencies for comprehensive unit testing
+* 3572cd4 chore(hooks): configure Git hooks with executable permissions and documentation
+* 98706a0 ci: run workflows on main pushes only
+* 926fbd0 ci: throttle workflow concurrency
+* 28ca34e fix(security): disable backups and guard PR comment
+* 53334d8 ci(codeql): re-enable kotlin analysis
+* 58ab795 build(kotlin): pin 2.2.21 for CodeQL
+* 02c6468 (codex/ci-fixes) chore(githooks): normalize file modes
+* 7519efa fix(ci): guard workflows and align settings state
+*   e320e13 Merge branch 'main' into copilot/create-ai-chatbot-app
+|\  
+| * 5a60da8 (origin/main, origin/HEAD, main) docs(ci): add quick start guide for CI/CD system
+| * ad643d2 feat(ci): add comprehensive CI/CD workflows and Git hooks
+| * 43bb3d1 Update all skill files with complete examples and DEVELOPMENT_PROTOCOL compliance
+| * e7f676e Update backend, testing, build, and reviewer agents with DEVELOPMENT_PROTOCOL compliance
+| * d909414 Update planner and UI agent files with DEVELOPMENT_PROTOCOL compliance
+| * 55317bb Update copilot-instructions.md and AGENTS.md with DEVELOPMENT_PROTOCOL enforcement
+| * 83bec6e Add comprehensive DEVELOPMENT_PROTOCOL.md with bulletproof guidelines
+| * 8f5343a Fix leftover code fragments from old examples in agent files
+| * 76f6e6b Update README to reflect NovaChat implementation and multi-agent system
+| * 57e96ab Update build and testing agents for NovaChat's Compose and AI architecture
+| * 42f8de3 Update copilot instructions and agents to reflect NovaChat's Compose architecture
+| * 3c82df7 Update README with multi-agent system documentation
+| * 64d5a90 Add multi-agent system with specialized agents and skills
+| * 1411bc1 Improve clarity in Copilot instructions based on code review
+| * 229ac55 Add Copilot instructions for Android project
+* | d6fed3d Phase 4 complete with comprehensive documentation (4,524 total lines refactored)
+* | 6e71617 Phase 4 complete: All UI updated with modern architecture (1,586 lines)
+* | 2fe38d1 Phase 4: Update ChatScreen to use new architecture with sealed states
+* | 7554455 Phase 4: SettingsViewModel, ViewModelFactory, and updated MainActivity
+* | ee3b08e Phase 4: Dependency injection and refactored ChatViewModel
+* | e0d88ee Add comprehensive Phase 3 summary documentation
+* | 888ff20 Phase 3 complete: Data layer implementation with repositories and mappers
+* | 5eeaaba Add Phase 2 comprehensive summary documentation
+* | 90588f4 Phase 2 complete: Domain layer interfaces, use cases, and presentation models
+* | 394a85d Domain layer foundation with 2026 Kotlin best practices (Phase 1)
+* | ceb360a Add comprehensive Gradle update summary with all changes documented
+* | 663ad71 Add comprehensive build verification documentation
+* | 7cdeb7f Update all dependencies to latest versions and increase compileSdk to 36
+* | 0923362 Update to latest stable Android build tools and successfully build app
+* | efa9ce0 Plan to update dependencies to latest stable versions and build app
+* | f22fcb4 Remove deprecated Kotlin/Native memory model configuration
+* | 41a8803 Add comprehensive project summary document
+* | 1e64b37 Add comprehensive documentation and guides for novice developers
+* | 2a5f9a1 Complete Android AI chatbot app implementation with Gradle wrapper
+* | 452dc97 Create initial Android project structure with Gradle config and app skeleton
+* | d5c0076 Initial plan
+|/  
+* c2e5365 Initial commit

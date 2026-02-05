@@ -38,7 +38,7 @@ class AiRepositoryImpl(
      * Updated based on the last operation result.
      */
     private val serviceStatusFlow = MutableStateFlow<AiServiceStatus>(
-        AiServiceStatus.Available("gemini-1.5-flash")
+        AiServiceStatus.Available(AiConfiguration.DEFAULT_MODEL_NAME)
     )
 
     /**
@@ -104,7 +104,7 @@ class AiRepositoryImpl(
 
                 // Create Gemini model with configuration
                 val generativeModel = GenerativeModel(
-                    modelName = "gemini-1.5-flash",
+                    modelName = AiConfiguration.DEFAULT_MODEL_NAME,
                     apiKey = apiKey.value,
                     generationConfig = generationConfig {
                         temperature = configuration.modelParameters.temperature
@@ -133,7 +133,7 @@ class AiRepositoryImpl(
 
                 // Update status to available
                 updateServiceStatus(
-                    AiServiceStatus.Available("gemini-1.5-flash")
+                    AiServiceStatus.Available(AiConfiguration.DEFAULT_MODEL_NAME)
                 )
 
                 Result.success(responseText)
@@ -187,66 +187,18 @@ class AiRepositoryImpl(
      * Currently returns an error as AICore is not yet publicly available
      * on Maven repositories (as of January 2026).
      *
-     * When AICore becomes available, this method will be implemented to:
-     * 1. Check if AICore is installed on the device
-     * 2. Load the appropriate model
-     * 3. Generate a response locally
-     * 4. Return the result
-     *
      * @param message The user's message
      * @param configuration AI configuration
      * @return Result with error indicating AICore is unavailable
+     *
+     * TODO: Implement AICore integration when the androidx.ai.edge.aicore
+     *       library becomes publicly available on Maven Central.
      */
     private suspend fun generateOfflineResponse(
         message: String,
         configuration: AiConfiguration
     ): Result<String> {
         return withContext(Dispatchers.IO) {
-            // AICore is not yet available in public Maven repositories
-            // When it becomes available, implement the following:
-            /*
-            try {
-                // Check if AICore is installed
-                if (!isAiCoreAvailable()) {
-                    val error = UnsupportedOperationException(
-                        "AICore is not installed on this device"
-                    )
-                    updateServiceStatus(
-                        AiServiceStatus.Unavailable("AICore not installed")
-                    )
-                    return@withContext Result.failure(error)
-                }
-
-                // Load model
-                val model = GenerativeModel.getDefault(context)
-
-                // Generate response
-                val response = model.generateContent(message)
-                val responseText = response.text
-
-                // Validate response
-                if (responseText.isNullOrBlank()) {
-                    return@withContext Result.failure(
-                        Exception("On-device AI returned empty response")
-                    )
-                }
-
-                updateServiceStatus(
-                    AiServiceStatus.Available("aicore-gemini-nano")
-                )
-
-                Result.success(responseText)
-
-            } catch (e: Exception) {
-                val error = Exception("On-device AI error: ${e.message}", e)
-                updateServiceStatus(
-                    AiServiceStatus.Error(error = error, isRecoverable = true)
-                )
-                Result.failure(error)
-            }
-            */
-
-            // Temporary implementation until AICore is available
             val error = UnsupportedOperationException(
                 "On-device AI (AICore) is not yet available. " +
                 "This feature requires the androidx.ai.edge.aicore library " +

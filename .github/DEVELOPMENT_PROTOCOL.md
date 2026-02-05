@@ -66,7 +66,214 @@ fun MyButton(onClick: () -> Unit) {
 
 ---
 
-## III. Atomic File Processing
+## III. Agent Domain Boundaries & Access Control
+
+### Purpose
+Prevent agents from modifying files outside their responsibility, which causes confusion and breaking changes.
+
+### Agent Modify-Access Zones (What They CAN Edit)
+
+#### UI Agent - Modify Access
+- `ui/**/*.kt` - Composable functions, screens, layout
+- `ui/theme/*.kt` - Colors, Typography, Theme configuration
+- `presentation/model/*UiState.kt` - UI state definitions
+- `presentation/model/*UiEvent.kt` - UI event definitions
+- `MainActivity.kt` - **NavHost block only**, not other logic
+
+#### Backend Agent - Modify Access
+- `presentation/viewmodel/*.kt` - ViewModels and state management
+- `domain/usecase/*.kt` - Business logic and use cases
+- `domain/model/*.kt` - Domain models (Android-agnostic)
+- `data/repository/*.kt` - Repository implementations
+- `data/model/*.kt` - Data models and mappers
+- `data/mapper/*.kt` - Domain ↔ Data conversion
+- `di/AppContainer.kt` - Dependency injection wiring
+
+#### Testing Agent - Modify Access
+- `**/test/**/*Test.kt` - Unit tests only
+- `**/androidTest/**/*Test.kt` - UI tests only
+- `**/test/**/Test*.kt` - Test utilities and fixtures
+
+#### Preview Agent - Modify Access
+- Add `@Preview` annotations to existing Composables
+- Create `**/Preview.kt` files for preview helpers only
+- **Modify Contents**: No - UI Agent owns Composable bodies
+
+#### Build Agent - Modify Access
+- `build.gradle.kts` - Dependencies, versions, build config
+- `gradle.properties` - Gradle settings
+- `AndroidManifest.xml` - Permissions, features, manifest
+- `res/xml/network_security_config.xml` - Security configuration
+- `app/proguard-rules.pro` - Code optimization rules
+
+### Agent Read-Access Zones (What They MUST Read Before Modifying)
+
+#### UI Agent MUST READ
+- ViewModel to understand state contract
+- UiState/UiEvent definitions for all branches
+- Existing Composable patterns for consistency
+
+#### Backend Agent MUST READ
+- UI state definitions to match state values
+- Existing ViewModel event patterns
+- Repository interface contracts
+- DI container to understand wiring
+
+#### Testing Agent MUST READ
+- Production code to understand actual behavior
+- Test patterns and helper functions
+- Mock/stub implementations
+
+#### Build Agent MUST READ
+- build.gradle.kts to understand current state
+- AndroidManifest.xml structure
+- Existing dependency versions
+- Impact on all layers (UI, Backend, Testing)
+
+### Violation Detection: Stop & Hand Off If...
+
+| Situation | Action |
+|-----------|--------|
+| **UI Agent modifying ViewModel** | ❌ STOP - Hand off to Backend Agent |
+| **UI Agent modifying UseCase/Repository** | ❌ STOP - Hand off to Backend Agent |
+| **Backend Agent modifying Composable functions** | ❌ STOP - Hand off to UI Agent |
+| **Backend Agent modifying Theme/colors** | ❌ STOP - Hand off to UI Agent |
+| **Testing Agent modifying production code** | ❌ STOP - Hand off to appropriate agent |
+| **Build Agent modifying Java/Kotlin logic** | ❌ STOP - Hand off to appropriate agent |
+| **Any agent editing files outside their zone** | ❌ STOP - Check matrix above, hand off |
+
+### Cross-Boundary Files (Require Communication)
+
+These files affect multiple agents and require approval before modification:
+
+| File | Primary Owner | Must Communicate With |
+|------|---------------|----------------------|
+| `presentation/model/*UiState.kt` | UI Agent | Backend Agent (fills state) |
+| `presentation/model/*UiEvent.kt` | UI Agent | Backend Agent (handles events) |
+| `presentation/viewmodel/*.kt` | Backend Agent | UI Agent (uses state), Testing Agent |
+| `di/AppContainer.kt` | Backend Agent | **ALL agents** (affects everyone) |
+| `build.gradle.kts` | Build Agent | **ALL agents** (dependencies affect everyone) |
+| `AndroidManifest.xml` | Build Agent | **ALL agents** (permissions affect everyone) |
+
+---
+
+## IV. Broader Context & Tunnel Vision Prevention
+
+### The Problem: Tunnel Vision
+Agents focusing only on their narrow task without understanding:
+- What other files depend on their changes
+- Whether their change breaks something downstream
+- How multiple layers interact
+- Cross-file impact
+
+### The Solution: Broader Context Check
+
+#### Before ANY modification, ask:
+
+1. **"What files depend on mine?"**
+   ```
+   Example: Changing ChatViewModel.kt
+   ├─ ChatScreen.kt depends on it (observes state)
+   ├─ ChatViewModelTest.kt depends on it (tests it)
+   └─ AppContainer.kt depends on it (provides instance)
+   ```
+
+2. **"Will my change break anything downstream?"**
+   ```
+   If I change UiState structure:
+   ├─ ChatScreen must observe all branches
+   ├─ Tests must verify all branches
+   └─ ViewModel must emit valid states
+   ```
+
+3. **"Do I understand the complete flow?"**
+   ```
+   Not just: "I'll add a new ViewModel"
+   But: "I'll add ViewModel → UI will observe it → Tests will verify → DI will provide it"
+   ```
+
+4. **"What if another agent modifies a dependency?"**
+   ```
+   If I'm creating a state branch:
+   ├─ What if Repository fails to implement needed method?
+   ├─ What if UI can't handle this state?
+   ├─ What if Tests can't verify this state?
+   ```
+
+### Build Agent Specific: Avoid Narrow Focus
+
+Build Agent responsibilities are **systemically broad**, not narrow.
+
+#### ❌ NARROW (Tunnel Vision)
+- "Just add this dependency"
+- "Just update the gradle version"
+- "Just configure the manifest"
+
+#### ✅ BROAD (Systemic Awareness)
+- "Add dependency and verify no conflicts with:
+  - Existing versions
+  - UI layer needs
+  - Backend layer compatibility
+  - Test framework requirements
+  - Security implications"
+
+- "Update gradle version and ensure:
+  - Kotlin compatibility
+  - Compose compatibility
+  - Plugin compatibility
+  - All agents' tooling works"
+
+- "Configure manifest and understand:
+  - Permission implications for UI
+  - Security implications for Backend
+  - Build implications for testing"
+
+### Broader Context Checklist (Before ANY File Modification)
+
+- [ ] **Identify dependencies**: What other files depend on mine?
+- [ ] **Verify impact**: Will my change break any downstream code?
+- [ ] **Check ripple effects**: What else needs updating?
+- [ ] **Read related code**: Understand the full flow, not just my piece
+- [ ] **Ask cross-layer questions**: How does this affect other layers?
+- [ ] **Plan sequential updates**: What updates are needed in what order?
+- [ ] **Verify completeness**: Have I updated ALL affected files?
+
+### Example: Broader Context in Action
+
+#### Scenario: Change UiState Structure
+
+❌ **Tunnel Vision Approach** (Wrong)
+```
+Backend Agent thinks:
+"I'll change ChatUiState from data class to sealed interface"
+[Makes the change]
+[Done - doesn't check what breaks]
+
+Result: ChatScreen breaks, tests fail, inconsistency
+```
+
+✅ **Broader Context Approach** (Right)
+```
+Backend Agent thinks:
+"I want to change ChatUiState structure. Let me check impact:
+- ChatScreen observes this state → Need to update when/branches
+- ChatViewModelTest tests this state → Need to update assertions
+- ChatViewModel emits this state → Need to update emission points
+- Is there documentation? → Yes, update examples
+
+I'll update in this order:
+1. ChatUiState (definition)
+2. ChatViewModel (emission)
+3. ChatScreen (observation)
+4. ChatViewModelTest (assertions)
+"
+[Makes all changes together]
+[Result: Consistent, nothing breaks]
+```
+
+---
+
+## V. Atomic File Processing
 
 ### The Rule
 Generate code **one complete file at a time**.
@@ -101,7 +308,7 @@ Generate code **one complete file at a time**.
 
 ---
 
-## IV. Cross-File Dependency Protocol
+## VI. Cross-File Dependency Protocol
 
 ### Before Changing Any File
 
@@ -143,7 +350,7 @@ Generate code **one complete file at a time**.
 
 ---
 
-## V. Self-Validation Protocol
+## VII. Self-Validation Protocol
 
 ### Before Outputting Any Code
 
@@ -208,7 +415,54 @@ If ANY check fails:
 
 ---
 
-## VI. Input Disambiguation Protocol
+## VIII. Spec-First Mandate
+
+### The Rule
+**No code is written until a `specs/PHASE_X_SPEC.md` is committed.**
+
+### Implementation
+1. **Write specification first**: Create detailed spec file describing the feature, architecture, and acceptance criteria
+2. **Commit the spec**: Push the spec to the repository
+3. **Only then code**: Implement based on the committed spec
+4. **Reference the spec**: Code comments reference section numbers of the spec
+
+### Why This Matters
+- Prevents post-hoc rationalization (writing code then documenting it)
+- Forces design thinking before implementation
+- Allows stakeholder feedback before coding begins
+- Maintains audit trail of decisions
+
+### Violation
+❌ **NEVER** create "Summary" or "Completion" markdown files after coding
+✅ **ALWAYS** spec the feature before any code is written
+
+---
+
+## VIII-B. Commit Hygiene Rule
+
+### The Rule
+**One type per commit. NEVER mix feature and documentation commits.**
+
+### Implementation
+1. Feature work (code changes): `feat(ui): Add chat screen` or `feat(backend): Add SendMessageUseCase`
+2. Documentation (updates to `.md` files): `docs: Update DEVELOPMENT_PROTOCOL.md`
+3. Tests: `test: Add ChatViewModelTest`
+4. Build/Config: `build: Update gradle dependencies`
+5. Refactor: `refactor: Extract KEY_DRAFT_MESSAGE constant`
+
+### Invalid Patterns
+❌ `feat(ui,docs): Add screen and document it` (mixed types)
+❌ `feat: Update implementation AND create summary file` (code + doc in one commit)
+❌ `docs: Add summary of previous 5 commits` (retroactive documentation)
+
+### Why This Matters
+- Atomic commits make git history readable
+- Separate concerns = easier to revert if needed
+- Enforces spec-first workflow (spec commit comes before code commit)
+
+---
+
+## IX. Input Disambiguation Protocol
 
 ### The "Confusion Guard"
 
@@ -313,7 +567,7 @@ Did you mean to:
 
 ---
 
-## VII. 2026 Standards Compliance
+## X. 2026 Standards Compliance
 
 ### Technology Standards
 
@@ -374,7 +628,7 @@ di/              → Dependency Injection
 
 ---
 
-## VIII. File Generation Workflow
+## XI. File Generation Workflow
 
 ### Standard Workflow
 
@@ -420,7 +674,7 @@ di/              → Dependency Injection
 
 ---
 
-## IX. Error Handling & Recovery
+## XII. Error Handling & Recovery
 
 ### When Things Go Wrong
 
@@ -453,7 +707,7 @@ di/              → Dependency Injection
 
 ---
 
-## X. Communication Standards
+## XIII. Communication Standards
 
 ### When Responding to User
 
@@ -514,7 +768,7 @@ Could you specify:
 
 ---
 
-## XI. Special Cases
+## XIV. Special Cases
 
 ### Large Files (>500 lines)
 
@@ -565,7 +819,7 @@ Proceeding with File 1: [FileName]
 
 ---
 
-## XII. Quality Checklist
+## XV. Quality Checklist
 
 Before any code output, verify:
 
@@ -579,10 +833,68 @@ Before any code output, verify:
 - [ ] **Documentation**: KDoc for public APIs
 - [ ] **Security**: No hardcoded secrets
 - [ ] **Naming**: Follows Kotlin conventions
+- [ ] **Abstraction Check**: No hardcoded strings/numbers that should be constants
 
 ---
 
-## XIII. Version Control
+## XVI. Abstraction & Constant Extraction
+
+### The Rule
+**Never hardcode magic strings or numbers. Extract to named constants.**
+
+### Examples
+
+#### ❌ WRONG - Hardcoded String
+```kotlin
+class ChatViewModel(...) : ViewModel() {
+    fun updateDraftMessage(text: String) {
+        savedStateHandle["draft_message"] = text  // Magic string!
+    }
+}
+
+class ChatViewModelTest {
+    @Test
+    fun draftMessage_survives() {
+        val key = savedStateHandle.get<String>("draft_message")  // Hardcoded everywhere!
+    }
+}
+```
+
+#### ✅ CORRECT - Named Constant
+```kotlin
+class ChatViewModel(...) : ViewModel() {
+    companion object {
+        internal const val KEY_DRAFT_MESSAGE = "draft_message"
+    }
+    
+    fun updateDraftMessage(text: String) {
+        savedStateHandle[KEY_DRAFT_MESSAGE] = text
+    }
+}
+
+class ChatViewModelTest {
+    @Test
+    fun draftMessage_survives() {
+        val key = savedStateHandle.get<String>(ChatViewModel.KEY_DRAFT_MESSAGE)
+    }
+}
+```
+
+### Pattern: Constant Location
+- **View Models**: `internal const val` in companion object at top level of ViewModel class
+- **Domain Models**: `const val` in companion object or top-level object
+- **Repositories**: `const val` in companion object if private to repo, or in configuration class if shared
+- **Tests**: Reference constants from production code, never hardcode
+
+### Checklist Before Committing
+- [ ] Are there any quoted strings repeated more than once in the same file?
+- [ ] Are there any algorithm parameters (temperatures, timeouts, retry counts) hardcoded?
+- [ ] Are there any resource names or keys hardcoded in multiple places?
+- [ ] Can a magic value be extracted to a named constant in the appropriate class?
+
+---
+
+## XVII. Version Control
 
 ### Commit Guidelines
 
@@ -602,7 +914,7 @@ Each commit must:
 
 ---
 
-## XIV. Enforcement
+## XVIII. Enforcement
 
 This protocol is **mandatory** for all development work on NovaChat.
 

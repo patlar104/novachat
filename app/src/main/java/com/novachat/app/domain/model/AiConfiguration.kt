@@ -61,6 +61,9 @@ data class AiConfiguration(
  * while maintaining exhaustive pattern matching.
  */
 sealed interface AiMode {
+    companion object {
+        const val DEFAULT_MODEL_NAME = "gemini-1.5-flash"
+    }
     /**
      * Online mode using cloud-based AI services (Google Gemini).
      * Requires internet connectivity and a valid API key.

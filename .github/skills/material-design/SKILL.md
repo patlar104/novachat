@@ -20,6 +20,73 @@ This skill provides **COMPLETE** Material Design 3 Compose patterns. All code ex
 > - ✅ Theme integration shown
 > - ✅ Accessibility semantics included
 
+## Multi-Agent Coordination
+
+### When the UI Agent Should Use Tools
+
+**Use tools immediately for:**
+- Reading existing Composable files → `read_file`
+- Creating new screen Composables → `create_file`
+- Modifying Composable implementations → `replace_string_in_file`
+- Searching for Material 3 patterns → `grep_search` or `semantic_search`
+- Validating syntax and imports → `run_in_terminal` for build checks
+
+**Do NOT describe; DO implement:**
+- Don't say "create a screen Composable"; create it using `create_file`
+- Don't say "update the theme colors"; update using `replace_string_in_file`
+- Don't say "add Material 3 buttons"; add them using `replace_string_in_file`
+
+### When to Hand Off to Other Agents
+
+**Hand off to Backend Agent if:**
+- ViewModel creation/modification is needed
+- State management implementation needed
+- Use case or repository integration needed
+- Event handling logic needs implementation
+- → **Action**: Provide Composable signature showing expected state/events
+
+**Hand off to Preview Agent if:**
+- @Preview annotations need creation
+- Preview data providers need creation
+- Preview state variants need setup
+- → **Action**: Create Composable, then hand off for preview coverage
+
+**Hand off to Testing Agent if:**
+- UI behavior tests need creation
+- Interaction testing needed
+- Accessibility testing needed
+- → **Action**: Implement Composable, then hand off for test coverage
+
+**Hand off to Build Agent if:**
+- Compose or Gradle dependencies missing
+- Build configuration issues arise
+- → **Action**: Report specific build/dependency issues
+
+### UI Task Assessment
+
+**Determine scope before acting:**
+
+1. **Is this a UI task?**
+   - Creating Composable screens → YES, use UI Agent tools
+   - Modifying Material 3 components → YES, use UI Agent tools
+   - Adjusting layout/spacing → YES, use UI Agent tools
+   - Creating ViewModels → NO, hand off to Backend Agent
+   - Creating tests → NO, hand off to Testing Agent
+   - Creating previews → Maybe, see below
+
+2. **Do I have all context needed?**
+   - What state should this screen display? → Check UiState definition
+   - What events should it emit? → Check UiEvent sealed interface
+   - What Material 3 components apply? → Review patterns in this skill
+
+3. **Is this within UI Agent scope?**
+   - Creating screen Composables → YES ✓
+   - Implementing Material 3 design → YES ✓
+   - Building layouts and navigation → YES ✓
+   - Creating ViewModels → NO, hand off to Backend Agent
+   - Setting up state management → NO, hand off to Backend Agent
+   - Writing tests → NO, hand off to Testing Agent
+
 ## Theme Setup (Complete)
 
 ### Color.kt - Material 3 Color System

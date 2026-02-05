@@ -4,6 +4,65 @@ Reusable patterns for creating `@Preview` annotations in NovaChat.
 
 **Official reference**: https://developer.android.com/develop/ui/compose/tooling/previews
 
+## Multi-Agent Coordination
+
+### When the Preview Agent Should Use Tools
+
+**Use tools immediately for:**
+- Reading Composable files to understand structure → `read_file`
+- Creating preview files → `create_file`
+- Adding @Preview annotations to existing files → `replace_string_in_file`
+- Searching for Composable patterns → `grep_search` or `semantic_search`
+- Running preview validation → `run_in_terminal`
+
+**Do NOT describe; DO implement:**
+- Don't say "add @Preview annotations"; add them using `replace_string_in_file`
+- Don't say "create a preview file"; create it using `create_file`
+- Don't say "check what preview functions exist"; search using `grep_search`
+
+### When to Hand Off to Other Agents
+
+**Hand off to UI Agent if:**
+- Composable function doesn't exist and needs creation
+- Composable layout/logic needs changes
+- Material Design implementation needs adjustment
+- State management in Composable needs fixes
+- → **Action**: Report which Composables need creation/fixes
+
+**Hand off to Backend Agent if:**
+- ViewModel or state management needs changes
+- Preview data providers need production logic
+- Use case integration is needed
+- → **Action**: Report what state/data is needed in previews
+
+**Hand off to Build Agent if:**
+- Preview dependencies are missing
+- Gradle configuration affects preview compilation
+- → **Action**: Report missing dependencies or build issues
+
+### Preview Task Assessment
+
+**Determine scope before acting:**
+
+1. **Is this a preview task?**
+   - Creating @Preview annotations → YES, use Preview Agent tools
+   - Creating PreviewData objects → YES, use Preview Agent tools
+   - Creating Composable functions → NO, hand off to UI Agent
+   - Modifying component behavior → NO, hand off to UI Agent
+
+2. **Do I have all context needed?**
+   - Does the Composable exist? → Check with `grep_search` or `read_file`
+   - What states should be previewed? → Review UiState sealed interface
+   - What devices/themes to show? → Reference existing preview patterns
+
+3. **Is this within Preview Agent scope?**
+   - Adding @Preview annotations → YES ✓
+   - Creating preview data providers → YES ✓
+   - Creating preview helper Composables → YES ✓
+   - Fixing Composable logic → NO, hand off to UI Agent
+   - Creating ViewModels → NO, hand off to Backend Agent
+   - Creating use cases → NO, hand off to Backend Agent
+
 ---
 
 ## Core Pattern

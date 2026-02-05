@@ -22,6 +22,68 @@ This skill provides **COMPLETE** security implementations for Android developmen
 > - ✅ Complete network security configurations
 > - ✅ Full permission handling code
 
+## Multi-Agent Coordination
+
+### When Build Agent Should Use Tools (Security Context)
+
+**Use tools immediately for:**
+- Reading build.gradle.kts for dependency security → `read_file`
+- Checking AndroidManifest.xml security config → `read_file`
+- Searching for hardcoded secrets → `grep_search`
+- Reviewing network security configuration → `read_file`
+- Adding security dependencies → `replace_string_in_file`
+- Updating ProGuard/R8 rules → `replace_string_in_file`
+
+**Do NOT describe; DO implement:**
+- Don't say "add secure encryption"; implement using `replace_string_in_file`
+- Don't say "configure network security"; create/update config using `create_file`
+- Don't say "check for hardcoded secrets"; search and report using `grep_search`
+
+### When Build Agent Should Hand Off
+
+**Hand off to Backend Agent if:**
+- Authentication system needs implementation
+- DataStore encryption implementation needed
+- Token storage implementation needed
+- API key management needs implementation
+- → **Action**: Report security requirement for backend to implement
+
+**Hand off to UI Agent if:**
+- Permission request UI needed
+- Security-related dialogs needed
+- Secure input handling UI needed
+- → **Action**: Report UI security implementation needed
+
+**Hand off to another specialist if:**
+- SSL/Certificate pinning needs verification
+- Encryption algorithm selection needs expertise
+- Compliance requirements (GDPR, etc.) need addressing
+- → **Action**: Report security requirement for specialist review
+
+### Security Task Assessment
+
+**Determine scope before acting:**
+
+1. **Is this a security/build task?**
+   - Configuring network security → YES, use Build Agent tools
+   - Adding secure dependencies → YES, use Build Agent tools
+   - Checking for hardcoded secrets → YES, use Build Agent tools
+   - Implementing authentication → NO, hand off to Backend Agent
+   - Creating permission UI → NO, hand off to UI Agent
+
+2. **Do I have all context needed?**
+   - What security requirements apply? → Review project guidelines
+   - What vulnerabilities exist? → Search with `grep_search`
+   - What dependencies are affected? → Check build.gradle.kts
+
+3. **Is this within Build Agent scope?**
+   - Configuring security settings in manifest → YES ✓
+   - Managing secure dependencies → YES ✓
+   - Setting up network security config → YES ✓
+   - Implementing encryption logic → NO, hand off to Backend Agent
+   - Creating secure UI components → NO, hand off to UI Agent
+   - Writing security tests → NO, hand off to Testing Agent
+
 ## Critical Security Checks
 
 ### 1. Never Hardcode Secrets

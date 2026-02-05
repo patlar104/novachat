@@ -153,7 +153,7 @@ class ChatViewModelTest {
         viewModel.updateDraftMessage(draftText)
 
         // Assert: draft persisted in SavedStateHandle
-        savedStateHandle.get<String>("draft_message").shouldBe(draftText)
+        savedStateHandle.get<String>(ChatViewModel.KEY_DRAFT_MESSAGE).shouldBe(draftText)
     }
 
     @Test

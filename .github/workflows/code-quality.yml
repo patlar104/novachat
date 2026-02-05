@@ -20,6 +20,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  commitlint:
+    name: Commit Message Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint commit messages
+        uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: .commitlintrc.json
+
   ktlint:
     name: Kotlin Linting (ktlint)
     runs-on: ubuntu-latest
