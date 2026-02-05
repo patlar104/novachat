@@ -38,7 +38,7 @@ class AiRepositoryImpl(
      * Updated based on the last operation result.
      */
     private val serviceStatusFlow = MutableStateFlow<AiServiceStatus>(
-        AiServiceStatus.Available(AiConfiguration.DEFAULT_MODEL_NAME)
+        AiServiceStatus.Available(AiMode.DEFAULT_MODEL_NAME)
     )
 
     /**
@@ -104,7 +104,7 @@ class AiRepositoryImpl(
 
                 // Create Gemini model with configuration
                 val generativeModel = GenerativeModel(
-                    modelName = AiConfiguration.DEFAULT_MODEL_NAME,
+                    modelName = AiMode.DEFAULT_MODEL_NAME,
                     apiKey = apiKey.value,
                     generationConfig = generationConfig {
                         temperature = configuration.modelParameters.temperature
@@ -133,7 +133,7 @@ class AiRepositoryImpl(
 
                 // Update status to available
                 updateServiceStatus(
-                    AiServiceStatus.Available(AiConfiguration.DEFAULT_MODEL_NAME)
+                    AiServiceStatus.Available(AiMode.DEFAULT_MODEL_NAME)
                 )
 
                 Result.success(responseText)
