@@ -46,7 +46,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 - UI state management
 
 **Constraints**:
-- ONLY modifies UI-related files
+- ONLY modifies UI-related files (i.e., files in `app/src/main/java/.../ui/` but not viewmodels)
 - Never implements business logic
 - All UI in Compose (no XML layouts)
 - All strings must be in resources
@@ -93,17 +93,16 @@ We have seven specialized agents, each with specific responsibilities and constr
 ---
 
 ### 4. ⚙️ Backend Agent (`backend-agent.agent.md`)
-**Role**: Implements business logic and data layer
+**Role**: Implements business logic, domain, and data layers, following Clean Architecture.
 
 **Scope**:
-- ViewModels with StateFlow
-- Repositories (AI, Preferences, Data)
-- Data sources (DataStore, Gemini API, AICore)
-- Use cases
-- Dependency injection (AppContainer)
+- **Presentation Layer**: ViewModels (with StateFlow, UiState, UiEffect)
+- **Domain Layer**: Core models, Repository interfaces, and Use Cases
+- **Data Layer**: Repository implementations, Data sources (DataStore, Gemini API, AICore)
+- **Dependency Injection**: AppContainer (manual DI)
 
 **Constraints**:
-- ONLY modifies backend/logic files
+- ONLY modifies backend/logic files (i.e., files in `data/`, `domain/`, `presentation/model/`, `presentation/viewmodel/`, `di/`)
 - Never modifies UI files
 - ViewModels must not have UI references
 - All logic must be unit testable
@@ -226,6 +225,17 @@ Provides:
 - Accessibility guidelines
 
 **Protocol**: All Compose examples are complete and functional
+
+### 🖼️ Compose Preview Skill
+Location: `.github/skills/compose-preview/`
+
+Provides:
+- Best practices for `@Preview` annotations
+- Multi-preview annotations for device and theme variations
+- Creation of mock data providers (e.g., Preview*Data)
+- Techniques for isolating previews from ViewModels
+
+**Protocol**: All preview examples are complete and functional
 
 ### 🔒 Security Best Practices Skill
 Location: `.github/skills/security-check/`

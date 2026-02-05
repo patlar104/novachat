@@ -82,21 +82,19 @@ cd novachat
 
 ## Project Structure
 
+NovaChat uses a layered architecture, following **Clean Architecture** principles (Domain, Data, Presentation) with **MVVM** pattern. Dependencies are managed manually via the `di` (Dependency Injection) package using `AppContainer`.
+
 ```
 app/
 ├── src/
 │   └── main/
 │       ├── java/com/novachat/app/
-│       │   ├── data/              # Data models and repositories
-│       │   │   ├── AiRepository.kt
-│       │   │   ├── ChatMessage.kt
-│       │   │   └── PreferencesRepository.kt
-│       │   ├── ui/                # Compose UI screens
-│       │   │   ├── ChatScreen.kt
-│       │   │   ├── SettingsScreen.kt
-│       │   │   └── theme/         # App theme
-│       │   ├── viewmodel/         # ViewModels
-│       │   │   └── ChatViewModel.kt
+│       │   ├── di/                # Dependency Injection (AppContainer)
+│       │   ├── data/              # Data Layer: Repository implementations and data sources
+│       │   ├── domain/            # Domain Layer: Core models, Repository interfaces, and Use Cases
+│       │   ├── presentation/      # Presentation Layer: UI State models, UI Events, and ViewModels
+│       │   │   └── viewmodel/     # ViewModels (e.g., ChatViewModel.kt, SettingsViewModel.kt)
+│       │   ├── ui/                # Compose UI screens and theming
 │       │   └── MainActivity.kt
 │       ├── res/                   # Resources
 │       └── AndroidManifest.xml
@@ -257,7 +255,7 @@ Review the AI integration for security vulnerabilities and best practices
 This branch focuses on the multi-agent system configuration in `.github/`:
 - `copilot-instructions.md` - General NovaChat development guidelines
 - `agents/` - Specialized agent configurations (6 agents)
-- `skills/` - Reusable knowledge and patterns (3 skills)
+- `skills/` - Reusable knowledge and patterns (4 skills)
 - `AGENTS.md` - Complete multi-agent system documentation
 
 For the full application implementation, see the `copilot/create-ai-chatbot-app` branch.

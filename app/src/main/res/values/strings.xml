@@ -16,4 +16,17 @@
     <string name="api_key_saved">API key saved successfully</string>
     <string name="clear_chat">Clear Chat</string>
     <string name="chat_cleared">Chat cleared</string>
+
+    <!-- Added missing strings for SettingsScreen.kt -->
+    <string name="back">Back</string>
+    <string name="note_offline_mode">Note: Offline mode requires Google AICore support (currently unavailable)</string>
+    <string name="api_key_source">Get your API key from https://ai.google.dev/</string>
+
+    <!-- Added missing strings for ChatScreen.kt -->
+    <string name="dismiss">Dismiss</string>
+    <string name="emoji_wave">👋</string>
+    <string name="empty_state_title">Start a conversation!</string>
+    <string name="empty_state_subtitle">Type a message below to chat with AI</string>
+    <string name="emoji_error">❌</string>
+    <string name="try_again">Try Again</string>
 </resources>

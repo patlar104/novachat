@@ -6,24 +6,28 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.novachat.app.R
 import com.novachat.app.domain.model.Message
+import com.novachat.app.domain.model.MessageId
 import com.novachat.app.domain.model.MessageSender
 import com.novachat.app.presentation.model.ChatUiEvent
 import com.novachat.app.presentation.model.ChatUiState
 import com.novachat.app.presentation.model.UiEffect
 import com.novachat.app.presentation.viewmodel.ChatViewModel
+import java.util.UUID
 import kotlinx.coroutines.launch
 
 /**
@@ -40,10 +44,7 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(
-    viewModel: ChatViewModel,
-    onNavigateToSettings: () -> Unit
-) {
+fun ChatScreen(viewModel: ChatViewModel, onNavigateToSettings: () -> Unit) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val draftMessage by viewModel.draftMessage.collectAsStateWithLifecycle()
 
@@ -139,18 +140,14 @@ fun ChatScreenContent(
             is ChatUiState.Initial -> {
                 EmptyState(modifier = Modifier.padding(paddingValues))
             }
-            
             is ChatUiState.Loading -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                    modifier = Modifier.fillMaxSize().padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
                 }
             }
-            
             is ChatUiState.Success -> {
                 ChatContent(
                     messages = state.messages,
@@ -160,7 +157,6 @@ fun ChatScreenContent(
                     modifier = Modifier.padding(paddingValues)
                 )
             }
-            
             is ChatUiState.Error -> {
                 ErrorState(
                     message = state.message,
@@ -183,7 +179,7 @@ private fun ChatContent(
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Auto-scroll to bottom when new messages arrive
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
@@ -192,39 +188,32 @@ private fun ChatContent(
             }
         }
     }
-    
+
     Column(modifier = modifier.fillMaxSize()) {
         // Error banner
         error?.let {
-            ErrorBanner(
-                message = it,
-                onDismiss = onDismissError
-            )
+            ErrorBanner(message = it, onDismiss = onDismissError)
         }
-        
+
         // Messages list
         if (messages.isEmpty()) {
             EmptyState(modifier = Modifier.fillMaxSize())
         } else {
             LazyColumn(
                 state = listState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
+                modifier = Modifier.fillMaxSize().weight(1f),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(messages, key = { it.id.value }) { message ->
                     MessageBubble(message = message)
                 }
-                
+
                 // Loading indicator
                 if (isProcessing) {
                     item {
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
+                            modifier = Modifier.fillMaxWidth().padding(8.dp),
                             contentAlignment = Alignment.CenterStart
                         ) {
                             CircularProgressIndicator(modifier = Modifier.size(24.dp))
@@ -239,7 +228,7 @@ private fun ChatContent(
 @Composable
 fun MessageBubble(message: Message) {
     val isUser = message.sender == MessageSender.USER
-    
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
@@ -273,31 +262,21 @@ fun MessageInputBar(
     onSendMessage: () -> Unit,
     isLoading: Boolean
 ) {
-    Surface(
-        shadowElevation = 8.dp,
-        tonalElevation = 2.dp
-    ) {
+    Surface(shadowElevation = 8.dp, tonalElevation = 2.dp) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
                 value = messageText,
                 onValueChange = onMessageTextChange,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp),
+                modifier = Modifier.weight(1f).padding(end = 8.dp),
                 placeholder = { Text(stringResource(R.string.type_message)) },
                 enabled = !isLoading,
                 maxLines = 4
             )
-            
-            IconButton(
-                onClick = onSendMessage,
-                enabled = messageText.isNotBlank() && !isLoading
-            ) {
+
+            IconButton(onClick = onSendMessage, enabled = messageText.isNotBlank() && !isLoading) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Send,
                     contentDescription = stringResource(R.string.send),
@@ -319,9 +298,7 @@ fun ErrorBanner(message: String, onDismiss: () -> Unit) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -330,8 +307,13 @@ fun ErrorBanner(message: String, onDismiss: () -> Unit) {
                 color = MaterialTheme.colorScheme.onErrorContainer,
                 modifier = Modifier.weight(1f)
             )
-            TextButton(onClick = onDismiss) {
-                Text("Dismiss")
+            TextButton(
+                onClick = onDismiss,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                )
+            ) {
+                Text(stringResource(R.string.dismiss))
             }
         }
     }
@@ -347,19 +329,16 @@ fun EmptyState(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "👋",
-                style = MaterialTheme.typography.displayLarge
-            )
+            Text(text = stringResource(R.string.emoji_wave), style = MaterialTheme.typography.displayLarge) // Fixed: Hardcoded string
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Start a conversation!",
+                text = stringResource(R.string.empty_state_title), // Fixed: Hardcoded string
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Type a message below to chat with AI",
+                text = stringResource(R.string.empty_state_subtitle), // Fixed: Hardcoded string
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
@@ -383,9 +362,11 @@ fun ErrorState(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(32.dp)
         ) {
-            Text(
-                text = "❌",
-                style = MaterialTheme.typography.displayLarge
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = null, // The message below explains the error, so no content description is needed for the icon.
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(48.dp) // Large size to match the visual weight of displayLarge
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -396,9 +377,126 @@ fun ErrorState(
             if (isRecoverable) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = onDismiss) {
-                    Text("Try Again")
+                    Text(stringResource(R.string.try_again)) // Fixed: Hardcoded string
                 }
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatScreenContentPreview() {
+    ChatScreenContent(
+        uiState = ChatUiState.Initial,
+        draftMessage = "",
+        snackbarHostState = remember { SnackbarHostState() },
+        onEvent = {},
+        onDraftMessageChange = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatScreenContentLoadingPreview() {
+    ChatScreenContent(
+        uiState = ChatUiState.Loading,
+        draftMessage = "",
+        snackbarHostState = remember { SnackbarHostState() },
+        onEvent = {},
+        onDraftMessageChange = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatScreenContentSuccessPreview() {
+    val messages =
+        listOf(
+            Message(MessageId(UUID.randomUUID().toString()), "Hello!", MessageSender.USER),
+            Message(MessageId(UUID.randomUUID().toString()), "Hi there!", MessageSender.ASSISTANT) // Corrected from MODEL
+        )
+    ChatScreenContent(
+        uiState = ChatUiState.Success(messages),
+        draftMessage = "Testing",
+        snackbarHostState = remember { SnackbarHostState() },
+        onEvent = {},
+        onDraftMessageChange = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatScreenContentErrorPreview() {
+    ChatScreenContent(
+        uiState = ChatUiState.Error("Something went wrong", isRecoverable = true), // Added isRecoverable
+        draftMessage = "",
+        snackbarHostState = remember { SnackbarHostState() },
+        onEvent = {},
+        onDraftMessageChange = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MessageBubbleUserPreview() {
+    MessageBubble(
+        message =
+            Message(MessageId(UUID.randomUUID().toString()), "This is a user message", MessageSender.USER)
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MessageBubbleModelPreview() {
+    MessageBubble(
+        message =
+            Message(MessageId(UUID.randomUUID().toString()), "This is a model message", MessageSender.ASSISTANT) // Corrected from MODEL
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MessageInputBarPreview() {
+    MessageInputBar(
+        messageText = "Hello world",
+        onMessageTextChange = {},
+        onSendMessage = {},
+        isLoading = false
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MessageInputBarLoadingPreview() {
+    MessageInputBar(
+        messageText = "Thinking...",
+        onMessageTextChange = {},
+        onSendMessage = {},
+        isLoading = true
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ErrorBannerPreview() {
+    ErrorBanner(message = "This is an error message", onDismiss = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EmptyStatePreview() {
+    EmptyState()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ErrorStatePreview() {
+    ErrorState(message = "Something went wrong", isRecoverable = true, onDismiss = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ErrorStateNotRecoverablePreview() {
+    ErrorState(message = "Something went wrong", isRecoverable = false, onDismiss = {})
 }

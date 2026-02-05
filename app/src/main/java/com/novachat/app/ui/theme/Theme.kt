@@ -9,6 +9,12 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -54,4 +60,34 @@ fun NovaChatTheme(
         typography = Typography,
         content = content
     )
+}
+
+// ---------------------- Previews ----------------------
+
+@Preview(showBackground = true, name = "Theme - Light")
+@Composable
+fun LightThemePreview() {
+    NovaChatTheme(darkTheme = false, dynamicColor = false) {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            Text(
+                text = "Light Theme Preview",
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Theme - Dark")
+@Composable
+fun DarkThemePreview() {
+    NovaChatTheme(darkTheme = true, dynamicColor = false) {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            Text(
+                text = "Dark Theme Preview",
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+    }
 }

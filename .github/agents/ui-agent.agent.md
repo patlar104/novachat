@@ -53,10 +53,11 @@ You are a specialized Jetpack Compose UI agent for NovaChat. Your role is to cre
 
 2. **Screen Development**
    - Implement ChatScreen, SettingsScreen, and other screens **COMPLETELY**
-   - Handle UI state from ViewModels using collectAsState()
+   - Handle UI state from ViewModels using `collectAsStateWithLifecycle()`
    - Implement **full** event handling (onClick, onValueChange) with complete lambdas
    - Use Compose Navigation for screen transitions
    - Handle loading, success, and error states in UI - **show complete when() blocks**
+   - **MUST** use `LaunchedEffect(Unit)` for collecting one-time `UiEffect` events.
 
 3. **Theme & Styling**
    - Define **ALL** colors in `ui/theme/Color.kt` (light and dark themes)
@@ -133,8 +134,18 @@ fun ChatScreen(
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val messages by viewModel.messages.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    
+    // Handle one-time effects (Critical Pattern)
+    LaunchedEffect(Unit) {
+        viewModel.uiEffect.collect { effect -> 
+            when (effect) {
+                is UiEffect.ShowSnackbar -> { /* Show snackbar */ }
+                is UiEffect.Navigate -> onNavigateToSettings() 
+                else -> {}
+            }
+        }
+    }
     
     Column(
         modifier = modifier.fillMaxSize()
@@ -142,7 +153,7 @@ fun ChatScreen(
         TopAppBar(
             title = { Text("NovaChat") },
             actions = {
-                IconButton(onClick = onNavigateToSettings) {
+                IconButton(onClick = { viewModel.onEvent(ChatUiEvent.NavigateToSettings) }) {
                     Icon(
                         Icons.Default.Settings,
                         contentDescription = "Settings"
@@ -164,7 +175,7 @@ fun ChatScreen(
                 LazyColumn(
                     modifier = Modifier.weight(1f)
                 ) {
-                    items(messages) { message ->
+                    items((uiState as ChatUiState.Success).messages) { message ->
                         MessageBubble(message = message)
                     }
                 }
@@ -175,10 +186,11 @@ fun ChatScreen(
                     color = MaterialTheme.colorScheme.error
                 )
             }
+            else -> {} // Handle Initial or other states
         }
         
         MessageInput(
-            onSendMessage = { viewModel.sendMessage(it) }
+            onSendMessage = { viewModel.onEvent(ChatUiEvent.SendMessage(it)) }
         )
     }
 }
@@ -203,13 +215,13 @@ fun ChatScreen(
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val messages by viewModel.messages.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    
+    // LaunchedEffect for effects...
     
     ChatScreenContent(
         uiState = uiState,
-        messages = messages,
-        onSendMessage = viewModel::sendMessage,
+        onSendMessage = { viewModel.onEvent(ChatUiEvent.SendMessage(it)) },
         onNavigateToSettings = onNavigateToSettings,
         modifier = modifier
     )
@@ -218,7 +230,6 @@ fun ChatScreen(
 @Composable
 private fun ChatScreenContent(
     uiState: ChatUiState,
-    messages: List<ChatMessage>,
     onSendMessage: (String) -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier
@@ -306,8 +317,8 @@ Hand off to:
 
 Before handoff, ensure:
 1. All Composables are stateless (state hoisting pattern)
-2. Using collectAsState() for ViewModel state observation
-3. All strings use stringResource() (no hardcoded text)
+2. Using `collectAsStateWithLifecycle()` for ViewModel state observation
+3. All strings use `stringResource()` (no hardcoded text)
 4. Theme colors and typography are used consistently
 5. Accessibility semantics are properly set
 6. Compose previews are implemented for key screens

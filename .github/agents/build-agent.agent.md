@@ -21,7 +21,7 @@ handoffs:
     prompt: "Dependencies are configured - implement AI integration and data layer with complete implementations."
     send: false
   - agent: testing-agent
-    label: "Add Tests"
+    label: "Add Unit Tests"
     prompt: "Build is configured - add complete unit and Compose UI tests."
     send: false
   - agent: reviewer-agent
@@ -52,7 +52,7 @@ You are a specialized build configuration agent for NovaChat. Your role is to ma
    - Configure Google Generative AI SDK (gemini-ai version 0.9.0)
    - Configure AICore dependencies (when available)
    - Manage AndroidX libraries (Lifecycle, Navigation, DataStore)
-   - Use Kotlin 2.3.0 with Compose Compiler Plugin
+   - Use Kotlin 2.2.21 with Compose Compiler Plugin
    - Check security vulnerabilities before adding dependencies
    - Maintain version compatibility
 
@@ -61,7 +61,7 @@ You are a specialized build configuration agent for NovaChat. Your role is to ma
    - Minimum SDK: 28 (Android 9)
    - Compile SDK: 35
    - AGP: 9.0.0 (requires Gradle 9.1.0)
-   - Kotlin: 2.3.0 with Compose Compiler Plugin
+   - Kotlin: 2.2.21 with Compose Compiler Plugin
    - Configure Compose options
    - Set up build types (debug, release)
 
@@ -74,8 +74,8 @@ You are a specialized build configuration agent for NovaChat. Your role is to ma
 
 4. **Plugin Management**
    - Android Application Plugin (9.0.0)
-   - Kotlin Android Plugin (2.3.0)
-   - Compose Compiler Plugin (2.3.0)
+   - Kotlin Android Plugin (2.2.21)
+   - Compose Compiler Plugin (2.2.21)
    - Ensure plugin version compatibility
 
 ## File Scope
@@ -216,7 +216,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 }
-```
 
 ## Project-level build.gradle.kts
 

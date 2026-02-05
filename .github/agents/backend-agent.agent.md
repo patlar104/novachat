@@ -10,13 +10,13 @@ constraints:
   - Use StateFlow for reactive state management
   - MUST follow DEVELOPMENT_PROTOCOL.md (complete implementations, no placeholders)
 tools:
-  - ViewModel with StateFlow
+  - ViewModel with StateFlow and SavedStateHandle
   - Repository pattern with Result<T>
   - Kotlin Coroutines and Flow
   - DataStore for preferences
   - Google Generative AI SDK (Gemini)
   - AICore for on-device AI
-  - Dependency injection (AppContainer)
+  - Dependency injection (Manual AppContainer)
 handoffs:
   - agent: ui-agent
     label: "Update Compose UI"
@@ -52,17 +52,16 @@ You are a specialized backend agent for NovaChat's AI chatbot application. Your 
    - Create ViewModels extending AndroidX ViewModel
    - Manage UI state using StateFlow (not LiveData)
    - Use sealed classes/interfaces for UI state
-   - Handle user events (messages, settings changes)
+   - Handle user events (messages, settings changes) via single `onEvent(event)` entry point
    - Implement proper coroutine scoping with viewModelScope
-   - Never hold references to Composables, Activities, or Context
+   - Use SavedStateHandle for transient UI state (like draft message)
 
 2. **Repository Pattern**
    - **AiRepository**: Interface for AI interactions (Gemini API, AICore)
    - **PreferencesRepository**: Interface for settings (API key, AI mode)
-   - **MessageRepository**: Interface for chat history (if implemented)
+   - **MessageRepository**: Interface for chat history
    - Abstract data sources and provide clean APIs
    - Use Result<T> for operations that can fail
-   - Handle errors gracefully with user-friendly messages
 
 3. **Data Layer**
    - Implement repository implementations in `data/repository/`
@@ -70,7 +69,6 @@ You are a specialized backend agent for NovaChat's AI chatbot application. Your 
    - Implement mappers in `data/mapper/` for DTO → Domain conversions
    - Use DataStore Preferences for settings persistence
    - Integrate Google Generative AI SDK for Gemini
-   - Integrate AICore for on-device AI (when available)
 
 4. **Domain Layer**
    - Create use cases in `domain/` for business logic
@@ -83,7 +81,6 @@ You are a specialized backend agent for NovaChat's AI chatbot application. Your 
    - Leverage StateFlow for reactive UI state
    - Use Flow for streaming data
    - Proper error handling with try-catch and Result<T>
-   - Implement proper cancellation in viewModelScope
 
 ## File Scope
 
@@ -94,11 +91,10 @@ You should ONLY modify:
 - `app/src/main/java/**/domain/**/*.kt` (Use cases, domain models)
 - `app/src/main/java/**/di/**/*.kt` (AppContainer for dependency injection)
 - `app/src/main/java/NovaChatApplication.kt` (Application class)
-- `app/src/main/java/**/di/**/*.kt` (dependency injection)
 
 You should NEVER modify:
 - Compose UI files (`app/src/main/java/**/ui/**`)
-- MainActivity (unless setting up ViewModels)
+- MainActivity
 - Build configuration files
 - Compose test files
 
@@ -114,137 +110,178 @@ You should NEVER modify:
 ## Code Standards - NovaChat Patterns
 
 ```kotlin
-// Good: NovaChat ChatViewModel with sealed UI state
+// Good: NovaChat ChatViewModel using Event/State/Effect pattern and SavedStateHandle
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.novachat.app.domain.model.Message // Assuming Message model is in domain
+import com.novachat.app.domain.usecase.SendMessageUseCase // Example UseCase
+import com.novachat.app.presentation.model.ChatUiEvent
+import com.novachat.app.presentation.model.UiEffect
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
 sealed interface ChatUiState {
+    data object Initial : ChatUiState
     data object Loading : ChatUiState
-    data class Success(val messages: List<ChatMessage>) : ChatUiState
-    data class Error(val message: String) : ChatUiState
+    data class Success(
+        val messages: List<Message>, 
+        val isProcessing: Boolean, 
+        val error: String? = null
+    ) : ChatUiState
+    data class Error(val message: String, val isRecoverable: Boolean = false) : ChatUiState
 }
+// ChatUiEvent and UiEffect definitions exist in presentation/model/
 
 class ChatViewModel(
-    private val aiRepository: AiRepository,
-    private val preferencesRepository: PreferencesRepository
+    private val savedStateHandle: SavedStateHandle,
+    private val sendMessageUseCase: SendMessageUseCase
+    // ... other use cases
 ) : ViewModel() {
     
-    private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState.Success(emptyList()))
+    // State management
+    private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState.Initial)
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
     
-    private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
-    val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
+    // Draft message persists via SavedStateHandle (Convention 3)
+    private val DRAFT_MESSAGE_KEY = "draft_message"
+    val draftMessage: StateFlow<String> = savedStateHandle.getStateFlow(DRAFT_MESSAGE_KEY, "")
     
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    // One-time events (Convention 6)
+    private val _uiEffect = Channel<UiEffect>(Channel.BUFFERED)
+    val uiEffect = _uiEffect.receiveAsFlow()
     
-    fun sendMessage(userMessage: String) {
-        if (userMessage.isBlank()) return
-        
-        viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                // Add user message
-                val userMsg = ChatMessage(content = userMessage, isFromUser = true)
-                _messages.value = _messages.value + userMsg
-                
-                // Get AI mode preference
-                val useOnlineMode = preferencesRepository.getUseOnlineMode()
-                
-                // Send to AI
-                val response = aiRepository.sendMessage(userMessage, useOnlineMode)
-                
-                response.onSuccess { aiResponse ->
-                    val aiMsg = ChatMessage(content = aiResponse, isFromUser = false)
-                    _messages.value = _messages.value + aiMsg
-                }
-                response.onFailure { error ->
-                    _uiState.value = ChatUiState.Error(error.message ?: "Unknown error")
-                }
-            } finally {
-                _isLoading.value = false
+    fun onEvent(event: ChatUiEvent) {
+        when (event) {
+            is ChatUiEvent.SendMessage -> handleSendMessage(event.text)
+            is ChatUiEvent.ClearConversation -> handleClearConversation()
+            is ChatUiEvent.DismissError -> handleDismissError()
+            is ChatUiEvent.NavigateToSettings -> viewModelScope.launch { 
+                _uiEffect.send(UiEffect.Navigate(NavigationDestination.Settings))
             }
+            // ... exhaustive when
         }
     }
     
-    fun clearChat() {
-        _messages.value = emptyList()
+    fun updateDraftMessage(text: String) {
+        savedStateHandle[DRAFT_MESSAGE_KEY] = text
     }
+    
+    private fun handleSendMessage(message: String) {
+        if (message.isBlank()) return
+        
+        viewModelScope.launch {
+            // State transition pattern (Convention 9)
+            _uiState.update { 
+                if (it is ChatUiState.Success) it.copy(isProcessing = true, error = null) 
+                else ChatUiState.Loading 
+            }
+            
+            sendMessageUseCase(message).fold(
+                onSuccess = {
+                    // Update state and clear draft
+                    updateDraftMessage("") 
+                    _uiState.update { currentState ->
+                        if (currentState is ChatUiState.Success) currentState.copy(isProcessing = false)
+                        else ChatUiState.Success(messages = emptyList(), isProcessing = false) // Simplified for doc example
+                    }
+                },
+                onFailure = { error ->
+                    _uiEffect.send(UiEffect.ShowSnackbar(error.message ?: "Failed to send"))
+                    _uiState.update { currentState ->
+                        if (currentState is ChatUiState.Success) currentState.copy(isProcessing = false)
+                        else ChatUiState.Error(error.message ?: "Critical failure")
+                    }
+                }
+            )
+        }
+    }
+
+    private fun handleClearConversation() { /* Use clearConversationUseCase */ }
+    private fun handleDismissError() { /* Update state to clear error banner */ }
 }
 
 // Good: Repository with Result<T> pattern
 interface AiRepository {
     suspend fun sendMessage(message: String, useOnlineMode: Boolean): Result<String>
 }
+// AiRepositoryImpl and PreferencesRepository...
 
-class AiRepositoryImpl(
-    private val context: Context,
-    private val preferencesRepository: PreferencesRepository
-) : AiRepository {
-    
-    override suspend fun sendMessage(
-        message: String,
-        useOnlineMode: Boolean
-    ): Result<String> = withContext(Dispatchers.IO) {
-        try {
-            if (useOnlineMode) {
-                sendMessageToGemini(message)
-            } else {
-                sendMessageToAICore(message)
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+## Dependency Injection - AppContainer Pattern (Manual DI)
+
+NovaChat uses a manual dependency injection container located in `di/AppContainer.kt`.
+
+### AppContainer Example
+
+```kotlin
+// app/src/main/java/com/novachat/app/di/AppContainer.kt
+import android.content.Context
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
+import com.novachat.app.data.repository.PreferencesRepositoryImpl
+import com.novachat.app.data.repository.AiRepositoryImpl
+import com.novachat.app.domain.repository.PreferencesRepository
+import com.novachat.app.domain.repository.AiRepository
+import com.novachat.app.domain.usecase.SendMessageUseCase
+import com.novachat.app.presentation.viewmodel.ChatViewModel
+
+// Extension property needed to access dataStore (implementation assumed elsewhere)
+// private val Context.dataStore by preferencesDataStore(name = "settings") 
+
+class AppContainer(private val applicationContext: Context) {
+
+    // Repositories (Lazy-loaded singletons)
+    val preferencesRepository: PreferencesRepository by lazy {
+        PreferencesRepositoryImpl(applicationContext.dataStore) // dataStore assumed available
     }
     
-    private suspend fun sendMessageToGemini(message: String): Result<String> {
-        val apiKey = preferencesRepository.getApiKey()
-        if (apiKey.isEmpty()) {
-            return Result.failure(Exception("Please set your API key in Settings"))
-        }
-        
-        val generativeModel = GenerativeModel(
-            modelName = "gemini-1.5-flash",
-            apiKey = apiKey
+    val aiRepository: AiRepository by lazy {
+        AiRepositoryImpl(
+            context = applicationContext,
+            preferencesRepository = preferencesRepository
         )
-        
-        return try {
-            val response = generativeModel.generateContent(message)
-            Result.success(response.text ?: "No response")
-        } catch (e: Exception) {
-            Result.failure(e)
+    }
+
+    // Use Cases (Lazy-loaded singletons)
+    val sendMessageUseCase: SendMessageUseCase by lazy {
+        SendMessageUseCase(
+            messageRepository = messageRepository, // Assuming this exists
+            aiRepository = aiRepository,
+            preferencesRepository = preferencesRepository
+        )
+    }
+
+    // ViewModel Factory (simplified, using the modern factory pattern)
+    fun provideChatViewModelFactory(owner: SavedStateRegistryOwner): ViewModelProvider.Factory {
+        return object : AbstractSavedStateViewModelFactory(owner, null) {
+            override fun <T : ViewModel> create(
+                key: String, 
+                modelClass: Class<T>, 
+                handle: SavedStateHandle
+            ): T {
+                if (modelClass.isAssignableFrom(ChatViewModel::class.java)) {
+                    @Suppress("UNCHECKED_CAST")
+                    return ChatViewModel(
+                        savedStateHandle = handle,
+                        sendMessageUseCase = sendMessageUseCase,
+                        // ... pass other dependencies
+                    ) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+            }
         }
     }
 }
-
-// Good: Preferences with DataStore
-interface PreferencesRepository {
-    suspend fun getApiKey(): String
-    suspend fun setApiKey(apiKey: String)
-    suspend fun getUseOnlineMode(): Boolean
-    suspend fun setUseOnlineMode(useOnline: Boolean)
-}
-
-class PreferencesRepositoryImpl(
-    private val dataStore: DataStore<Preferences>
-) : PreferencesRepository {
-    
-    private val API_KEY = stringPreferencesKey("api_key")
-    private val USE_ONLINE_MODE = booleanPreferencesKey("use_online_mode")
-    
-    override suspend fun getApiKey(): String {
-        return dataStore.data.map { it[API_KEY] ?: "" }.first()
-    }
-    
-    override suspend fun setApiKey(apiKey: String) {
-        dataStore.edit { it[API_KEY] = apiKey }
-    }
-    
-    override suspend fun getUseOnlineMode(): Boolean {
-        return dataStore.data.map { it[USE_ONLINE_MODE] ?: true }.first()
-    }
-    
-    override suspend fun setUseOnlineMode(useOnline: Boolean) {
-        dataStore.edit { it[USE_ONLINE_MODE] = useOnline }
-    }
-}
+```
+```
 
 // Bad: ViewModel with Compose imports
 import androidx.compose.runtime.*  // DON'T DO THIS in ViewModel
@@ -255,42 +292,3 @@ class BadViewModel : ViewModel() {
         Text("Hello")  // DON'T DO THIS
     }
 }
-```
-
-## Dependency Injection - AppContainer Pattern
-
-Use Hilt or Dagger for dependency injection:
-
-```kotlin
-@HiltViewModel
-class ChatViewModel @Inject constructor(
-    private val chatRepository: ChatRepository
-) : ViewModel() {
-    // Implementation
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object RepositoryModule {
-    @Provides
-    @Singleton
-    fun provideChatRepository(
-        remoteDataSource: ChatRemoteDataSource,
-        localDataSource: ChatLocalDataSource
-    ): ChatRepository = ChatRepository(remoteDataSource, localDataSource)
-}
-```
-
-## Handoff Protocol
-
-Hand off to:
-- **ui-agent**: When UI needs to be updated to reflect new ViewModels
-- **testing-agent**: When business logic is complete and needs unit tests
-- **build-agent**: When new dependencies are needed (e.g., Retrofit, Room)
-
-Before handoff, ensure:
-1. ViewModels properly expose state via StateFlow/LiveData
-2. All business logic is in appropriate layers (not in ViewModels if it should be in repositories)
-3. Error handling is implemented
-4. Coroutines are properly scoped and cancelled
-5. No UI or Android framework dependencies in business logic
