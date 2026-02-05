@@ -297,6 +297,7 @@ Adjust padding in ChatScreen at line 82."
 | [compose-preview/SKILL.md] | Reusable preview patterns and examples |
 | [AGENTS.md] | Multi-agent system overview |
 | [copilot-instructions.md] | All agent guidance (includes Preview) |
+| [Android Developers: Compose previews](https://developer.android.com/develop/ui/compose/tooling/previews) | Official guidance on preview parameters, limitations, and ViewModel constraints |
 
 ---
 

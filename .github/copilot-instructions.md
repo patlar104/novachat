@@ -40,8 +40,8 @@ NovaChat is an Android AI chatbot (Jetpack Compose + MVVM + Clean Architecture) 
 - Preview Best Practices (dedicated section in agent file)
 - Code Quality Requirements (all - mandatory for all agents)
 
-**Scope**: @Preview annotations, preview Composables, mock ViewModels, device specifications
-**Skip or Reference Only**: Backend logic, repositories, use cases (only create PreviewViewModels)
+**Scope**: @Preview annotations, preview Composables, preview data providers, device specifications
+**Skip or Reference Only**: Backend logic, repositories, use cases (no ViewModel usage in previews)
 **Receive from**: UI Agent (after Composable creation)
 **Handoff to**: Testing Agent (for automated UI tests)
 

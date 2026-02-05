@@ -27,8 +27,8 @@ A comprehensive new **Preview Agent** system for NovaChat to enable rapid UI/UX 
 - **Size**: ~800 lines
 - **Contains**:
   - Reusable @Preview patterns
-  - Device specification constants
-  - Mock ViewModel factory patterns
+    - Device specification constants
+    - Preview state factory patterns
   - Light/dark theme composition examples
   - Advanced techniques (parameterized previews, interactive previews)
   - Common patterns for different component types
@@ -375,7 +375,7 @@ Preview Agent (creates @Preview annotations)
     ↓
 Backend Agent (creates ViewModel)
     ↓
-Preview Agent (updates mock ViewModels)
+Preview Agent (updates Preview*ScreenData)
     ↓
 Testing Agent (creates automated tests)
     ↓

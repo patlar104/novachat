@@ -4,7 +4,7 @@
 
 NovaChat uses two AI APIs:
 1. **Google Gemini API** - Cloud-based AI for online mode
-2. **Google AICore** - On-device AI for offline mode
+2. **Google AICore** - On-device AI for offline mode (planned; currently unavailable)
 
 ## Google Gemini API
 
@@ -25,22 +25,17 @@ The app uses the Gemini 1.5 Flash model for:
 
 ### Configuration
 
-Model parameters (configured in `AiRepository.kt`):
+Model parameters (configured via `AiConfiguration`):
 ```kotlin
 temperature = 0.7f      // Creativity level (0.0-1.0)
 topK = 40              // Token sampling parameter
 topP = 0.95f           // Nucleus sampling parameter
-maxOutputTokens = 1024 // Maximum response length
+maxOutputTokens = 2048 // Maximum response length
 ```
 
 ### Rate Limits
 
-Free tier limits (as of 2024):
-- 15 requests per minute
-- 1,500 requests per day
-- 1 million tokens per day
-
-For higher limits, check [Google AI pricing](https://ai.google.dev/pricing).
+Rate limits vary by plan and can change. See [Google AI pricing](https://ai.google.dev/pricing) for current limits.
 
 ### Error Handling
 
@@ -63,9 +58,7 @@ Common errors and solutions:
 
 ### Supported Devices
 
-Not all Android 15+ devices support AICore. Check compatibility:
-- Pixel 8 Pro and newer: Full support
-- Other devices: Check manufacturer documentation
+Not all Android 15+ devices support AICore. Check compatibility in official documentation.
 
 ### On-Device Models
 
@@ -92,7 +85,7 @@ AICore provides:
 | Response Quality | Excellent | Good |
 | Speed | Fast | Very Fast |
 | Privacy | Cloud-based | On-device |
-| Availability | All devices | Android 15+ only |
+| Availability | All devices | Limited and device-dependent |
 
 ## Security Best Practices
 
@@ -118,7 +111,7 @@ AICore provides:
 - Data used to improve models (unless opted out)
 
 **Offline Mode (AICore):**
-- All processing on-device
+- All processing on-device (when available)
 - No data sent to servers
 - Maximum privacy
 
@@ -127,10 +120,14 @@ AICore provides:
 ### Sending a Message (Online)
 
 ```kotlin
-val repository = AiRepository(context)
-val result = repository.sendMessageToGemini(
+val repository = AiRepositoryImpl(context)
+val config = AiConfiguration(
+    mode = AiMode.ONLINE,
+    apiKey = ApiKey.create("your-api-key-here")
+)
+val result = repository.generateResponse(
     message = "Hello, how are you?",
-    apiKey = "your-api-key-here"
+    configuration = config
 )
 
 result.fold(
@@ -146,9 +143,14 @@ result.fold(
 ### Sending a Message (Offline)
 
 ```kotlin
-val repository = AiRepository(context)
-val result = repository.sendMessageToAiCore(
-    message = "Hello, how are you?"
+val repository = AiRepositoryImpl(context)
+val config = AiConfiguration(
+    mode = AiMode.OFFLINE,
+    apiKey = null
+)
+val result = repository.generateResponse(
+    message = "Hello, how are you?",
+    configuration = config
 )
 
 result.fold(

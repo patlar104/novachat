@@ -1,26 +1,150 @@
 package com.novachat.app.ui
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import com.novachat.app.domain.model.AiConfiguration
+import androidx.compose.ui.unit.dp
 import com.novachat.app.domain.model.AiMode
 import com.novachat.app.presentation.model.SettingsUiState
-import com.novachat.app.ui.previews.createPreviewSettingsViewModel
+import com.novachat.app.ui.previews.PreviewSettingsScreenData
 import com.novachat.app.ui.theme.NovaChatTheme
 
 /**
- * Preview composables for the SettingsScreen.
+ * Preview composables for the Settings screen pattern.
  *
- * This file demonstrates previewing a different screen type with:
- * - Form states (loading, success, error)
- * - Configuration states (online mode, settings saved, etc.)
- * - Theme and device variations
- * - Component-level previews of form elements
- *
- * @see SettingsScreen
- * @see com.novachat.app.ui.previews.createPreviewSettingsViewModel
+ * This file demonstrates ViewModel-free previews using a stateless
+ * SettingsScreenPreviewSurface and sample UI states.
  */
+
+@Composable
+private fun SettingsScreenPreviewSurface(
+    uiState: SettingsUiState,
+    draftApiKey: String = "",
+    showSaveSuccess: Boolean = false
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Settings") }
+            )
+        }
+    ) { paddingValues ->
+        when (uiState) {
+            is SettingsUiState.Initial,
+            is SettingsUiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(32.dp))
+                }
+            }
+            is SettingsUiState.Success -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            val modeLabel = when (uiState.configuration.mode) {
+                                AiMode.ONLINE -> "Online"
+                                AiMode.OFFLINE -> "Offline (unavailable)"
+                            }
+
+                            Text(
+                                text = "AI mode: $modeLabel",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            if (uiState.configuration.mode == AiMode.OFFLINE) {
+                                Text(
+                                    text = "Offline mode requires AICore (not available).",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+                    }
+
+                    if (uiState.configuration.mode == AiMode.ONLINE) {
+                        Card(modifier = Modifier.fillMaxWidth()) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Text(
+                                    text = "API key",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+
+                                OutlinedTextField(
+                                    value = draftApiKey,
+                                    onValueChange = {},
+                                    modifier = Modifier.fillMaxWidth(),
+                                    singleLine = true,
+                                    label = { Text("Enter API key") }
+                                )
+
+                                Button(
+                                    onClick = {},
+                                    enabled = draftApiKey.isNotBlank(),
+                                    modifier = Modifier.align(Alignment.End)
+                                ) {
+                                    Text("Save")
+                                }
+
+                                if (showSaveSuccess) {
+                                    Text(
+                                        text = "API key saved",
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            is SettingsUiState.Error -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = uiState.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        }
+    }
+}
 
 // ============================================================
 // SETTINGS SCREEN - UI STATE PREVIEWS
@@ -35,12 +159,7 @@ import com.novachat.app.ui.theme.NovaChatTheme
 @Composable
 fun SettingsScreenInitialPreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Initial
-            ),
-            onNavigateBack = {}
-        )
+        SettingsScreenPreviewSurface(uiState = PreviewSettingsScreenData.initialState())
     }
 }
 
@@ -53,12 +172,7 @@ fun SettingsScreenInitialPreview() {
 @Composable
 fun SettingsScreenLoadingPreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Loading
-            ),
-            onNavigateBack = {}
-        )
+        SettingsScreenPreviewSurface(uiState = PreviewSettingsScreenData.loadingState())
     }
 }
 
@@ -71,23 +185,15 @@ fun SettingsScreenLoadingPreview() {
 @Composable
 fun SettingsScreenSuccessOnlineModePreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = "sk-proj-abc123def456-example-key"
-                    )
-                ),
-                draftApiKey = "sk-proj-abc123def456-example-key"
-            ),
-            onNavigateBack = {}
+        SettingsScreenPreviewSurface(
+            uiState = PreviewSettingsScreenData.successOnline(),
+            draftApiKey = "sk-proj-abc123def456-example-key"
         )
     }
 }
 
 @Preview(
-    name = "Success - Offline Mode",
+    name = "Success - Offline Mode (Unavailable)",
     group = "SettingsScreen/States",
     showBackground = true,
     backgroundColor = 0xFFFFFFFF
@@ -95,17 +201,8 @@ fun SettingsScreenSuccessOnlineModePreview() {
 @Composable
 fun SettingsScreenSuccessOfflineModePreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.OFFLINE,
-                        apiKey = null  // Offline mode doesn't need API key
-                    )
-                ),
-                draftApiKey = ""
-            ),
-            onNavigateBack = {}
+        SettingsScreenPreviewSurface(
+            uiState = PreviewSettingsScreenData.successOfflineUnavailable()
         )
     }
 }
@@ -119,18 +216,10 @@ fun SettingsScreenSuccessOfflineModePreview() {
 @Composable
 fun SettingsScreenSuccessSavedPreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = "sk-proj-abc123def456-example-key"
-                    )
-                ),
-                draftApiKey = "sk-proj-abc123def456-example-key",
-                showSaveSuccess = true  // Show "Settings saved" message
-            ),
-            onNavigateBack = {}
+        SettingsScreenPreviewSurface(
+            uiState = PreviewSettingsScreenData.successOnline(),
+            draftApiKey = "sk-proj-abc123def456-example-key",
+            showSaveSuccess = true
         )
     }
 }
@@ -144,17 +233,9 @@ fun SettingsScreenSuccessSavedPreview() {
 @Composable
 fun SettingsScreenSuccessEmptyApiKeyPreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = null
-                    )
-                ),
-                draftApiKey = ""
-            ),
-            onNavigateBack = {}
+        SettingsScreenPreviewSurface(
+            uiState = PreviewSettingsScreenData.successOnlineMissingKey(),
+            draftApiKey = ""
         )
     }
 }
@@ -168,15 +249,7 @@ fun SettingsScreenSuccessEmptyApiKeyPreview() {
 @Composable
 fun SettingsScreenErrorPreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Error(
-                    message = "Failed to load settings. Please try again.",
-                    isRecoverable = true
-                )
-            ),
-            onNavigateBack = {}
-        )
+        SettingsScreenPreviewSurface(uiState = PreviewSettingsScreenData.errorRecoverable())
     }
 }
 
@@ -193,17 +266,7 @@ fun SettingsScreenErrorPreview() {
 @Composable
 fun SettingsScreenPhonePreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = "sk-proj-abc123def456-example-key"
-                    )
-                )
-            ),
-            onNavigateBack = {}
-        )
+        SettingsScreenPreviewSurface(uiState = PreviewSettingsScreenData.successOnline())
     }
 }
 
@@ -216,17 +279,7 @@ fun SettingsScreenPhonePreview() {
 @Composable
 fun SettingsScreenCompactPhonePreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = "sk-proj-abc123def456-example-key"
-                    )
-                )
-            ),
-            onNavigateBack = {}
-        )
+        SettingsScreenPreviewSurface(uiState = PreviewSettingsScreenData.successOnline())
     }
 }
 
@@ -239,17 +292,7 @@ fun SettingsScreenCompactPhonePreview() {
 @Composable
 fun SettingsScreenLargePhonePreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = "sk-proj-abc123def456-example-key"
-                    )
-                )
-            ),
-            onNavigateBack = {}
-        )
+        SettingsScreenPreviewSurface(uiState = PreviewSettingsScreenData.successOnline())
     }
 }
 
@@ -262,17 +305,7 @@ fun SettingsScreenLargePhonePreview() {
 @Composable
 fun SettingsScreenTabletPreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = "sk-proj-abc123def456-example-key"
-                    )
-                )
-            ),
-            onNavigateBack = {}
-        )
+        SettingsScreenPreviewSurface(uiState = PreviewSettingsScreenData.successOnline())
     }
 }
 
@@ -290,17 +323,7 @@ fun SettingsScreenTabletPreview() {
 @Composable
 fun SettingsScreenLightThemePreview() {
     NovaChatTheme(darkTheme = false) {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = "sk-proj-abc123def456-example-key"
-                    )
-                )
-            ),
-            onNavigateBack = {}
-        )
+        SettingsScreenPreviewSurface(uiState = PreviewSettingsScreenData.successOnline())
     }
 }
 
@@ -314,17 +337,7 @@ fun SettingsScreenLightThemePreview() {
 @Composable
 fun SettingsScreenDarkThemePreview() {
     NovaChatTheme(darkTheme = true) {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = "sk-proj-abc123def456-example-key"
-                    )
-                )
-            ),
-            onNavigateBack = {}
-        )
+        SettingsScreenPreviewSurface(uiState = PreviewSettingsScreenData.successOnline())
     }
 }
 
@@ -341,17 +354,7 @@ fun SettingsScreenDarkThemePreview() {
 @Composable
 fun SettingsScreenNormalFontPreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = "sk-proj-abc123def456-example-key"
-                    )
-                )
-            ),
-            onNavigateBack = {}
-        )
+        SettingsScreenPreviewSurface(uiState = PreviewSettingsScreenData.successOnline())
     }
 }
 
@@ -364,17 +367,7 @@ fun SettingsScreenNormalFontPreview() {
 @Composable
 fun SettingsScreenLargeFontPreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = "sk-proj-abc123def456-example-key"
-                    )
-                )
-            ),
-            onNavigateBack = {}
-        )
+        SettingsScreenPreviewSurface(uiState = PreviewSettingsScreenData.successOnline())
     }
 }
 
@@ -387,16 +380,9 @@ fun SettingsScreenLargeFontPreview() {
 @Composable
 fun SettingsScreenExtraLargeFontPreview() {
     NovaChatTheme {
-        SettingsScreen(
-            viewModel = createPreviewSettingsViewModel(
-                initialState = SettingsUiState.Success(
-                    configuration = AiConfiguration(
-                        mode = AiMode.ONLINE,
-                        apiKey = "sk-proj-key"  // Shorter key for space
-                    )
-                )
-            ),
-            onNavigateBack = {}
+        SettingsScreenPreviewSurface(
+            uiState = PreviewSettingsScreenData.successOnline(),
+            draftApiKey = "sk-proj-key"
         )
     }
 }

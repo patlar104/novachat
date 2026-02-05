@@ -3,6 +3,8 @@
 ## Overview
 Phase 4 completes the comprehensive refactoring by implementing the presentation layer with modern Android architecture: dependency injection, ViewModels with use cases, sealed UI states, effect channels, and updated UI components.
 
+**Note**: This summary includes prior version references and before/after context from the snapshot.
+
 ## Files Created/Updated (1,586 Lines)
 
 ### Dependency Injection (171 lines)

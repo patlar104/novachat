@@ -37,7 +37,7 @@ A complete **Preview Agent** system for your NovaChat project, specializing in c
 - **Contains**:
   - Core @Preview patterns
   - Device specification constants
-  - Mock ViewModel factory patterns
+  - Preview state factory patterns
   - Theme composition (light/dark, @PreviewLightDark)
   - State composition patterns
   - Performance optimization tips
@@ -132,7 +132,7 @@ A complete **Preview Agent** system for your NovaChat project, specializing in c
 
 ✅ Create `@Preview` annotations for Composables  
 ✅ Create `*ScreenPreview.kt` files with comprehensive previews  
-✅ Create `Preview*ViewModel.kt` mock implementations  
+✅ Create `Preview*ScreenData.kt` sample state providers  
 ✅ Define device constants (phone, tablet, landscape, etc.)  
 ✅ Compose light/dark theme previews  
 ✅ Support IDE debugging through preview composition  
@@ -191,7 +191,7 @@ Preview Agent (creates @Preview annotations) ← NEW STEP!
     ↓
 Backend Agent (creates ViewModel & logic)
     ↓
-Preview Agent (updates mock ViewModels) ← NEW STEP!
+Preview Agent (updates Preview*ScreenData) ← NEW STEP!
     ↓
 Testing Agent (creates automated tests)
     ↓
@@ -270,7 +270,7 @@ Create ComposeTestRule-based UI tests for ChatScreen
 
 ### 4. **Well-Coordinated**
 - Clear handoff protocols with UI Agent
-- Mock ViewModel factory patterns
+- Preview state factory patterns
 - Integration with Backend Agent state definitions
 - Bridge to Testing Agent for automated tests
 
@@ -296,7 +296,7 @@ Create ComposeTestRule-based UI tests for ChatScreen
 🔍 Reference: [`.github/skills/compose-preview/SKILL.md`](./.github/skills/compose-preview/SKILL.md)
 - Copy-paste patterns
 - Device constants
-- Mock ViewModel examples
+- Preview state examples
 - Advanced techniques
 
 ### **Complete Context**
@@ -355,7 +355,7 @@ app/src/main/java/com/novachat/app/ui/preview/
 ├── ChatScreenPreview.kt
 ├── SettingsScreenPreview.kt
 ├── SharedPreviewComponents.kt
-└── PreviewViewModels.kt
+└── PreviewScreenData.kt
 ```
 
 ---
@@ -409,13 +409,13 @@ Create previews for NewFeatureScreen including:
 - API error state
 - @PreviewScreenSizes for multiple devices
 - Device constants in SharedPreviewComponents.kt
-- Mock NewFeatureViewModel factory methods
+- PreviewNewFeatureScreenData state builders
 ```
 
 Expected output:
 ```
 ✅ NewFeatureScreenPreview.kt (12 previews)
-✅ PreviewNewFeatureViewModel.kt (factory builders)
+✅ PreviewNewFeatureScreenData.kt (state builders)
 ✅ Updated SharedPreviewComponents.kt (constants)
 ✅ Ready for Android Studio IDE preview
 ```

@@ -107,7 +107,7 @@ fun SettingsScreen(
             }
             
             is SettingsUiState.Success -> {
-                SettingsContent(
+                SettingsScreenContent(
                     configuration = state.configuration,
                     draftApiKey = draftApiKey,
                     onDraftApiKeyChange = { viewModel.updateDraftApiKey(it) },
@@ -148,7 +148,7 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SettingsContent(
+fun SettingsScreenContent(
     configuration: com.novachat.app.domain.model.AiConfiguration,
     draftApiKey: String,
     onDraftApiKeyChange: (String) -> Unit,

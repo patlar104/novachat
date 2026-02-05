@@ -68,7 +68,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 **Scope**:
 - @Preview annotations on Composables
 - Preview composition files (*ScreenPreview.kt)
-- Mock ViewModels for previews (PreviewViewModels)
+- Preview data providers (Preview*ScreenData)
 - Preview utilities and device specifications
 - Multi-state/device/theme preview composition
 
@@ -76,7 +76,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 - ONLY creates preview code (for IDE debugging, not production)
 - Never calls production repositories
 - No side effects in preview Composables
-- Preview ViewModels are lightweight mocks only
+- Previews are driven by parameterized UI composables (no ViewModel usage)
 - **MUST provide complete preview implementations**
 - Lightweight theme variants for fast IDE compilation
 
@@ -86,7 +86,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 - ✅ Light and dark theme previews
 - ✅ Mock data only (no API calls)
 - ✅ All imports explicitly included
-- ✅ Builder pattern for PreviewViewModels
+- ✅ Preview data helpers (Preview*ScreenData) for state coverage
 
 **Handoffs**: From UI (for new Composables) and Backend (for state changes), to Testing (for automated tests)
 

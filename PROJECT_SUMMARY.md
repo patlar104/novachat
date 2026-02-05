@@ -9,7 +9,7 @@ NovaChat is a complete, production-ready Android AI chatbot application that dem
 ### Core Functionality
 ✅ **Dual AI Mode Support**
 - Online mode using Google Gemini 1.5 Flash API
-- Offline mode using Google AICore for on-device AI
+- Offline mode planned with Google AICore for on-device AI (currently unavailable)
 - Seamless switching between modes via Settings
 
 ✅ **Modern Chat Interface**
@@ -35,9 +35,9 @@ NovaChat is a complete, production-ready Android AI chatbot application that dem
 ## Technical Stack
 
 ### Language & Build Tools
-- **Kotlin**: 2.0.20 (modern, concise Android development)
-- **Gradle**: 8.11.1 (build automation)
-- **Android Gradle Plugin**: 8.5.2
+- **Kotlin**: 2.2.21 (via Compose Compiler Plugin)
+- **Gradle**: 9.1.0 (build automation)
+- **Android Gradle Plugin**: 9.0.0
 - **JDK**: 17 (LTS version)
 
 ### Android Components
@@ -46,22 +46,22 @@ NovaChat is a complete, production-ready Android AI chatbot application that dem
 - **Compile SDK**: 35
 
 ### UI Framework
-- **Jetpack Compose**: BOM 2024.12.01 (declarative UI)
+- **Jetpack Compose**: BOM 2026.01.01 (declarative UI)
 - **Material Design 3**: Latest material components
-- **Navigation Compose**: 2.8.5 (screen navigation)
-- **Compose UI Tooling**: For preview and debugging
+-- **Navigation Compose**: 2.9.7 (screen navigation)
+-- **Compose UI Tooling**: For preview and debugging
 
 ### Architecture Components
-- **ViewModel**: 2.8.7 (UI state management)
-- **Lifecycle Runtime**: 2.8.7 (lifecycle-aware components)
-- **DataStore Preferences**: 1.1.1 (key-value storage)
+-- **ViewModel**: 2.10.0 (UI state management)
+-- **Lifecycle Runtime**: 2.10.0 (lifecycle-aware components)
+-- **DataStore Preferences**: 1.2.0 (key-value storage)
 
 ### AI Libraries
 - **Google Generative AI SDK**: 0.9.0 (Gemini API)
-- **Google AICore**: 1.0.0-alpha01 (on-device AI)
+- **Google AICore**: Not yet available on Maven (offline mode disabled)
 
 ### Other Dependencies
-- **Kotlin Coroutines**: 1.10.1 (async programming)
+-- **Kotlin Coroutines**: 1.10.2 (async programming)
 - **Material Icons Extended**: For comprehensive icon set
 
 ## Project Structure
@@ -139,7 +139,7 @@ novachat/
          │
          ↓
 ┌─────────────────┐
-│   Data Source   │  DataStore, Gemini API, AICore
+│   Data Source   │  DataStore, Gemini API (AICore planned)
 │                 │  - Remote AI services
 │                 │  - Local storage
 └─────────────────┘
@@ -213,7 +213,7 @@ ChatViewModelTest
 AiRepositoryTest
 - testGeminiAPISuccess()
 - testGeminiAPIFailure()
-- testAICoreIntegration()
+- testAICoreIntegration() (planned)
 ```
 
 ### UI Tests (Recommended)
@@ -261,7 +261,7 @@ SettingsScreenTest
 
 ## Build Status
 
-⚠️ **Note**: The project cannot be built in the current sandboxed development environment due to network restrictions blocking access to Google's Maven repository (dl.google.com). However, the code is complete and ready to build in a standard development environment.
+⚠️ **Note**: Builds require access to Google's Maven repository (dl.google.com). In restricted network environments, dependency resolution may fail.
 
 ### To Build Locally:
 1. Ensure JDK 17 is installed
@@ -285,20 +285,20 @@ The project includes comprehensive documentation for novice developers:
 
 | Dependency | Version | Purpose |
 |------------|---------|---------|
-| Kotlin | 2.0.20 | Programming language |
-| Android Gradle Plugin | 8.5.2 | Build system |
-| Compose BOM | 2024.12.01 | UI framework |
+| Kotlin | 2.2.21 | Programming language |
+| Android Gradle Plugin | 9.0.0 | Build system |
+| Compose BOM | 2026.01.01 | UI framework |
 | Generative AI | 0.9.0 | Gemini API |
-| AICore | 1.0.0-alpha01 | On-device AI |
-| Coroutines | 1.10.1 | Async operations |
-| Navigation | 2.8.5 | Screen navigation |
-| ViewModel | 2.8.7 | State management |
-| DataStore | 1.1.1 | Preferences storage |
+| AICore | Not available on Maven (planned) | On-device AI |
+| Coroutines | 1.10.2 | Async operations |
+| Navigation | 2.9.7 | Screen navigation |
+| ViewModel | 2.10.0 | State management |
+| DataStore | 1.2.0 | Preferences storage |
 
 ## Accomplishments
 
 ✅ Created a complete, modern Android application from scratch
-✅ Implemented dual AI integration (cloud + on-device)
+✅ Implemented online AI integration (offline planned)
 ✅ Used latest Android development practices (Compose, MVVM, Coroutines)
 ✅ Targeted Android 16 with backward compatibility
 ✅ Provided extensive documentation for novice developers
@@ -334,7 +334,7 @@ MIT License - Free to use, modify, and distribute. See LICENSE file for details.
 
 ## Acknowledgments
 
-- Google for Gemini API and AICore
+- Google for Gemini API (AICore planned)
 - Android team for Jetpack Compose
 - Kotlin team for the excellent language
 - The open-source community

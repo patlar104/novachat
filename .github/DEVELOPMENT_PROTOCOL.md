@@ -320,7 +320,7 @@ Did you mean to:
 #### Kotlin
 - **Version**: 2.2.21 (project baseline for CodeQL compatibility)
 - **Compiler Plugin**: Compose Compiler Plugin (not separate plugin)
-- **Coroutines**: 1.10.1+
+- **Coroutines**: 1.10.2+
 - **Features**: Use context receivers, value classes where appropriate
 
 #### Android Gradle Plugin
@@ -333,7 +333,7 @@ Did you mean to:
 - **BOM**: 2026.01.01 or later
 - **Compiler**: Integrated with Kotlin 2.2.21
 - **Material 3**: Exclusive (no Material 2)
-- **Navigation**: Compose Navigation 2.8.0+
+- **Navigation**: Compose Navigation 2.9.0+
 
 #### Dependencies
 ```kotlin
@@ -343,10 +343,10 @@ dependencies {
     implementation(composeBom)
     
     // Kotlin
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
+   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     
     // Lifecycle
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+   implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
     
     // Google AI
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")

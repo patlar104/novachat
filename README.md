@@ -1,12 +1,12 @@
 # NovaChat - Android AI Chatbot Assistant
 
-NovaChat is a modern Android AI chatbot application that supports both online (cloud-based) and offline (on-device) AI models. Built with the latest Android technologies targeting Android 16.
+NovaChat is a modern Android AI chatbot application that supports online (cloud-based) AI models. Offline (on-device) mode is planned but currently unavailable because AICore is not yet published to Maven. Built with the latest Android technologies targeting Android 16.
 
 ## Features
 
 - 🤖 **Dual AI Mode Support**
   - Online mode using Google Gemini API (gemini-1.5-flash)
-  - Offline mode using Google AICore for on-device AI (Android 15+)
+  - Offline mode planned with Google AICore for on-device AI (Android 15+), currently unavailable
 - 💬 Modern chat interface built with Jetpack Compose
 - ⚙️ Easy settings management for API keys and AI mode selection
 - 🎨 Material Design 3 with dynamic theming support
@@ -20,15 +20,15 @@ NovaChat is a modern Android AI chatbot application that supports both online (c
 - **Architecture**: MVVM with ViewModels
 - **AI Libraries**:
   - Google Generative AI SDK 0.9.0 (Gemini)
-  - Google AICore (Not yet available - offline mode disabled)
+  - Google AICore (not yet available on Maven; offline mode disabled)
 - **Data Storage**: DataStore Preferences
 - **Async**: Kotlin Coroutines
 
 ## Requirements
 
-- Android Studio Otter or newer (for AGP 9.0.0 support)
+- Android Studio (latest stable, for AGP 9.0.0 support)
 - JDK 17
-- Android SDK 35 (Android 16)
+- Android SDK 36 (compileSdk) and Android SDK 35 (targetSdk)
 - Minimum device: Android 9 (API 28)
 
 ## Setup Instructions
@@ -60,7 +60,7 @@ cd novachat
 2. Tap the Settings icon (gear icon) in the top-right corner
 3. Choose your AI mode:
    - **Online (Gemini)**: Cloud-based, requires internet and API key
-   - **Offline (On-device)**: On-device AI, requires Android 15+ with AICore support
+  - **Offline (On-device)**: Planned; requires Android 15+ with AICore support (currently unavailable)
 4. If using Online mode, enter your API key and tap "Save"
 5. Return to the chat screen and start chatting!
 
@@ -149,9 +149,8 @@ This app requires access to Google's Maven repository. If you're building in a r
 3. Try using a VPN if the repository is geo-blocked
 
 #### "On-device AI is not available"
-- Ensure your device runs Android 15 or later
-- Not all devices support Google AICore
-- Try using Online mode instead
+- Offline mode is currently disabled because AICore is not yet available on Maven
+- Use Online mode instead
 
 ### "Please set your API key in Settings"
 - Open Settings and enter a valid Google AI API key
@@ -192,7 +191,7 @@ NovaChat is a modern Android AI chatbot that demonstrates:
 - **MVVM + Clean Architecture** with proper separation of concerns
 - **Modern Android Development**: Kotlin 2.2.21, Coroutines, StateFlow, DataStore
 
-**Current Status**: This branch contains the multi-agent development system configuration. See the `copilot/create-ai-chatbot-app` branch for the full application implementation.
+**Current Status**: This repository includes the app code and the multi-agent development system configuration.
 
 ## 🤖 Multi-Agent Development System
 

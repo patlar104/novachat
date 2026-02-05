@@ -21,7 +21,7 @@
 - Scope definition (do's and don'ts)
 - Preview file structure & conventions
 - Key preview patterns
-- Mock ViewModel patterns
+- Preview state factory patterns
 - Integration with other agents (UI, Backend, Testing)
 - Quality gates & validation
 - Anti-patterns to avoid
@@ -37,7 +37,7 @@
 - @Preview annotations (basic to advanced)
 - Device specification constants
 - Multi-device configuration
-- Mock ViewModel factory patterns
+- Preview state factory patterns
 - Theme preview composition
 - State composition patterns
 - Performance optimization
@@ -151,7 +151,7 @@ app/src/main/java/com/novachat/app/ui/preview/
 ├── SettingsScreenPreview.kt  
 ├── OtherScreenPreview.kt
 ├── SharedPreviewComponents.kt
-└── PreviewViewModels.kt
+└── PreviewScreenData.kt
 ```
 
 ### Example Output: ChatScreenPreview.kt
@@ -211,11 +211,11 @@ When invoked, the Preview Agent:
    - Dark theme
    - @PreviewLightDark for auto variants
 
-5. **Creates mock ViewModels** with factory builders:
-   - `PreviewViewModel.empty()`
-   - `PreviewViewModel.loading()`
-   - `PreviewViewModel.withData()`
-   - `PreviewViewModel.withError(msg)`
+5. **Creates preview state builders**:
+  - `PreviewChatScreenData.initialState()`
+  - `PreviewChatScreenData.loadingState()`
+  - `PreviewChatScreenData.successWithMessages()`
+  - `PreviewChatScreenData.successWithErrorBanner()`
 
 6. **Documents previews** with explanatory comments
 
@@ -256,7 +256,7 @@ Themes:
 - Dark theme
 
 Include:
-- PreviewViewModels with factory builders
+- PreviewScreenData with state builders
 - Device constants in SharedPreviewComponents.kt
 ```
 

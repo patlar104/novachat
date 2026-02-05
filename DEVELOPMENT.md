@@ -8,42 +8,48 @@ NovaChat follows the MVVM (Model-View-ViewModel) architecture pattern with Jetpa
 
 ```
 app/src/main/java/com/novachat/app/
-├── data/                       # Data layer
-│   ├── AiRepository.kt        # AI model interactions
-│   ├── ChatMessage.kt         # Data models
-│   └── PreferencesRepository.kt # User preferences
+├── presentation/              # UI state + ViewModels
+│   ├── model/                 # UiState, UiEvent, UiEffect
+│   └── viewmodel/             # ChatViewModel, SettingsViewModel
+├── domain/                    # Business logic interfaces + models
+│   ├── model/                 # Message, AiConfiguration, etc.
+│   └── repository/            # AiRepository, MessageRepository, PreferencesRepository
+├── data/                      # Implementations + mappers
+│   ├── repository/            # AiRepositoryImpl, MessageRepositoryImpl, PreferencesRepositoryImpl
+│   ├── mapper/                # Domain <-> data mappers
+│   └── model/                 # DataModels.kt
 ├── ui/                        # UI layer (Compose)
 │   ├── ChatScreen.kt          # Main chat interface
 │   ├── SettingsScreen.kt      # Settings screen
 │   └── theme/                 # App theming
-├── viewmodel/                 # ViewModel layer
-│   └── ChatViewModel.kt       # Chat state management
-└── MainActivity.kt            # App entry point
+├── di/                        # Dependency injection
+│   └── AppContainer.kt
+├── MainActivity.kt            # App entry point
+└── NovaChatApplication.kt     # Application class
 ```
 
 ### Key Components
 
 #### 1. Data Layer
 
-**ChatMessage.kt**
+**Message (domain/model/Message.kt)**
 - Represents individual chat messages
-- Contains message text, sender info, and timestamp
-- Includes `AiMode` enum for online/offline selection
+- Contains message content, sender info, timestamp, and status
+- Used across layers via mappers
 
-**AiRepository.kt**
-- Handles all AI model interactions
-- `sendMessageToGemini()` - Online AI using Google Gemini API
-- `sendMessageToAiCore()` - Offline AI using on-device models
+**AiRepository (domain/repository/AiRepository.kt)**
+- Defines AI model interactions via `generateResponse()`
+- Implemented in data layer (`AiRepositoryImpl`)
 - Returns `Result<String>` for proper error handling
 
-**PreferencesRepository.kt**
+**PreferencesRepository (domain/repository/PreferencesRepository.kt)**
 - Manages user preferences using DataStore
-- Stores API keys securely
-- Persists AI mode selection
+- Implemented in data layer (`PreferencesRepositoryImpl`)
+- Persists AI configuration and API keys
 
 #### 2. ViewModel Layer
 
-**ChatViewModel.kt**
+**ChatViewModel (presentation/viewmodel/ChatViewModel.kt)**
 - Manages chat state and business logic
 - Exposes StateFlows for UI observation
 - Handles message sending and error states
@@ -51,13 +57,13 @@ app/src/main/java/com/novachat/app/
 
 #### 3. UI Layer
 
-**ChatScreen.kt**
+**ChatScreen (ui/ChatScreen.kt)**
 - Main chat interface using Jetpack Compose
 - Shows message list with auto-scrolling
 - Input field for typing messages
 - Error banners and loading states
 
-**SettingsScreen.kt**
+**SettingsScreen (ui/SettingsScreen.kt)**
 - Configure AI mode (online/offline)
 - Enter and save API key
 - View app information
@@ -67,7 +73,7 @@ app/src/main/java/com/novachat/app/
 ### Adding a New AI Provider
 
 1. Add the new AI SDK dependency in `app/build.gradle.kts`
-2. Create a new function in `AiRepository.kt`:
+2. Implement a new path in `AiRepositoryImpl.kt`:
 ```kotlin
 suspend fun sendMessageToNewProvider(message: String): Result<String> {
     return withContext(Dispatchers.IO) {
@@ -80,8 +86,8 @@ suspend fun sendMessageToNewProvider(message: String): Result<String> {
     }
 }
 ```
-3. Add a new `AiMode` enum value in `ChatMessage.kt`
-4. Update `ChatViewModel.sendMessage()` to handle the new mode
+3. Add a new `AiMode` entry in `domain/model/AiConfiguration.kt`
+4. Update `AiRepositoryImpl.generateResponse()` to route the new mode
 5. Update `SettingsScreen.kt` to add UI for the new option
 
 ### Adding Message Persistence

@@ -181,39 +181,39 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     
     // AndroidX Core
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.activity:activity-compose:1.10.0")
+    implementation("androidx.core:core-ktx:1.17.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
+    implementation("androidx.activity:activity-compose:1.12.3")
     
     // ViewModel for Compose
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.10.0")
     
     // Navigation Compose
-    implementation("androidx.navigation:navigation-compose:2.8.5")
+    implementation("androidx.navigation:navigation-compose:2.9.7")
     
     // DataStore
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.datastore:datastore-preferences:1.2.0")
     
     // Google Generative AI (Gemini)
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
     
     // Google AICore (On-device AI)
     // Note: Not yet publicly available on Maven as of Jan 2026
-    // implementation("com.google.android.aicore:aicore:1.0.0-alpha01")
+    // implementation("androidx.ai.edge.aicore:aicore:1.0.0-alpha01")
     
     // Kotlin Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     
     // Testing
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
-    testImplementation("io.mockk:mockk:1.13.14")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    testImplementation("io.mockk:mockk:1.14.9")
     testImplementation("com.google.truth:truth:1.4.4")
     
     // Android Testing
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 }
 ```
@@ -234,15 +234,15 @@ plugins {
 ```toml
 [versions]
 agp = "9.0.0"
-kotlin = "2.3.0"
+kotlin = "2.2.21"
 composeBom = "2026.01.01"
-coreKtx = "1.15.0"
-lifecycle = "2.8.7"
-activityCompose = "1.10.0"
-navigationCompose = "2.8.5"
-datastorePreferences = "1.1.1"
+coreKtx = "1.17.0"
+lifecycle = "2.10.0"
+activityCompose = "1.12.3"
+navigationCompose = "2.9.7"
+datastorePreferences = "1.2.0"
 generativeai = "0.9.0"
-coroutines = "1.10.1"
+coroutines = "1.10.2"
 
 [libraries]
 # Jetpack Compose

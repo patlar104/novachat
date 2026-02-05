@@ -5,6 +5,7 @@
 Successfully updated the NovaChat Android project to use the **latest stable versions** of all build tools and dependencies as of **January 2026**, verified through web research rather than relying on cached/outdated knowledge.
 
 **Note**: Kotlin is pinned to **2.2.21** for CodeQL compatibility (downgraded from 2.3.0).
+**Note**: This changelog includes prior version references for before/after context.
 
 ## What Was Done
 

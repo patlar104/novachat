@@ -89,7 +89,7 @@ Preview Agent (creates @Preview annotations) ← YOU ARE HERE
     ↓
 Backend Agent (creates ViewModel)
     ↓
-Preview Agent (updates mock ViewModels)
+Preview Agent (updates Preview*ScreenData)
     ↓
 Testing Agent (creates automated tests)
     ↓
@@ -381,12 +381,12 @@ app/src/main/java/com/novachat/app/ui/preview/
 - 🎨 **Complete coverage**: All states, devices, themes automatically handled
 - 🤝 **Coordination**: Works seamlessly with UI, Backend, and Testing agents
 - 📋 **Documentation**: Preview composition serves as living UI documentation
-- 🔄 **Maintenance**: Updates automatically when ViewModel states change
+- 🔄 **Maintenance**: Updates automatically when UI state contracts change
 
 ### When to Use It
 - ✅ Creating new Composable screens
 - ✅ Updating existing Composable layouts
-- ✅ Adding new UI states to ViewModels
+- ✅ Adding new UI states to UI state contracts
 - ✅ Testing responsive design
 - ✅ Designing light/dark theme variants
 

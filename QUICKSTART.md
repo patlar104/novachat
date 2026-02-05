@@ -13,7 +13,7 @@ Welcome to NovaChat! This guide will help you get started even if you're new to 
 
 2. **Android Studio**
    - Download from: https://developer.android.com/studio
-   - Latest stable version (Ladybug or newer)
+   - Latest stable version
    - Includes Android SDK automatically
 
 ### System Requirements
@@ -129,7 +129,7 @@ When you first open the project:
 **Problem**: Android SDK not installed  
 **Solution**:
 1. Tools → SDK Manager
-2. Check "Android 13.0 (API 33)" or higher
+2. Check "Android 16 (API 35)" and "Android 17 (API 36)"
 3. Click "Apply" to install
 4. Restart Android Studio
 

@@ -3,6 +3,8 @@
 ## Overview
 Phase 2 establishes the complete domain layer with repository interfaces, business logic use cases, and presentation layer UI state management following 2026 Android best practices.
 
+**Note**: This summary includes prior version references and before/after context from the snapshot.
+
 ## Files Created
 
 ### Domain Layer (1,071 lines)

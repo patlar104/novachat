@@ -3,6 +3,8 @@
 ## Overview
 Phase 3 implements the complete data layer with repository concrete classes, data models optimized for persistence, bidirectional mappers, and full integration with Android DataStore and Gemini API.
 
+**Note**: This summary includes prior version references and before/after context from the snapshot.
+
 ## Files Created (1,474 Lines)
 
 ### Data Models (162 lines)
