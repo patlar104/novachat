@@ -94,12 +94,20 @@ dependencies {
     // JSON serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
     
-    // Testing
+    // Testing - Unit Tests
     testImplementation("junit:junit:4.13.2")
+    testImplementation("io.mockk:mockk:1.14.9")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    testImplementation("app.cash.turbine:turbine:1.2.1")
+    testImplementation("io.kotest:kotest-assertions-core:6.1.2")
+    
+    // Testing - Android Instrumented Tests
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation(platform("androidx.compose:compose-bom:2026.01.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    
+    // Testing - Debug
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
