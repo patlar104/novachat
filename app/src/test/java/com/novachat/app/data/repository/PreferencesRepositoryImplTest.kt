@@ -1,17 +1,21 @@
 package com.novachat.app.data.repository
 
 import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import com.novachat.app.domain.model.AiConfiguration
 import com.novachat.app.domain.model.AiMode
 import com.novachat.app.domain.model.ApiKey
 import com.novachat.app.domain.model.ModelParameters
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 /**
  * Unit tests for PreferencesRepositoryImpl using DataStore.
@@ -27,19 +31,23 @@ import org.junit.Test
  * @since 1.0.0
  */
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class PreferencesRepositoryImplTest {
+    private lateinit var context: Context
+    private lateinit var repository: PreferencesRepositoryImpl
 
-    private val mockContext = mockk<Context>()
-
-    private fun createRepository(): PreferencesRepositoryImpl {
-        return PreferencesRepositoryImpl(mockContext)
+    @Before
+    fun setup() {
+        context = ApplicationProvider.getApplicationContext()
+        repository = PreferencesRepositoryImpl(context)
+        runBlocking {
+            repository.clearAll()
+        }
     }
 
     @Test
     fun observeAiConfiguration_returns_valid_configuration() = runTest {
         // Arrange
-        val repository = createRepository()
-
         // Act
         val result = repository.observeAiConfiguration().first()
 
@@ -57,8 +65,6 @@ class PreferencesRepositoryImplTest {
             modelParameters = ModelParameters.DEFAULT
         )
 
-        val repository = createRepository()
-
         // Act
         val result = repository.updateAiConfiguration(config)
 
@@ -75,8 +81,6 @@ class PreferencesRepositoryImplTest {
             modelParameters = ModelParameters.DEFAULT
         )
 
-        val repository = createRepository()
-
         // Act
         val result = repository.updateAiConfiguration(config)
 
@@ -87,8 +91,6 @@ class PreferencesRepositoryImplTest {
     @Test
     fun observeAiConfiguration_handles_errors_gracefully() = runTest {
         // Arrange
-        val repository = createRepository()
-
         // Act & Assert
         // The flow should complete without throwing, emitting some default or stored config
         val config = repository.observeAiConfiguration().first()
@@ -99,7 +101,6 @@ class PreferencesRepositoryImplTest {
     fun updateApiKey_updates_only_api_key() = runTest {
         // Arrange
         val newApiKey = ApiKey.unsafe("new-api-key-1234567890")
-        val repository = createRepository()
 
         // Act
         val result = repository.updateApiKey(newApiKey)
@@ -111,7 +112,6 @@ class PreferencesRepositoryImplTest {
     @Test
     fun updateApiKey_with_null_clears_key() = runTest {
         // Arrange
-        val repository = createRepository()
 
         // Act
         val result = repository.updateApiKey(null)
@@ -123,7 +123,6 @@ class PreferencesRepositoryImplTest {
     @Test
     fun updateAiMode_switches_mode() = runTest {
         // Arrange
-        val repository = createRepository()
 
         // Act
         val result = repository.updateAiMode(AiMode.ONLINE)
@@ -135,7 +134,6 @@ class PreferencesRepositoryImplTest {
     @Test
     fun clearAll_resets_preferences() = runTest {
         // Arrange
-        val repository = createRepository()
 
         // Act
         val result = repository.clearAll()

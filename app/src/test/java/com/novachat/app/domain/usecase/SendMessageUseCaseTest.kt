@@ -153,6 +153,7 @@ class SendMessageUseCaseTest {
                 apiKey = null
             )
         )
+        coEvery { mockMessageRepository.updateMessage(any()) } returns Result.success(Unit)
 
         val useCase = createUseCase()
 

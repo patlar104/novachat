@@ -46,10 +46,9 @@ fun ChatScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val draftMessage by viewModel.draftMessage.collectAsStateWithLifecycle()
-    
+
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
-    
+
     // Handle one-time effects
     LaunchedEffect(Unit) {
         viewModel.uiEffect.collect { effect ->
@@ -77,19 +76,37 @@ fun ChatScreen(
             }
         }
     }
-    
+
+    ChatScreenContent(
+        uiState = uiState,
+        draftMessage = draftMessage,
+        snackbarHostState = snackbarHostState,
+        onEvent = viewModel::onEvent,
+        onDraftMessageChange = viewModel::updateDraftMessage
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChatScreenContent(
+    uiState: ChatUiState,
+    draftMessage: String,
+    snackbarHostState: SnackbarHostState,
+    onEvent: (ChatUiEvent) -> Unit,
+    onDraftMessageChange: (String) -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.chat_title)) },
                 actions = {
-                    IconButton(onClick = { viewModel.onEvent(ChatUiEvent.ClearConversation) }) {
+                    IconButton(onClick = { onEvent(ChatUiEvent.ClearConversation) }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = stringResource(R.string.clear_chat)
                         )
                     }
-                    IconButton(onClick = { viewModel.onEvent(ChatUiEvent.NavigateToSettings) }) {
+                    IconButton(onClick = { onEvent(ChatUiEvent.NavigateToSettings) }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = stringResource(R.string.settings_title)
@@ -106,12 +123,12 @@ fun ChatScreen(
         bottomBar = {
             MessageInputBar(
                 messageText = draftMessage,
-                onMessageTextChange = { viewModel.updateDraftMessage(it) },
+                onMessageTextChange = onDraftMessageChange,
                 onSendMessage = {
-                    viewModel.onEvent(ChatUiEvent.SendMessage(draftMessage))
+                    onEvent(ChatUiEvent.SendMessage(draftMessage))
                 },
                 isLoading = when (uiState) {
-                    is ChatUiState.Success -> (uiState as ChatUiState.Success).isProcessing
+                    is ChatUiState.Success -> uiState.isProcessing
                     is ChatUiState.Loading -> true
                     else -> false
                 }
@@ -139,7 +156,7 @@ fun ChatScreen(
                     messages = state.messages,
                     isProcessing = state.isProcessing,
                     error = state.error,
-                    onDismissError = { viewModel.onEvent(ChatUiEvent.DismissError) },
+                    onDismissError = { onEvent(ChatUiEvent.DismissError) },
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -148,7 +165,7 @@ fun ChatScreen(
                 ErrorState(
                     message = state.message,
                     isRecoverable = state.isRecoverable,
-                    onDismiss = { viewModel.onEvent(ChatUiEvent.DismissError) },
+                    onDismiss = { onEvent(ChatUiEvent.DismissError) },
                     modifier = Modifier.padding(paddingValues)
                 )
             }

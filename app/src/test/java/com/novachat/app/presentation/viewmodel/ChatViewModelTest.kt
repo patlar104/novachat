@@ -11,6 +11,7 @@ import com.novachat.app.domain.usecase.SendMessageUseCase
 import com.novachat.app.presentation.model.ChatUiEvent
 import com.novachat.app.presentation.model.ChatUiState
 import com.novachat.app.presentation.model.UiEffect
+import com.novachat.app.testutil.MainDispatcherRule
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.coEvery
@@ -20,6 +21,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.junit.Rule
 import org.junit.Test
 
 /**
@@ -37,6 +39,9 @@ import org.junit.Test
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChatViewModelTest {
+
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
 
     private val mockSendMessageUseCase = mockk<SendMessageUseCase>()
     private val mockObserveMessagesUseCase = mockk<ObserveMessagesUseCase>()

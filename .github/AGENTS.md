@@ -15,7 +15,7 @@ This repository uses a specialized multi-agent system with GitHub Copilot to pre
 
 ## Agent Overview
 
-We have six specialized agents, each with specific responsibilities and constraints:
+We have seven specialized agents, each with specific responsibilities and constraints:
 
 ### 1. 🎯 Planner Agent (`planner.agent.md`)
 **Role**: Analyzes requirements and creates implementation plans
@@ -62,7 +62,37 @@ We have six specialized agents, each with specific responsibilities and constrai
 
 ---
 
-### 3. ⚙️ Backend Agent (`backend-agent.agent.md`)
+### 3. 🎬 Preview Agent (`preview-agent.agent.md`)
+**Role**: Creates comprehensive @Preview annotations and preview composables for IDE debugging
+
+**Scope**:
+- @Preview annotations on Composables
+- Preview composition files (*ScreenPreview.kt)
+- Mock ViewModels for previews (PreviewViewModels)
+- Preview utilities and device specifications
+- Multi-state/device/theme preview composition
+
+**Constraints**:
+- ONLY creates preview code (for IDE debugging, not production)
+- Never calls production repositories
+- No side effects in preview Composables
+- Preview ViewModels are lightweight mocks only
+- **MUST provide complete preview implementations**
+- Lightweight theme variants for fast IDE compilation
+
+**Protocol Requirements**:
+- ✅ Complete @Preview functions (all states shown)
+- ✅ Multiple device variants for each preview
+- ✅ Light and dark theme previews
+- ✅ Mock data only (no API calls)
+- ✅ All imports explicitly included
+- ✅ Builder pattern for PreviewViewModels
+
+**Handoffs**: From UI (for new Composables) and Backend (for state changes), to Testing (for automated tests)
+
+---
+
+### 4. ⚙️ Backend Agent (`backend-agent.agent.md`)
 **Role**: Implements business logic and data layer
 
 **Scope**:
@@ -89,7 +119,7 @@ We have six specialized agents, each with specific responsibilities and constrai
 
 ---
 
-### 4. 🧪 Testing Agent (`testing-agent.agent.md`)
+### 5. 🧪 Testing Agent (`testing-agent.agent.md`)
 **Role**: Writes comprehensive tests
 
 **Scope**:
@@ -114,7 +144,7 @@ We have six specialized agents, each with specific responsibilities and constrai
 
 ---
 
-### 5. 🔧 Build Agent (`build-agent.agent.md`)
+### 6. 🔧 Build Agent (`build-agent.agent.md`)
 **Role**: Manages build configuration and dependencies
 
 **Scope**:
@@ -141,7 +171,7 @@ We have six specialized agents, each with specific responsibilities and constrai
 
 ---
 
-### 6. 👁️ Reviewer Agent (`reviewer-agent.agent.md`)
+### 7. 👁️ Reviewer Agent (`reviewer-agent.agent.md`)
 **Role**: Reviews code quality and security
 
 **Responsibilities**:
@@ -254,17 +284,18 @@ graph TD
     D -->|Logic Task| F[Backend Agent]
     D -->|Dependencies| G[Build Agent]
     
-    E --> H[Testing Agent]
-    F --> H
-    G --> H
+    E --> H[Preview Agent]
+    H --> I[Testing Agent]
+    F --> I
+    G --> I
     
-    H --> I[Reviewer Agent]
-    I --> J{Issues Found?}
+    I --> J[Reviewer Agent]
+    J --> K{Issues Found?}
     
-    J -->|Yes| K[Route to Appropriate Agent]
-    J -->|No| L[Complete]
+    K -->|Yes| L[Route to Appropriate Agent]
+    K -->|No| M[Complete]
     
-    K --> I
+    L --> J
 ```
 
 ## Anti-Drift Mechanisms
@@ -395,6 +426,7 @@ Review the authentication feature for:
 ├── agents/
 │   ├── planner.agent.md
 │   ├── ui-agent.agent.md
+│   ├── preview-agent.agent.md
 │   ├── backend-agent.agent.md
 │   ├── testing-agent.agent.md
 │   ├── build-agent.agent.md
@@ -403,6 +435,8 @@ Review the authentication feature for:
 │   ├── android-testing/
 │   │   └── SKILL.md
 │   ├── material-design/
+│   │   └── SKILL.md
+│   ├── compose-preview/
 │   │   └── SKILL.md
 │   └── security-check/
 │       └── SKILL.md

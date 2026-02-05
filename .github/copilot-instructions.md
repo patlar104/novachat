@@ -29,6 +29,21 @@ NovaChat is an Android AI chatbot (Jetpack Compose + MVVM + Clean Architecture) 
 - Code Quality Requirements (all - mandatory for all agents)
 
 **Skip or Reference Only**: Sections on AI Repository, Use Cases, DataStore patterns (backend will handle)
+**Handoff to**: Preview Agent after creating Composables (for @Preview annotations)
+
+### 🎬 Preview Agent
+**Focus Areas**: Sections marked with [PREVIEW-FOCUS]
+- Essential Architecture Patterns (sections 1-2: State understanding for preview composition)
+- Repository Structure (understand UI layer structure for preview file placement)
+- NovaChat-Specific Patterns (Material Design 11 for theme variations)
+- Material Design (11) - Theme preview variants
+- Preview Best Practices (dedicated section in agent file)
+- Code Quality Requirements (all - mandatory for all agents)
+
+**Scope**: @Preview annotations, preview Composables, mock ViewModels, device specifications
+**Skip or Reference Only**: Backend logic, repositories, use cases (only create PreviewViewModels)
+**Receive from**: UI Agent (after Composable creation)
+**Handoff to**: Testing Agent (for automated UI tests)
 
 ### ⚙️ Backend Agent  
 **Focus Areas**: Sections marked with [BACKEND-FOCUS]
@@ -70,25 +85,26 @@ NovaChat is an Android AI chatbot (Jetpack Compose + MVVM + Clean Architecture) 
 
 ## Agent Focus Quick Reference
 
-| Section | UI | Backend | Testing | Build | Reviewer |
-|---------|----|---------|---------:|-------:|----------|
-| Quick Facts | ✓ | ✓ | ✓ | ✓✓ | ✓ |
-| Architecture Patterns 1-2 | ✓✓ | ✓ | ✓ | - | ✓ |
-| Architecture Patterns 3-5 | - | ✓✓ | ✓ | ✓ | ✓ |
-| Development Commands | ✓ | ✓ | ✓ | ✓✓ | ✓ |
-| Repository Structure | ✓ | ✓✓ | ✓ | - | ✓ |
-| ViewModel Patterns | ✓ | ✓ | ✓ | - | ✓ |
-| New Screen Checklist | ✓ | ✓✓ | ✓ | - | ✓ |
-| SavedStateHandle (Conv. 3) | ✓✓ | ✓ | - | - | ✓ |
-| DataStore (Conv. 4) | - | ✓✓ | - | - | ✓ |
-| AI Mode Validation (Conv. 5) | - | ✓✓ | ✓ | ✓ | ✓ |
-| Effect Channel (Conv. 6) | ✓✓ | ✓ | - | - | ✓ |
-| Data Flow (Conv. 8) | ✓ | ✓✓ | ✓✓ | - | ✓ |
-| Error Handling (Conv. 9) | ✓ | ✓✓ | ✓✓ | - | ✓ |
-| Material Design (Conv. 11) | ✓✓ | - | - | - | ✓ |
-| API Security (Conv. 12) | - | ✓✓ | ✓ | ✓ | ✓ |
-| Testing Patterns | - | - | ✓✓ | - | ✓ |
-| Anti-Patterns | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Section | UI | Preview | Backend | Testing | Build | Reviewer |
+|---------|----|---------|---------:|-------:|----------|----------|
+| Quick Facts | ✓ | - | ✓ | ✓ | ✓✓ | ✓ |
+| Architecture Patterns 1-2 | ✓✓ | ✓ | ✓ | ✓ | - | ✓ |
+| Architecture Patterns 3-5 | - | - | ✓✓ | ✓ | ✓ | ✓ |
+| Development Commands | ✓ | ✓ | ✓ | ✓ | ✓✓ | ✓ |
+| Repository Structure | ✓ | ✓ | ✓✓ | ✓ | - | ✓ |
+| ViewModel Patterns | ✓ | - | ✓ | ✓ | - | ✓ |
+| New Screen Checklist | ✓ | ✓ | ✓✓ | ✓ | - | ✓ |
+| SavedStateHandle (Conv. 3) | ✓✓ | - | ✓ | - | - | ✓ |
+| DataStore (Conv. 4) | - | - | ✓✓ | - | - | ✓ |
+| AI Mode Validation (Conv. 5) | - | - | ✓✓ | ✓ | ✓ | ✓ |
+| Effect Channel (Conv. 6) | ✓✓ | - | ✓ | - | - | ✓ |
+| Data Flow (Conv. 8) | ✓ | - | ✓✓ | ✓✓ | - | ✓ |
+| Error Handling (Conv. 9) | ✓ | - | ✓✓ | ✓✓ | - | ✓ |
+| Material Design (Conv. 11) | ✓✓ | ✓✓ | - | - | - | ✓ |
+| API Security (Conv. 12) | - | - | ✓✓ | ✓ | ✓ | ✓ |
+| Testing Patterns | - | - | - | ✓✓ | - | ✓ |
+| Preview Patterns | - | ✓✓ | - | ✓ | - | ✓ |
+| Anti-Patterns | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 **Legend**: ✓✓ = Critical, ✓ = Important, - = Reference only
 
@@ -96,7 +112,7 @@ NovaChat is an Android AI chatbot (Jetpack Compose + MVVM + Clean Architecture) 
 
 ## Essential Architecture Patterns
 
-### 1. **State & Event-Driven UI** [UI-FOCUS]
+### 1. **State & Event-Driven UI** [UI-FOCUS][PREVIEW-FOCUS]
 NovaChat uses sealed interfaces for type-safe state management:
 ```kotlin
 // Presentation layer defines UI contract
@@ -745,7 +761,7 @@ These patterns violate NovaChat's architecture and will cause problems:
     - For Preferences flows: use `.flow.distinctUntilChanged()` to avoid duplicate emissions
     - Use `SuspendCancellationException` for cleanup in finally blocks
 
-11. **Material Design 3 & Theming** [UI-FOCUS]
+11. **Material Design 3 & Theming** [UI-FOCUS][PREVIEW-FOCUS]
     - All colors come from `MaterialTheme.colorScheme`
     - Typography from `MaterialTheme.typography`
     - Use predefined shapes: `MaterialTheme.shapes.small/medium/large`
