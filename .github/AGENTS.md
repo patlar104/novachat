@@ -2,31 +2,50 @@
 
 This repository uses a specialized multi-agent system with GitHub Copilot to prevent agent drift and maintain code quality across the Android project.
 
-> **⚠️ MANDATORY PROTOCOL**: All agents MUST follow [DEVELOPMENT_PROTOCOL.md](DEVELOPMENT_PROTOCOL.md)
-> 
+> **MANDATORY PROTOCOL**: All agents MUST follow [DEVELOPMENT_PROTOCOL.md](DEVELOPMENT_PROTOCOL.md)
+>
 > **Key Requirements for ALL Agents:**
-> - ✅ **Zero-Elision Policy**: Never use placeholders (`// ... code`)
-> - ✅ **Complete Implementations**: Write full, working code only
-> - ✅ **Self-Validation**: Check completeness, imports, syntax before output
-> - ✅ **Input Disambiguation**: Ask for clarification when requests are ambiguous
-> - ✅ **Cross-File Dependencies**: Analyze ripple effects before changes
-> - ✅ **Atomic Processing**: One complete file at a time
-> - ✅ **2026 Standards**: Kotlin 2.3.0, AGP 9.0.0, Compose BOM 2026.01.01
+>
+> - **Zero-Elision Policy**: Never use placeholders (`// ... code`)
+> - **Complete Implementations**: Write full, working code only
+> - **Self-Validation**: Check completeness, imports, syntax before output
+> - **Input Disambiguation**: Ask for clarification when requests are ambiguous
+> - **Cross-File Dependencies**: Analyze ripple effects before changes
+> - **Atomic Processing**: One complete file at a time
+> - **Source Verification**: Validate external versions against official sources; do not assume docs are current or user-authored
+> - **2026 Standards**: Kotlin 2.2.21, AGP 9.0.0, Compose BOM 2026.01.01 (Google Maven only; [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping))
+
+## Diff-Style Summary Format
+
+When asked to summarize edits, use a diff-style summary with section-by-section bullets and cite file paths.
+Prefer `git diff` when the user asks for exact change details.
+
+Template:
+
+```text
+Diff-Style Summary
+- Section: <what changed> (file: <path>)
+- Section: <what changed> (file: <path>)
+- Before → After: <short change> (file: <path>)
+```
 
 ## Agent Overview
 
 We have seven specialized agents, each with specific responsibilities and constraints:
 
-### 1. 🎯 Planner Agent (`planner.agent.md`)
+### 1. Planner Agent ([`planner.agent.md`](agents/planner.agent.md))
+
 **Role**: Analyzes requirements and creates implementation plans
 
 **Responsibilities**:
+
 - Break down features into actionable tasks
 - Define architecture and component structure
 - Create test strategies
 - Set clear acceptance criteria
 
 **Constraints**:
+
 - Never implements code directly
 - Only creates plans and specifications
 - Always uses markdown checklists
@@ -35,10 +54,12 @@ We have seven specialized agents, each with specific responsibilities and constr
 
 ---
 
-### 2. 🎨 UI Agent (`ui-agent.agent.md`)
+### 2. UI Agent ([`ui-agent.agent.md`](agents/ui-agent.agent.md))
+
 **Role**: Implements Jetpack Compose user interfaces
 
 **Scope**:
+
 - Jetpack Compose UI (Composables)
 - Material Design 3 components
 - Theme configuration
@@ -46,33 +67,43 @@ We have seven specialized agents, each with specific responsibilities and constr
 - UI state management
 
 **Constraints**:
-- ONLY modifies UI-related files (i.e., files in `app/src/main/java/.../ui/` but not viewmodels)
+
+- ONLY modifies UI-related files:
+  - [`app/src/main/java/.../ui/`](../app/src/main/java/com/novachat/app/ui)
+  - [`app/src/main/java/.../ui/theme/`](../app/src/main/java/com/novachat/app/ui/theme)
+  - [`app/src/main/java/.../MainActivity.kt`](../app/src/main/java/com/novachat/app/MainActivity.kt)
+  - [`app/src/main/res/values/strings.xml`](../app/src/main/res/values/strings.xml)
+  - Not ViewModels or backend logic (see [`presentation/viewmodel/`](../app/src/main/java/com/novachat/app/presentation/viewmodel))
 - Never implements business logic
 - All UI in Compose (no XML layouts)
 - All strings must be in resources
 - **MUST provide complete Composable implementations**
 
 **Protocol Requirements**:
-- ✅ Complete `@Composable` functions (no `// ... UI implementation` placeholders)
-- ✅ All imports explicitly included
-- ✅ Full theme integration shown
-- ✅ Check existing Composables before creating new ones
+
+- **Complete `@Composable` functions** (no `// ... UI implementation` placeholders)
+- **All imports explicitly included**
+- **Full theme integration shown**
+- **Check existing Composables before creating new ones**
 
 **Handoffs**: To Backend (for ViewModel integration), Testing (for UI tests), or Reviewer
 
 ---
 
-### 3. 🎬 Preview Agent (`preview-agent.agent.md`)
+### 3. Preview Agent ([`preview-agent.agent.md`](agents/preview-agent.agent.md))
+
 **Role**: Creates comprehensive @Preview annotations and preview composables for IDE debugging
 
 **Scope**:
-- @Preview annotations on Composables
-- Preview composition files (*ScreenPreview.kt)
-- Preview data providers (Preview*ScreenData)
-- Preview utilities and device specifications
+
+- @Preview annotations on Composables ([`app/src/main/java/.../ui/`](../app/src/main/java/com/novachat/app/ui))
+- Preview composition files (`*ScreenPreview.kt`) in [`app/src/main/java/.../ui/preview/`](../app/src/main/java/com/novachat/app/ui/preview)
+- Preview data providers (`Preview*ScreenData`) in [`app/src/main/java/.../ui/preview/`](../app/src/main/java/com/novachat/app/ui/preview)
+- Preview utilities and device specifications in [`app/src/main/java/.../ui/preview/`](../app/src/main/java/com/novachat/app/ui/preview)
 - Multi-state/device/theme preview composition
 
 **Constraints**:
+
 - ONLY creates preview code (for IDE debugging, not production)
 - Never calls production repositories
 - No side effects in preview Composables
@@ -81,79 +112,96 @@ We have seven specialized agents, each with specific responsibilities and constr
 - Lightweight theme variants for fast IDE compilation
 
 **Protocol Requirements**:
-- ✅ Complete @Preview functions (all states shown)
-- ✅ Multiple device variants for each preview
-- ✅ Light and dark theme previews
-- ✅ Mock data only (no API calls)
-- ✅ All imports explicitly included
-- ✅ Preview data helpers (Preview*ScreenData) for state coverage
+
+- **Complete @Preview functions** (all states shown)
+- **Multiple device variants for each preview**
+- **Light and dark theme previews**
+- **Mock data only** (no API calls)
+- **All imports explicitly included**
+- **Preview data helpers** (Preview*ScreenData) for state coverage
 
 **Handoffs**: From UI (for new Composables) and Backend (for state changes), to Testing (for automated tests)
 
 ---
 
-### 4. ⚙️ Backend Agent (`backend-agent.agent.md`)
+### 4. Backend Agent ([`backend-agent.agent.md`](agents/backend-agent.agent.md))
+
 **Role**: Implements business logic, domain, and data layers, following Clean Architecture.
 
 **Scope**:
-- **Presentation Layer**: ViewModels (with StateFlow, UiState, UiEffect)
-- **Domain Layer**: Core models, Repository interfaces, and Use Cases
-- **Data Layer**: Repository implementations, Data sources (DataStore, Gemini API, AICore)
-- **Dependency Injection**: AppContainer (manual DI)
+
+- **Presentation Layer**: ViewModels (with StateFlow, UiState, UiEffect) in [`presentation/viewmodel/`](../app/src/main/java/com/novachat/app/presentation/viewmodel)
+- **Domain Layer**: Core models, Repository interfaces, and Use Cases in [`domain/`](../app/src/main/java/com/novachat/app/domain)
+- **Data Layer**: Repository implementations and data sources in [`data/`](../app/src/main/java/com/novachat/app/data)
+- **Dependency Injection**: AppContainer in [`di/AppContainer.kt`](../app/src/main/java/com/novachat/app/di/AppContainer.kt)
 
 **Constraints**:
-- ONLY modifies backend/logic files (i.e., files in `data/`, `domain/`, `presentation/model/`, `presentation/viewmodel/`, `di/`)
+
+- ONLY modifies backend/logic files:
+  - [`app/src/main/java/.../data/`](../app/src/main/java/com/novachat/app/data)
+  - [`app/src/main/java/.../domain/`](../app/src/main/java/com/novachat/app/domain)
+  - [`app/src/main/java/.../presentation/model/`](../app/src/main/java/com/novachat/app/presentation/model)
+  - [`app/src/main/java/.../presentation/viewmodel/`](../app/src/main/java/com/novachat/app/presentation/viewmodel)
+  - [`app/src/main/java/.../di/`](../app/src/main/java/com/novachat/app/di)
 - Never modifies UI files
 - ViewModels must not have UI references
 - All logic must be unit testable
 - **MUST provide complete implementations**
 
 **Protocol Requirements**:
-- ✅ Complete ViewModels with all state handling
-- ✅ Complete Repository implementations (no `// ... implement` placeholders)
-- ✅ All coroutine scopes and error handling included
-- ✅ Verify existing implementations before adding new ones
+
+- **Complete ViewModels with all state handling**
+- **Complete Repository implementations** (no `// ... implement` placeholders)
+- **All coroutine scopes and error handling included**
+- **Verify existing implementations before adding new ones**
 
 **Handoffs**: To UI (for integration), Testing (for unit tests), or Build (for dependencies)
 
 ---
 
-### 5. 🧪 Testing Agent (`testing-agent.agent.md`)
+### 5. Testing Agent ([`testing-agent.agent.md`](agents/testing-agent.agent.md))
+
 **Role**: Writes comprehensive tests
 
 **Scope**:
-- Unit tests (ViewModels, repositories) with coroutines
-- Compose UI tests (not Espresso)
-- Test utilities and helpers
+
+- Unit tests (ViewModels, repositories) with coroutines in [`app/src/test/java/`](../app/src/test/java)
+- Compose UI tests (not Espresso) in [`app/src/androidTest/java/`](../app/src/androidTest/java)
+- Test utilities and helpers in [`app/src/test/java/`](../app/src/test/java)
 
 **Constraints**:
+
 - ONLY creates or modifies test files
 - Never modifies production code
 - If tests fail, reports issues and hands off to appropriate agent
 - **MUST provide complete test implementations**
 
 **Protocol Requirements**:
-- ✅ Complete test functions (no `// ... test implementation` placeholders)
-- ✅ All test setup and teardown included
-- ✅ MockK setup fully shown
-- ✅ ComposeTestRule usage complete
-- ✅ Check for existing tests before creating duplicates
+
+- **Complete test functions** (no `// ... test implementation` placeholders)
+- **All test setup and teardown included**
+- **MockK setup fully shown**
+- **ComposeTestRule usage complete**
+- **Check for existing tests before creating duplicates**
 
 **Handoffs**: To Backend or UI (for bug fixes), Reviewer (for coverage review)
 
 ---
 
-### 6. 🔧 Build Agent (`build-agent.agent.md`)
+### 6. Build Agent ([`build-agent.agent.md`](agents/build-agent.agent.md))
+
 **Role**: Manages build configuration and dependencies
 
 **Scope**:
-- Gradle build files (Kotlin DSL)
-- Dependency management (Compose BOM, AI SDKs)
-- Version catalogs (libs.versions.toml)
-- ProGuard/R8 rules
+
+- Gradle build files (Kotlin DSL) in [`build.gradle.kts`](../build.gradle.kts) and [`app/build.gradle.kts`](../app/build.gradle.kts)
+- Dependency management (Compose BOM, AI SDKs) in [`app/build.gradle.kts`](../app/build.gradle.kts)
+- Version catalogs (if used; see [`gradle/`](../gradle))
+- ProGuard/R8 rules in [`app/proguard-rules.pro`](../app/proguard-rules.pro)
 - Build variants
 
 **Constraints**:
+
 - ONLY modifies build configuration files
 - Never modifies application code
 - Must check dependencies for security vulnerabilities
@@ -161,19 +209,22 @@ We have seven specialized agents, each with specific responsibilities and constr
 - **MUST provide complete build configurations**
 
 **Protocol Requirements**:
-- ✅ Complete build.gradle.kts files (no `// ... dependencies` placeholders)
-- ✅ All plugin configurations shown
-- ✅ Version catalog entries complete
-- ✅ Verify 2026 dependency versions (Compose BOM 2026.01.01, Kotlin 2.3.0)
+
+- **Complete build.gradle.kts files** (no `// ... dependencies` placeholders) in [`build.gradle.kts`](../build.gradle.kts) and [`app/build.gradle.kts`](../app/build.gradle.kts)
+- **All plugin configurations shown**
+- **Version catalog entries complete** (if used; see [`gradle/`](../gradle))
+- **Verify 2026 dependency versions** (Compose BOM 2026.01.01, Kotlin 2.2.21)
 
 **Handoffs**: To Backend (after adding dependencies), Testing (for test setup), or Reviewer
 
 ---
 
-### 7. 👁️ Reviewer Agent (`reviewer-agent.agent.md`)
+### 7. Reviewer Agent ([`reviewer-agent.agent.md`](agents/reviewer-agent.agent.md))
+
 **Role**: Reviews code quality and security
 
 **Responsibilities**:
+
 - Code quality review
 - Architecture compliance (MVVM + Clean Architecture)
 - Security auditing
@@ -183,12 +234,14 @@ We have seven specialized agents, each with specific responsibilities and constr
 - **DEVELOPMENT_PROTOCOL.md compliance**
 
 **Constraints**:
+
 - ONLY reviews - never implements fixes
 - Must categorize issues by severity
 - Provides specific, actionable feedback
 - **MUST check for protocol violations**
 
 **Protocol Requirements**:
+
 - ✅ Verify zero-elision policy compliance (no placeholders in code)
 - ✅ Check complete implementations
 - ✅ Verify all imports present
@@ -200,14 +253,49 @@ We have seven specialized agents, each with specific responsibilities and constr
 
 ---
 
+## Constraints Cross-Check (Repo Paths)
+
+Validated against the current repository layout:
+
+- **Planner Agent**: No file modifications.
+- **Reviewer Agent**: No file modifications.
+- **UI Agent**:
+  - [`app/src/main/java/com/novachat/app/ui/**`](../app/src/main/java/com/novachat/app/ui)
+  - [`app/src/main/java/com/novachat/app/ui/theme/**`](../app/src/main/java/com/novachat/app/ui/theme)
+  - [`app/src/main/java/com/novachat/app/MainActivity.kt`](../app/src/main/java/com/novachat/app/MainActivity.kt)
+  - [`app/src/main/res/values/strings.xml`](../app/src/main/res/values/strings.xml)
+- **Preview Agent**: [`app/src/main/java/com/novachat/app/ui/preview/**`](../app/src/main/java/com/novachat/app/ui/preview)
+- **Backend Agent**:
+  - [`app/src/main/java/com/novachat/app/presentation/model/**`](../app/src/main/java/com/novachat/app/presentation/model)
+  - [`app/src/main/java/com/novachat/app/presentation/viewmodel/**`](../app/src/main/java/com/novachat/app/presentation/viewmodel)
+  - [`app/src/main/java/com/novachat/app/domain/**`](../app/src/main/java/com/novachat/app/domain)
+  - [`app/src/main/java/com/novachat/app/data/**`](../app/src/main/java/com/novachat/app/data)
+  - [`app/src/main/java/com/novachat/app/di/**`](../app/src/main/java/com/novachat/app/di)
+  - [`app/src/main/java/com/novachat/app/NovaChatApplication.kt`](../app/src/main/java/com/novachat/app/NovaChatApplication.kt)
+- **Testing Agent**:
+  - [`app/src/test/java/**`](../app/src/test/java)
+  - [`app/src/androidTest/java/**`](../app/src/androidTest/java)
+- **Build Agent**:
+  - [`build.gradle.kts`](../build.gradle.kts)
+  - [`app/build.gradle.kts`](../app/build.gradle.kts)
+  - [`settings.gradle.kts`](../settings.gradle.kts)
+  - [`gradle.properties`](../gradle.properties)
+  - [`gradle/wrapper/gradle-wrapper.properties`](../gradle/wrapper/gradle-wrapper.properties)
+  - [`app/proguard-rules.pro`](../app/proguard-rules.pro)
+  - [`app/src/main/AndroidManifest.xml`](../app/src/main/AndroidManifest.xml)
+
+If any path moves, update this section and the agent constraints together.
+
 ## Reusable Skills
 
 Skills are shared knowledge that agents can reference. **All skills MUST follow DEVELOPMENT_PROTOCOL.md** (no placeholder code).
 
 ### 📱 Android Testing Skill
-Location: `.github/skills/android-testing/`
+
+Location: [`.github/skills/android-testing/`](skills/android-testing)
 
 Provides:
+
 - ViewModel unit testing with coroutines (complete examples)
 - Compose UI testing with ComposeTestRule
 - MockK best practices (full setup shown)
@@ -215,10 +303,12 @@ Provides:
 
 **Protocol**: All test examples are complete and runnable
 
-### 🎨 Material Design 3 Skill
-Location: `.github/skills/material-design/`
+### Material Design 3 Skill
+
+Location: [`.github/skills/material-design/`](skills/material-design)
 
 Provides:
+
 - Material Design 3 Compose components (complete implementations)
 - Theme configuration (full theme files)
 - Layout best practices (complete Composables)
@@ -226,10 +316,12 @@ Provides:
 
 **Protocol**: All Compose examples are complete and functional
 
-### 🖼️ Compose Preview Skill
-Location: `.github/skills/compose-preview/`
+### Compose Preview Skill
+
+Location: [`.github/skills/compose-preview/`](skills/compose-preview)
 
 Provides:
+
 - Best practices for `@Preview` annotations
 - Multi-preview annotations for device and theme variations
 - Creation of mock data providers (e.g., Preview*Data)
@@ -237,10 +329,12 @@ Provides:
 
 **Protocol**: All preview examples are complete and functional
 
-### 🔒 Security Best Practices Skill
-Location: `.github/skills/security-check/`
+### Security Best Practices Skill
+
+Location: [`.github/skills/security-check/`](skills/security-check)
 
 Provides:
+
 - Secure data storage patterns (complete DataStore implementations)
 - Network security configuration (full XML configs)
 - Input validation (complete validation functions)
@@ -256,7 +350,10 @@ Provides:
 ### Starting a New Feature
 
 1. **Assign to Planner Agent**
-   ```
+
+   Use [`agents/planner.agent.md`](agents/planner.agent.md)
+
+   ```markdown
    @copilot using planner.agent.md
    
    Create a plan for implementing [feature description]
@@ -265,7 +362,10 @@ Provides:
 2. **Planner creates detailed plan** with tasks assigned to specific agents
 
 3. **Execute tasks** by invoking the assigned agents:
-   ```
+
+   Use [`agents/ui-agent.agent.md`](agents/ui-agent.agent.md)
+
+   ```markdown
    @copilot using ui-agent.agent.md
    
    Implement the login screen layout according to the plan
@@ -276,7 +376,10 @@ Provides:
 5. **Continue the chain** until all tasks are complete
 
 6. **Final review**:
-   ```
+
+   Use [`agents/reviewer-agent.agent.md`](agents/reviewer-agent.agent.md)
+
+   ```markdown
    @copilot using reviewer-agent.agent.md
    
    Review the login feature implementation
@@ -311,26 +414,32 @@ graph TD
 ## Anti-Drift Mechanisms
 
 ### 1. **Strict Scope Enforcement**
+
 Each agent has explicit file scope constraints. Agents will refuse to work on files outside their scope.
 
 ### 2. **Handoff Protocols**
+
 Agents clearly specify when to hand off to another agent, preventing scope creep.
 
 ### 3. **Boundary Checks**
+
 Built-in checks prevent common mistakes:
+
 - UI Agent refuses business logic
 - Backend Agent refuses UI modifications
 - Testing Agent never modifies production code
 
 ### 4. **Skills as Reference**
+
 Shared skills provide consistent patterns, reducing variation in implementation.
 
 ### 5. **Reviewer Oversight**
+
 Reviewer Agent catches drift before code is merged.
 
-## Best Practices
+### Best Practices
 
-### ✅ Do's
+#### Do's
 
 - Always start with Planner Agent for new features
 - Use the appropriate specialized agent for each task
@@ -338,7 +447,7 @@ Reviewer Agent catches drift before code is merged.
 - Run Reviewer Agent before finalizing
 - Follow handoff recommendations
 
-### ❌ Don'ts
+#### Don'ts
 
 - Don't ask UI Agent to implement ViewModels
 - Don't ask Backend Agent to create layouts
@@ -349,7 +458,10 @@ Reviewer Agent catches drift before code is merged.
 ## Agent Invocation Examples
 
 ### Planning
-```
+
+Use [`agents/planner.agent.md`](agents/planner.agent.md)
+
+```bash
 @copilot using planner.agent.md
 
 Plan implementation for:
@@ -359,7 +471,10 @@ Plan implementation for:
 ```
 
 ### UI Implementation
-```
+
+Use [`agents/ui-agent.agent.md`](agents/ui-agent.agent.md)
+
+```bash
 @copilot using ui-agent.agent.md
 
 Create the login screen with:
@@ -370,7 +485,10 @@ Create the login screen with:
 ```
 
 ### Backend Implementation
-```
+
+Use [`agents/backend-agent.agent.md`](agents/backend-agent.agent.md)
+
+```bash
 @copilot using backend-agent.agent.md
 
 Implement LoginViewModel with:
@@ -380,7 +498,10 @@ Implement LoginViewModel with:
 ```
 
 ### Testing
-```
+
+Use [`agents/testing-agent.agent.md`](agents/testing-agent.agent.md)
+
+```bash
 @copilot using testing-agent.agent.md
 
 Create tests for LoginViewModel covering:
@@ -390,7 +511,10 @@ Create tests for LoginViewModel covering:
 ```
 
 ### Build Configuration
-```
+
+Use [`agents/build-agent.agent.md`](agents/build-agent.agent.md)
+
+```bash
 @copilot using build-agent.agent.md
 
 Add dependencies for:
@@ -400,7 +524,10 @@ Add dependencies for:
 ```
 
 ### Code Review
-```
+
+Use [`agents/reviewer-agent.agent.md`](agents/reviewer-agent.agent.md)
+
+```bash
 @copilot using reviewer-agent.agent.md
 
 Review the authentication feature for:
@@ -431,7 +558,7 @@ Review the authentication feature for:
 
 ## Directory Structure
 
-```
+```text
 .github/
 ├── agents/
 │   ├── planner.agent.md
@@ -453,6 +580,12 @@ Review the authentication feature for:
 └── copilot-instructions.md
 ```
 
+Linked paths:
+
+- [`.github/agents/`](agents)
+- [`.github/skills/`](skills)
+- [`.github/copilot-instructions.md`](copilot-instructions.md)
+
 ## Contributing
 
 When contributing to this project:
@@ -467,21 +600,21 @@ When contributing to this project:
 
 All contributions MUST comply with [DEVELOPMENT_PROTOCOL.md](DEVELOPMENT_PROTOCOL.md):
 
-- ✅ **No placeholders**: Complete implementations only
-- ✅ **Self-validation**: Check completeness, imports, syntax
-- ✅ **Input disambiguation**: Ask when requests are unclear
-- ✅ **Cross-file analysis**: Identify and update dependencies
-- ✅ **Atomic processing**: One complete file at a time
-- ✅ **2026 standards**: Latest Kotlin, AGP, Compose versions
+- **No placeholders**: Complete implementations only
+- **Self-validation**: Check completeness, imports, syntax
+- **Input disambiguation**: Ask when requests are unclear
+- **Cross-file analysis**: Identify and update dependencies
+- **Atomic processing**: One complete file at a time
+- **2026 standards**: Latest Kotlin, AGP, Compose versions
 
 ### Enforcement
 
 **All agents automatically enforce protocol compliance.** Violations will be rejected:
 
-❌ Code with `// ... rest of implementation` → **REJECTED**
-❌ Missing imports → **REJECTED**
-❌ Incomplete implementations → **REJECTED**
-❌ Outdated dependencies (pre-2026) → **REJECTED**
+- Code with `// ... rest of implementation` → REJECTED
+- Missing imports → REJECTED
+- Incomplete implementations → REJECTED
+- Outdated dependencies (pre-2026) → REJECTED
 
 ## Additional Resources
 

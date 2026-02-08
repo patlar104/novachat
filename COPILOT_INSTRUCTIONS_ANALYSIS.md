@@ -322,7 +322,7 @@ suspend fun generateResponse(...): Result<String> {
 ```kotlin
 suspend operator fun invoke(...): Result<Message> {
     val responseResult = aiRepository.generateResponse(...)
-    
+
     return responseResult.fold(
         onSuccess = { ... },
         onFailure = { error -> /* transform with context */ }
@@ -437,7 +437,7 @@ val configuration = try {
 fun validateConfiguration(config: AiConfiguration): Result<Unit> {
     return when (config.mode) {
         AiMode.ONLINE -> {
-            if (config.apiKey == null) 
+            if (config.apiKey == null)
                 Result.failure(ValidationError("API key required"))
             else if (!hasNetworkConnection())
                 Result.failure(NetworkError("No internet"))
@@ -662,10 +662,10 @@ sealed interface UiEffect { ... }
 class ChatViewModel(...) : ViewModel() {
     private val _uiState = MutableStateFlow<ChatUiState>(...)
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
-    
+
     private val _uiEffect = Channel<UiEffect>(Channel.BUFFERED)
     val uiEffect = _uiEffect.receiveAsFlow()
-    
+
     fun onEvent(event: ChatUiEvent) { when (event) { ... } }
 }
 ```
@@ -702,7 +702,7 @@ class AppContainer(private val context: Context) {
     val messageRepository: MessageRepository by lazy {
         MessageRepositoryImpl()
     }
-    
+
     val sendMessageUseCase: SendMessageUseCase by lazy {
         SendMessageUseCase(
             messageRepository = messageRepository,
@@ -850,7 +850,7 @@ class SendMessageUseCase {
    - When to use platform() vs. direct versions?
 
 2. **Kotlin/AGP/Gradle Version Relations**
-   - Why Kotlin 2.3.0 with AGP 9.0.0?
+- Why Kotlin 2.2.21 with AGP 9.0.0?
    - Can we use older/newer Kotlin?
    - Breaking changes between versions?
 
@@ -934,9 +934,9 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 ### 6.1 Kotlin & Android Versions ✅
 
 **Verified**: All 2026 standard versions used:
-- ✅ Kotlin 2.3.0 (correct)
+- ✅ Kotlin 2.2.21 (correct)
 - ✅ AGP 9.0.0 (correct)
-- ✅ Compose BOM 2026.01.01 (correct)
+- ✅ Compose BOM 2026.01.01 (Google Maven; mapping: [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping))
 - ✅ JVM Target Java 17 (correct)
 - ✅ Target SDK 35, Min SDK 28 (correct)
 

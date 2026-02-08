@@ -1,5 +1,5 @@
 ---
-name: Material Design 3 with Jetpack Compose
+name: material-design
 description: Complete Material 3 Compose patterns for NovaChat (NO placeholders, NO XML)
 category: ui
 applies_to:
@@ -13,12 +13,12 @@ note: All examples are COMPLETE Jetpack Compose implementations - following DEVE
 
 This skill provides **COMPLETE** Material Design 3 Compose patterns. All code examples are fully implemented with no placeholders.
 
-> **⚠️ PROTOCOL**: All examples follow [DEVELOPMENT_PROTOCOL.md](../../DEVELOPMENT_PROTOCOL.md)
-> - ✅ Complete @Composable functions (no `// ... UI code` placeholders)
-> - ✅ All imports explicitly shown
-> - ✅ Material 3 components only (no Material 2)
-> - ✅ Theme integration shown
-> - ✅ Accessibility semantics included
+> **PROTOCOL**: All examples follow [DEVELOPMENT_PROTOCOL.md](../../DEVELOPMENT_PROTOCOL.md)
+> - Complete @Composable functions (no `// ... UI code` placeholders)
+> - All imports explicitly shown
+> - Material 3 components only (no Material 2)
+> - Theme integration shown
+> - Accessibility semantics included
 
 ## Multi-Agent Coordination
 
@@ -27,14 +27,14 @@ This skill provides **COMPLETE** Material Design 3 Compose patterns. All code ex
 **Use tools immediately for:**
 - Reading existing Composable files → `read_file`
 - Creating new screen Composables → `create_file`
-- Modifying Composable implementations → `replace_string_in_file`
+- Modifying Composable implementations → `apply_patch`
 - Searching for Material 3 patterns → `grep_search` or `semantic_search`
 - Validating syntax and imports → `run_in_terminal` for build checks
 
 **Do NOT describe; DO implement:**
 - Don't say "create a screen Composable"; create it using `create_file`
-- Don't say "update the theme colors"; update using `replace_string_in_file`
-- Don't say "add Material 3 buttons"; add them using `replace_string_in_file`
+- Don't say "update the theme colors"; update using `apply_patch`
+- Don't say "add Material 3 buttons"; add them using `apply_patch`
 
 ### When to Hand Off to Other Agents
 
@@ -91,664 +91,101 @@ This skill provides **COMPLETE** Material Design 3 Compose patterns. All code ex
 
 ### Color.kt - Material 3 Color System
 
-```kotlin
-package com.novachat.app.ui.theme
+Rules:
 
-import androidx.compose.ui.graphics.Color
-
-// Light theme colors
-val md_theme_light_primary = Color(0xFF006B54)
-val md_theme_light_onPrimary = Color(0xFFFFFFFF)
-val md_theme_light_primaryContainer = Color(0xFF71F9CF)
-val md_theme_light_onPrimaryContainer = Color(0xFF002117)
-
-val md_theme_light_secondary = Color(0xFF4B635B)
-val md_theme_light_onSecondary = Color(0xFFFFFFFF)
-val md_theme_light_secondaryContainer = Color(0xFFCDE8DD)
-val md_theme_light_onSecondaryContainer = Color(0xFF082019)
-
-val md_theme_light_error = Color(0xFFBA1A1A)
-val md_theme_light_onError = Color(0xFFFFFFFF)
-val md_theme_light_errorContainer = Color(0xFFFFDAD6)
-val md_theme_light_onErrorContainer = Color(0xFF410002)
-
-val md_theme_light_background = Color(0xFFFBFDF9)
-val md_theme_light_onBackground = Color(0xFF191C1A)
-val md_theme_light_surface = Color(0xFFFBFDF9)
-val md_theme_light_onSurface = Color(0xFF191C1A)
-
-// Dark theme colors
-val md_theme_dark_primary = Color(0xFF52DDB4)
-val md_theme_dark_onPrimary = Color(0xFF00382A)
-val md_theme_dark_primaryContainer = Color(0xFF00513E)
-val md_theme_dark_onPrimaryContainer = Color(0xFF71F9CF)
-
-val md_theme_dark_secondary = Color(0xFFB1CCC1)
-val md_theme_dark_onSecondary = Color(0xFF1D352D)
-val md_theme_dark_secondaryContainer = Color(0xFF344C44)
-val md_theme_dark_onSecondaryContainer = Color(0xFFCDE8DD)
-
-val md_theme_dark_error = Color(0xFFFFB4AB)
-val md_theme_dark_onError = Color(0xFF690005)
-val md_theme_dark_errorContainer = Color(0xFF93000A)
-val md_theme_dark_onErrorContainer = Color(0xFFFFDAD6)
-
-val md_theme_dark_background = Color(0xFF191C1A)
-val md_theme_dark_onBackground = Color(0xFFE1E3DF)
-val md_theme_dark_surface = Color(0xFF191C1A)
-val md_theme_dark_onSurface = Color(0xFFE1E3DF)
-```
+- Define Material 3 colors in [`ui/theme/Color.kt`](../../app/src/main/java/com/novachat/app/ui/theme/Color.kt).
+- Use `md_theme_light_*` and `md_theme_dark_*` naming for all semantic colors.
+- Define colors as `Color(0xFF...)` constants.
 
 ### Theme.kt - Complete Theme Configuration
 
-```kotlin
-package com.novachat.app.ui.theme
+Rules:
 
-import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
-
-private val LightColorScheme = lightColorScheme(
-    primary = md_theme_light_primary,
-    onPrimary = md_theme_light_onPrimary,
-    primaryContainer = md_theme_light_primaryContainer,
-    onPrimaryContainer = md_theme_light_onPrimaryContainer,
-    secondary = md_theme_light_secondary,
-    onSecondary = md_theme_light_onSecondary,
-    secondaryContainer = md_theme_light_secondaryContainer,
-    onSecondaryContainer = md_theme_light_onSecondaryContainer,
-    error = md_theme_light_error,
-    onError = md_theme_light_onError,
-    errorContainer = md_theme_light_errorContainer,
-    onErrorContainer = md_theme_light_onErrorContainer,
-    background = md_theme_light_background,
-    onBackground = md_theme_light_onBackground,
-    surface = md_theme_light_surface,
-    onSurface = md_theme_light_onSurface
-)
-
-private val DarkColorScheme = darkColorScheme(
-    primary = md_theme_dark_primary,
-    onPrimary = md_theme_dark_onPrimary,
-    primaryContainer = md_theme_dark_primaryContainer,
-    onPrimaryContainer = md_theme_dark_onPrimaryContainer,
-    secondary = md_theme_dark_secondary,
-    onSecondary = md_theme_dark_onSecondary,
-    secondaryContainer = md_theme_dark_secondaryContainer,
-    onSecondaryContainer = md_theme_dark_onSecondaryContainer,
-    error = md_theme_dark_error,
-    onError = md_theme_dark_onError,
-    errorContainer = md_theme_dark_errorContainer,
-    onErrorContainer = md_theme_dark_onErrorContainer,
-    background = md_theme_dark_background,
-    onBackground = md_theme_dark_onBackground,
-    surface = md_theme_dark_surface,
-    onSurface = md_theme_dark_onSurface
-)
-
-@Composable
-fun NovaChatTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
-) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) 
-            else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-    
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
-        }
-    }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
-}
-```
+- Configure the app theme in [`ui/theme/Theme.kt`](../../app/src/main/java/com/novachat/app/ui/theme/Theme.kt).
+- Provide light/dark color schemes and enable dynamic color on API 31+.
+- Set status bar color with `SideEffect` and wrap content in `MaterialTheme`.
 
 ### Type.kt - Complete Typography
 
-```kotlin
-package com.novachat.app.ui.theme
+Rules:
 
-import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-
-val Typography = Typography(
-    displayLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 57.sp,
-        lineHeight = 64.sp,
-        letterSpacing = (-0.25).sp
-    ),
-    displayMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 45.sp,
-        lineHeight = 52.sp,
-        letterSpacing = 0.sp
-    ),
-    displaySmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 36.sp,
-        lineHeight = 44.sp,
-        letterSpacing = 0.sp
-    ),
-    headlineLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
-        letterSpacing = 0.sp
-    ),
-    headlineMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 28.sp,
-        lineHeight = 36.sp,
-        letterSpacing = 0.sp
-    ),
-    headlineSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 24.sp,
-        lineHeight = 32.sp,
-        letterSpacing = 0.sp
-    ),
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    titleMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.15.sp
-    ),
-    titleSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.1.sp
-    ),
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    ),
-    bodyMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.25.sp
-    ),
-    bodySmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.4.sp
-    ),
-    labelLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.1.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-)
-```
+- Define Typography in [`ui/theme/Type.kt`](../../app/src/main/java/com/novachat/app/ui/theme/Type.kt).
+- Provide all Material 3 text styles (display, headline, title, body, label).
+- Include `fontFamily`, `fontWeight`, `fontSize`, `lineHeight`, `letterSpacing`.
 
 ## Material 3 Components (Complete Examples)
 
 ### Buttons
 
-```kotlin
-import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+Rules:
 
-@Composable
-fun ButtonExamples() {
-    // Filled button (primary action)
-    Button(onClick = { /* Handle click */ }) {
-        Text("Send Message")
-    }
-    
-    // Filled tonal button
-    FilledTonalButton(onClick = { /* Handle click */ }) {
-        Text("Save")
-    }
-    
-    // Outlined button (secondary action)
-    OutlinedButton(onClick = { /* Handle click */ }) {
-        Text("Cancel")
-    }
-    
-    // Text button (tertiary action)
-    TextButton(onClick = { /* Handle click */ }) {
-        Text("Learn More")
-    }
-    
-    // Elevated button
-    ElevatedButton(onClick = { /* Handle click */ }) {
-        Text("Elevated")
-    }
-}
-```
+- Use Material 3 button variants (`Button`, `FilledTonalButton`, `OutlinedButton`, `TextButton`, `ElevatedButton`).
+- Always wrap button content with `Text`.
 
 ### Text Fields
 
-```kotlin
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
+Rules:
 
-@Composable
-fun TextFieldExamples() {
-    var email by remember { mutableStateOf("") }
-    var message by remember { mutableStateOf("") }
-    
-    // Filled text field
-    TextField(
-        value = email,
-        onValueChange = { email = it },
-        label = { Text("Email") },
-        leadingIcon = {
-            Icon(Icons.Default.Email, contentDescription = "Email icon")
-        },
-        singleLine = true
-    )
-    
-    // Outlined text field
-    OutlinedTextField(
-        value = message,
-        onValueChange = { message = it },
-        label = { Text("Message") },
-        supportingText = { Text("Enter your message here") },
-        minLines = 3,
-        maxLines = 5
-    )
-}
-```
+- Use `TextField` or `OutlinedTextField` with `value` and `onValueChange`.
+- Provide `label` and `supportingText` where needed.
+- Provide `contentDescription` for icons.
 
 ### Cards
 
-```kotlin
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+Rules:
 
-@Composable
-fun CardExamples() {
-    // Filled card
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Card Title",
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(
-                text = "Card content goes here",
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-    
-    // Elevated card
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 6.dp
-        )
-    ) {
-        Text(
-            text = "Elevated Card",
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-    
-    // Outlined card
-    OutlinedCard(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = "Outlined Card",
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-```
+- Use `Card`, `ElevatedCard`, and `OutlinedCard` for content grouping.
+- Apply `Modifier.padding` and `fillMaxWidth` as needed.
 
 ### Top App Bar
 
-```kotlin
+Rules:
+
+- Use `TopAppBar` with title, navigation icon, and actions as needed.
+- Keep actions in `IconButton`s with `contentDescription`.
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.runtime.Composable
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopAppBarExample(
-    onNavigationClick: () -> Unit,
-    onSettingsClick: () -> Unit
-) {
-    TopAppBar(
-        title = { Text("NovaChat") },
-        navigationIcon = {
-            IconButton(onClick = onNavigationClick) {
-                Icon(
-                    Icons.Default.Menu,
-                    contentDescription = "Open navigation drawer"
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = onSettingsClick) {
-                Icon(
-                    Icons.Default.Settings,
-                    contentDescription = "Open settings"
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-    )
-}
-```
 
 ### Dialogs
 
-```kotlin
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
+Rules:
 
-@Composable
-fun AlertDialogExample(
-    title: String,
-    message: String,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(text = title) },
-        text = { Text(text = message) },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
-}
-```
+- Use `AlertDialog` with title, text, confirm, and dismiss actions.
+- Keep dialog actions as `TextButton`s.
 
 ### Lists with LazyColumn
 
-```kotlin
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+Rules:
 
-data class Message(val id: Int, val content: String, val isFromUser: Boolean)
-
-@Composable
-fun MessageList(
-    messages: List<Message>,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(
-            items = messages,
-            key = { message -> message.id }
-        ) { message ->
-            MessageItem(message = message)
-        }
-    }
-}
-
-@Composable
-private fun MessageItem(message: Message) {
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = message.content,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-```
+- Use `LazyColumn` for long lists and provide stable keys.
+- Use `Card` or `ListItem` for list rows.
 
 ## Accessibility (Complete)
 
 ### Semantics for Screen Readers
 
-```kotlin
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+Rules:
 
-@Composable
-fun AccessibleButton(
-    onClick: () -> Unit,
-    enabled: Boolean = true
-) {
-    IconButton(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = Modifier.semantics {
-            contentDescription = if (enabled) {
-                "Send message button"
-            } else {
-                "Send message button, disabled"
-            }
-        }
-    ) {
-        Icon(
-            Icons.Default.Send,
-            contentDescription = null // Handled by button semantics
-        )
-    }
-}
-```
+- Add `contentDescription` for interactive icons.
+- Use `Modifier.semantics { contentDescription = "..." }` where needed.
 
 ### Minimum Touch Targets
 
-```kotlin
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Icon
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+Rules:
 
-@Composable
-fun AccessibleIconButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    contentDescription: String,
-    onClick: () -> Unit
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier.size(48.dp) // Minimum touch target
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription
-        )
-    }
-}
-```
+- Ensure interactive elements are at least 48dp by 48dp.
+- Apply `Modifier.size(48.dp)` for icon-only buttons.
 
 ## Layout Best Practices
 
 ### ConstraintLayout in Compose
 
-```kotlin
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+Rules:
 
-@Composable
-fun ConstraintLayoutExample() {
-    var text by remember { mutableStateOf("") }
-    
-    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-        val (titleRef, inputRef, buttonRef) = createRefs()
-        
-        Text(
-            text = "Enter Message",
-            modifier = Modifier.constrainAs(titleRef) {
-                top.linkTo(parent.top, margin = 16.dp)
-                start.linkTo(parent.start, margin = 16.dp)
-            }
-        )
-        
-        TextField(
-            value = text,
-            onValueChange = { text = it },
-            modifier = Modifier.constrainAs(inputRef) {
-                top.linkTo(titleRef.bottom, margin = 8.dp)
-                start.linkTo(parent.start, margin = 16.dp)
-                end.linkTo(parent.end, margin = 16.dp)
-                width = Dimension.fillToConstraints
-            }
-        )
-        
-        Button(
-            onClick = { /* Send */ },
-            modifier = Modifier.constrainAs(buttonRef) {
-                top.linkTo(inputRef.bottom, margin = 8.dp)
-                end.linkTo(parent.end, margin = 16.dp)
-            }
-        ) {
-            Text("Send")
-        }
-    }
-}
-```
+- Use ConstraintLayout only for complex layouts that Row/Column cannot handle.
+- Keep constraints readable and avoid deep nesting.
 
 ## Protocol Compliance Checklist
 

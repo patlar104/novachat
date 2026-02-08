@@ -4,18 +4,18 @@ NovaChat is a modern Android AI chatbot application that supports online (cloud-
 
 ## Features
 
-- 🤖 **Dual AI Mode Support**
+- **Dual AI Mode Support**
   - Online mode using Google Gemini API (gemini-1.5-flash)
   - Offline mode planned with Google AICore for on-device AI (Android 15+), currently unavailable
-- 💬 Modern chat interface built with Jetpack Compose
-- ⚙️ Easy settings management for API keys and AI mode selection
-- 🎨 Material Design 3 with dynamic theming support
-- 📱 Targeting Android 16 (API 35) with backward compatibility to Android 9 (API 28)
+- Modern chat interface built with Jetpack Compose
+- Easy settings management for API keys and AI mode selection
+- Material Design 3 with dynamic theming support
+- Targeting Android 16 (API 35) with backward compatibility to Android 9 (API 28)
 
 ## Technologies Used
 
 - **Language**: Kotlin 2.2.21 (via Compose Compiler Plugin)
-- **UI Framework**: Jetpack Compose (BOM 2026.01.01)
+- **UI Framework**: Jetpack Compose (BOM 2026.01.01; Google Maven only, mapping: [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping))
 - **Build System**: Gradle 9.1.0 with Android Gradle Plugin 9.0.0
 - **Architecture**: MVVM with ViewModels
 - **AI Libraries**:
@@ -30,6 +30,7 @@ NovaChat is a modern Android AI chatbot application that supports online (cloud-
 - JDK 17
 - Android SDK 36 (compileSdk) and Android SDK 35 (targetSdk)
 - Minimum device: Android 9 (API 28)
+- Google Maven repository enabled (`google()`) for Compose BOM and AndroidX
 
 ## Setup Instructions
 
@@ -52,7 +53,7 @@ cd novachat
 1. Open the project in Android Studio
 2. Wait for Gradle sync to complete
 3. Connect an Android device or start an emulator
-4. Click the "Run" button or press `Shift + F10`
+4. Click the "Run" button or press Shift + F10
 
 ### 4. Configure the App
 

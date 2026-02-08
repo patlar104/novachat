@@ -83,7 +83,7 @@ dependencies {
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
     
     // AICore for on-device AI
-    // NOTE: AICore is experimental and not yet publicly available on Maven (as of Jan 2026)
+    // NOTE: AICore is experimental and not yet publicly available on Google Maven (as of Jan 2026)
     // For now, this dependency is commented out. On-device AI will be unavailable.
     // When AICore becomes available, uncomment this line:
     // implementation("androidx.ai.edge.aicore:aicore:1.0.0-alpha01")

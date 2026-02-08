@@ -5,6 +5,7 @@ This document describes the complete CI/CD pipeline and automation setup for the
 ## Overview
 
 The repository includes:
+
 - **GitHub Actions Workflows**: Automated CI/CD pipelines
 - **Git Hooks**: Local validation before commit/push
 - **Dependabot**: Automated dependency updates
@@ -19,21 +20,25 @@ Located in `.github/workflows/`
 ### 1. Android CI (`android-ci.yml`)
 
 **Triggers**:
+
 - Push to `main` or `copilot/**` branches
 - Pull requests to `main` or `copilot/**` branches
 - Changes to app code or build files
 
 **Jobs**:
+
 - **Build & Test**: Builds debug APK, runs unit tests, lint checks
 - **Instrumentation Tests**: Runs Android instrumentation tests on emulator (PRs only)
 
 **Features**:
+
 - Gradle caching for faster builds
 - Parallel job execution
 - Artifact uploads (APKs, test results, lint reports)
 - PR comment with build status
 
 **Configuration**:
+
 - Runs on: `ubuntu-latest` (build), `macos-latest` (instrumentation)
 - JDK: 17 (Temurin distribution)
 - Timeout: 30 minutes (build), 45 minutes (instrumentation)
@@ -43,17 +48,20 @@ Located in `.github/workflows/`
 ### 2. Security Scanning (`security.yml`)
 
 **Triggers**:
+
 - Push to `main` or `copilot/**` branches
 - Pull requests
 - Weekly schedule (Mondays at 00:00 UTC)
 
 **Jobs**:
+
 1. **Dependency Check**: Scans dependencies for known vulnerabilities
 2. **CodeQL Analysis**: Static security analysis for Java/Kotlin code
 3. **Secret Scanning**: Detects accidentally committed secrets with TruffleHog
 4. **Gradle Security**: Checks for outdated dependencies
 
 **Features**:
+
 - Security alerts integration
 - Automated vulnerability reports
 - Weekly scheduled scans
@@ -63,16 +71,19 @@ Located in `.github/workflows/`
 ### 3. Code Quality (`code-quality.yml`)
 
 **Triggers**:
+
 - Push to `main` or `copilot/**` branches with Kotlin file changes
 - Pull requests with Kotlin file changes
 
 **Jobs**:
+
 1. **ktlint**: Kotlin code style checking
 2. **Detekt**: Static code analysis for Kotlin
 3. **Android Lint**: Android-specific lint checks
 4. **Code Coverage**: Test coverage reports
 
 **Features**:
+
 - Automated lint issue annotations on PRs
 - Quality gate enforcement
 - Coverage tracking
@@ -82,20 +93,24 @@ Located in `.github/workflows/`
 ### 4. Release Build (`release.yml`)
 
 **Triggers**:
+
 - Git tags matching `v*.*.*` (e.g., `v1.0.0`)
 - Manual workflow dispatch with version input
 
 **Jobs**:
+
 1. **Build Release**: Creates signed APK and AAB
 2. **Upload to Play Store**: Automated deployment (optional)
 
 **Features**:
+
 - Signed release builds with keystore secrets
 - GitHub Release creation with draft
 - Google Play Store upload support
 - Release notes generation
 
 **Required Secrets**:
+
 - `RELEASE_KEYSTORE_BASE64`: Base64-encoded keystore file
 - `RELEASE_KEYSTORE_PASSWORD`: Keystore password
 - `RELEASE_KEY_ALIAS`: Key alias
@@ -107,11 +122,13 @@ Located in `.github/workflows/`
 ## Dependabot (`dependabot.yml`)
 
 **Configuration**:
+
 - **Gradle dependencies**: Weekly updates on Mondays
 - **GitHub Actions**: Weekly updates on Mondays
 - **Grouped updates**: AndroidX, Compose, Kotlin, Testing libraries
 
 **Features**:
+
 - Automatic PR creation for updates
 - Security update prioritization
 - Grouped dependency updates
@@ -167,7 +184,7 @@ See `.githooks/README.md` for detailed documentation.
 
 ### On Pull Request
 
-```
+```text
 PR Created/Updated
   ↓
 Android CI (build & test)
@@ -183,7 +200,7 @@ PR Status Check ✅/❌
 
 ### On Push to Main
 
-```
+```text
 Code Pushed
   ↓
 Android CI (build & test)
@@ -197,7 +214,7 @@ All Checks Pass ✅
 
 ### On Release Tag
 
-```
+```text
 Tag Created (v1.0.0)
   ↓
 Release Build Workflow
@@ -220,6 +237,7 @@ Already enabled if you can see the Actions tab.
 ### 2. Configure Branch Protection (Recommended)
 
 For `main` branch:
+
 1. Go to Settings → Branches
 2. Add rule for `main`
 3. Enable:
@@ -242,17 +260,20 @@ base64 -i your-release-keystore.jks | pbcopy
 ```
 
 Required secrets:
+
 - `RELEASE_KEYSTORE_BASE64`
 - `RELEASE_KEYSTORE_PASSWORD`
 - `RELEASE_KEY_ALIAS`
 - `RELEASE_KEY_PASSWORD`
 
 Optional (for Play Store):
+
 - `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`
 
 ### 4. Enable Dependabot
 
 Already configured in `.github/dependabot.yml`. Dependabot will:
+
 - Create PRs for dependency updates weekly
 - Group related updates
 - Assign to reviewers
@@ -287,6 +308,7 @@ This ensures local validation before pushing.
 ### Updating Workflows
 
 Workflows are stored in `.github/workflows/`. To update:
+
 1. Edit the YAML file
 2. Commit and push
 3. Workflow will use the new configuration on next run
@@ -349,6 +371,7 @@ jobs:
 ### Modifying Hook Behavior
 
 Edit scripts in `.githooks/`:
+
 - Comment out checks you don't need
 - Add new validation steps
 - Adjust error messages
@@ -364,6 +387,7 @@ The workflows are designed to work automatically when the `app/` directory is pr
 3. **Run** full CI/CD when app code changes
 
 This means:
+
 - Workflows work on both configuration branches and app branches
 - No manual updates needed when merging branches
 - Configurations remain in sync automatically
@@ -375,18 +399,21 @@ This means:
 ### Gradle Caching
 
 All workflows use Gradle caching:
+
 - First run: ~5-10 minutes (cold cache)
 - Subsequent runs: ~2-3 minutes (warm cache)
 
 ### Parallel Execution
 
 Jobs run in parallel when possible:
+
 - Build + Security + Quality checks run simultaneously
 - Reduces total CI time
 
 ### Selective Triggering
 
 Workflows only run when relevant files change:
+
 - `android-ci.yml`: Only on app code changes
 - `code-quality.yml`: Only on Kotlin file changes
 - Saves CI minutes
@@ -434,6 +461,7 @@ plugins {
 ### "Tests failing in CI but passing locally"
 
 Common causes:
+
 - Different JDK versions (CI uses JDK 17)
 - Missing environment variables
 - Timezone/locale differences
@@ -444,11 +472,11 @@ Fix: Ensure local environment matches CI (JDK 17, UTF-8, etc.)
 
 ## Support and Documentation
 
-- **GitHub Actions**: https://docs.github.com/actions
-- **Gradle**: https://docs.gradle.org
-- **ktlint**: https://pinterest.github.io/ktlint/
-- **Detekt**: https://detekt.dev/
-- **Conventional Commits**: https://www.conventionalcommits.org/
+- **GitHub Actions**: <https://docs.github.com/actions>
+- **Gradle**: <https://docs.gradle.org>
+- **ktlint**: <https://pinterest.github.io/ktlint/>
+- **Detekt**: <https://detekt.dev/>
+- **Conventional Commits**: <https://www.conventionalcommits.org/>
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: Security Best Practices
+name: security-check
 description: Complete security implementations for NovaChat (NO placeholders)
 category: security
 applies_to:
@@ -15,12 +15,12 @@ note: All examples are COMPLETE implementations - following DEVELOPMENT_PROTOCOL
 
 This skill provides **COMPLETE** security implementations for Android development. All code examples are fully implemented with no placeholders.
 
-> **⚠️ PROTOCOL**: All examples follow [DEVELOPMENT_PROTOCOL.md](../../DEVELOPMENT_PROTOCOL.md)
-> - ✅ Complete security implementations (no `// ... security code` placeholders)
-> - ✅ All imports explicitly shown
-> - ✅ Full encryption examples
-> - ✅ Complete network security configurations
-> - ✅ Full permission handling code
+> **PROTOCOL**: All examples follow [DEVELOPMENT_PROTOCOL.md](../../DEVELOPMENT_PROTOCOL.md)
+> - Complete security implementations (no `// ... security code` placeholders)
+> - All imports explicitly shown
+> - Full encryption examples
+> - Complete network security configurations
+> - Full permission handling code
 
 ## Multi-Agent Coordination
 
@@ -31,11 +31,11 @@ This skill provides **COMPLETE** security implementations for Android developmen
 - Checking AndroidManifest.xml security config → `read_file`
 - Searching for hardcoded secrets → `grep_search`
 - Reviewing network security configuration → `read_file`
-- Adding security dependencies → `replace_string_in_file`
-- Updating ProGuard/R8 rules → `replace_string_in_file`
+- Adding security dependencies → `apply_patch`
+- Updating ProGuard/R8 rules → `apply_patch`
 
 **Do NOT describe; DO implement:**
-- Don't say "add secure encryption"; implement using `replace_string_in_file`
+- Don't say "add secure encryption"; implement using `apply_patch`
 - Don't say "configure network security"; create/update config using `create_file`
 - Don't say "check for hardcoded secrets"; search and report using `grep_search`
 
@@ -88,359 +88,146 @@ This skill provides **COMPLETE** security implementations for Android developmen
 
 ### 1. Never Hardcode Secrets
 
-❌ **BAD**:
-```kotlin
-const val API_KEY = "sk_live_1234567890abcdef"
-const val DATABASE_PASSWORD = "mypassword123"
-```
+Rules:
 
-✅ **GOOD**:
-```kotlin
-// Use BuildConfig (configured in build.gradle)
-val apiKey = BuildConfig.API_KEY
-
-// Or use local.properties (not committed to git)
-// In build.gradle.kts:
-val localProperties = Properties()
-localProperties.load(FileInputStream(rootProject.file("local.properties")))
-
-android {
-    defaultConfig {
-        buildConfigField("String", "API_KEY", "\"${localProperties["apiKey"]}\"")
-    }
-}
-```
+- Never hardcode secrets in source files.
+- Use `BuildConfig` fields sourced from `local.properties` and configured in [`app/build.gradle.kts`](../../app/build.gradle.kts).
 
 ### 2. Secure Network Communication
 
-❌ **BAD**:
-```xml
-<!-- AndroidManifest.xml -->
-<application
-    android:usesCleartextTraffic="true"> <!-- Allows HTTP! -->
-```
+Rules:
 
-✅ **GOOD**:
-```xml
-<!-- AndroidManifest.xml -->
-<application
-    android:usesCleartextTraffic="false"
-    android:networkSecurityConfig="@xml/network_security_config">
-```
-
-```xml
-<!-- res/xml/network_security_config.xml -->
-<network-security-config>
-    <base-config cleartextTrafficPermitted="false">
-        <trust-anchors>
-            <certificates src="system" />
-        </trust-anchors>
-    </base-config>
-</network-security-config>
-```
+- Set `android:usesCleartextTraffic="false"` in [`AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml).
+- If a network security config is needed, place it in `app/src/main/res/xml/` and set `android:networkSecurityConfig` in the manifest.
 
 ### 3. Prevent SQL Injection
 
-❌ **BAD**:
-```kotlin
-val cursor = db.rawQuery(
-    "SELECT * FROM users WHERE name = '$userName'",
-    null
-)
-```
+Rules:
 
-✅ **GOOD**:
-```kotlin
-// Use Room (parameterized queries)
-@Query("SELECT * FROM users WHERE name = :userName")
-fun getUserByName(userName: String): User
-
-// Or use parameterized queries with SQLite
-val cursor = db.rawQuery(
-    "SELECT * FROM users WHERE name = ?",
-    arrayOf(userName)
-)
-```
+- Use parameterized queries (`:param` in Room or `?` placeholders in SQLite).
+- Never concatenate user input into SQL strings.
 
 ### 4. Secure Data Storage
 
-❌ **BAD**:
-```kotlin
-// Storing sensitive data in SharedPreferences (unencrypted)
-sharedPreferences.edit()
-    .putString("password", userPassword)
-    .apply()
-```
+Rules:
 
-✅ **GOOD**:
-```kotlin
-// Use EncryptedSharedPreferences
-val masterKey = MasterKey.Builder(context)
-    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-    .build()
-
-val encryptedPrefs = EncryptedSharedPreferences.create(
-    context,
-    "secure_prefs",
-    masterKey,
-    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-)
-
-encryptedPrefs.edit()
-    .putString("auth_token", token)
-    .apply()
-```
+- Store sensitive data using `EncryptedSharedPreferences` or encrypted DataStore.
+- Never store secrets in plain `SharedPreferences`.
 
 ### 5. Validate User Input
 
-❌ **BAD**:
-```kotlin
-fun processUrl(url: String) {
-    webView.loadUrl(url) // Dangerous! Could be javascript: scheme
-}
-```
+Rules:
 
-✅ **GOOD**:
-```kotlin
-fun processUrl(url: String) {
-    if (url.startsWith("http://") || url.startsWith("https://")) {
-        webView.loadUrl(url)
-    } else {
-        throw IllegalArgumentException("Invalid URL scheme")
-    }
-}
-```
+- Validate user input before processing.
+- Accept only `http://` or `https://` URLs; reject other schemes.
 
 ### 6. Secure WebView Configuration
 
-❌ **BAD**:
-```kotlin
-webView.settings.apply {
-    javaScriptEnabled = true
-    allowFileAccess = true
-    allowContentAccess = true
-    allowFileAccessFromFileURLs = true
-    allowUniversalAccessFromFileURLs = true
-}
-```
+Rules:
 
-✅ **GOOD**:
-```kotlin
-webView.settings.apply {
-    javaScriptEnabled = true // Only if needed
-    allowFileAccess = false
-    allowContentAccess = false
-    allowFileAccessFromFileURLs = false
-    allowUniversalAccessFromFileURLs = false
-    setGeolocationEnabled(false)
-    databaseEnabled = false
-}
-```
+- Disable file/content access and file URL access in WebView settings.
+- Only enable JavaScript when required.
+- Disable geolocation and database access unless required.
 
 ## Permission Handling
 
 ### Request Only Necessary Permissions
 
-```xml
-<!-- AndroidManifest.xml -->
-<!-- Only request permissions you actually need -->
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.CAMERA" />
-```
+Rules:
+
+- Declare only required permissions in [`AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml).
 
 ### Runtime Permission Handling
 
-```kotlin
-// Check and request permissions at runtime
-fun checkCameraPermission() {
-    when {
-        ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED -> {
-            // Permission granted
-            openCamera()
-        }
-        shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
-            // Show explanation
-            showPermissionRationale()
-        }
-        else -> {
-            // Request permission
-            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-        }
-    }
-}
-```
+Rules:
+
+- Use `ContextCompat.checkSelfPermission()` before accessing protected APIs.
+- Show rationale with `shouldShowRequestPermissionRationale()` when needed.
+- Request permissions with `ActivityResultLauncher`.
 
 ## Authentication & Authorization
 
 ### Secure Token Storage
 
-```kotlin
-class TokenManager(context: Context) {
-    private val encryptedPrefs = EncryptedSharedPreferences.create(
-        context,
-        "auth_prefs",
-        getMasterKey(context),
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
-    
-    fun saveToken(token: String) {
-        encryptedPrefs.edit()
-            .putString(KEY_AUTH_TOKEN, token)
-            .apply()
-    }
-    
-    fun getToken(): String? {
-        return encryptedPrefs.getString(KEY_AUTH_TOKEN, null)
-    }
-    
-    fun clearToken() {
-        encryptedPrefs.edit()
-            .remove(KEY_AUTH_TOKEN)
-            .apply()
-    }
-}
-```
+Rules:
+
+- Store tokens in `EncryptedSharedPreferences` (or encrypted DataStore).
+- Provide `saveToken()`, `getToken()`, and `clearToken()` in a token manager.
 
 ### Secure Password Handling
 
-```kotlin
-// Never log or store passwords in plain text
-fun loginUser(username: String, password: String) {
-    // Hash password before sending (if not using HTTPS)
-    // Or better: let the server handle password hashing
-    
-    // Clear password from memory after use
-    password.toCharArray().fill('0')
-}
-```
+Rules:
+
+- Never log or store passwords in plain text.
+- Clear sensitive values from memory after use when possible.
 
 ## ProGuard/R8 Rules for Security
 
-```proguard
-# Keep security-critical classes
--keep class com.example.app.security.** { *; }
+Rules:
 
-# Remove logging in release
--assumenosideeffects class android.util.Log {
-    public static *** d(...);
-    public static *** v(...);
-    public static *** i(...);
-}
-
-# Don't obfuscate crash reports (but protect sensitive methods)
--keepattributes SourceFile,LineNumberTable
-```
+- Keep security‑critical classes from being removed.
+- Strip `android.util.Log` calls in release builds.
+- Keep source/line attributes for crash reports.
 
 ## Common Security Vulnerabilities
 
 ### 1. Insecure Data Leakage
 
-```kotlin
-❌ // Logging sensitive data
-Log.d("Auth", "User token: $authToken")
+Rules:
 
-✅ // Don't log sensitive information
-Log.d("Auth", "Authentication successful")
-```
+- Never log secrets or tokens.
+- Log only non‑sensitive status messages.
 
 ### 2. Exported Components
 
-```xml
-❌ <!-- Accidentally exported -->
-<activity android:name=".SecretActivity"
-    android:exported="true" /> <!-- Other apps can launch! -->
+Rules:
 
-✅ <!-- Properly protected -->
-<activity android:name=".SecretActivity"
-    android:exported="false" />
-```
+- Set `android:exported="false"` for components not meant for external access.
+- Declare exported components intentionally in [`AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml).
 
 ### 3. Intent Security
 
-```kotlin
-❌ // Implicit intent - any app can respond
-val intent = Intent("com.example.ACTION_PROCESS_DATA")
-startActivity(intent)
+Rules:
 
-✅ // Explicit intent - only your app
-val intent = Intent(this, ProcessDataActivity::class.java)
-startActivity(intent)
-```
+- Prefer explicit intents for internal navigation.
+- Avoid implicit intents for sensitive actions.
 
 ## Dependency Security
 
 ### Check Dependencies for Vulnerabilities
 
-```kotlin
-// Before adding any dependency, check:
-// 1. GitHub Advisory Database
-// 2. Snyk vulnerability database
-// 3. OWASP Dependency-Check
+Rules:
 
-// Keep dependencies updated
-dependencies {
-    implementation("com.squareup.okhttp3:okhttp:4.12.0") // Use latest stable
-}
-```
+- Check GitHub Advisory Database, Snyk, and OWASP Dependency‑Check before adding deps.
+- Keep dependencies at latest stable versions.
 
 ### Verify Dependency Sources
 
-```kotlin
-// Only use dependencies from trusted sources
-repositories {
-    google()
-    mavenCentral()
-    // Avoid unknown repositories
-}
-```
+Rules:
+
+- Use trusted repositories only (`google()`, `mavenCentral()`).
+- Avoid adding unknown Maven repos.
 
 ## File Access Security
 
 ### Secure File Sharing
 
-```kotlin
-❌ // Exposing file:// URIs
-val fileUri = Uri.fromFile(file)
-intent.putExtra(Intent.EXTRA_STREAM, fileUri) // Deprecated and insecure
+Rules:
 
-✅ // Use FileProvider
-val fileUri = FileProvider.getUriForFile(
-    context,
-    "${context.packageName}.fileprovider",
-    file
-)
-intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-```
+- Never share `file://` URIs; use `FileProvider`.
+- Grant read permissions via `Intent.FLAG_GRANT_READ_URI_PERMISSION`.
 
-```xml
-<!-- AndroidManifest.xml -->
-<provider
-    android:name="androidx.core.content.FileProvider"
-    android:authorities="${applicationId}.fileprovider"
-    android:exported="false"
-    android:grantUriPermissions="true">
-    <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/file_paths" />
-</provider>
-```
+Rules:
+
+- Configure `FileProvider` in [`AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml).
+- Keep provider `android:exported="false"` and define `@xml/file_paths`.
 
 ## Certificate Pinning (Advanced)
 
-```kotlin
-val certificatePinner = CertificatePinner.Builder()
-    .add("api.example.com", "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")
-    .build()
+Rules:
 
-val client = OkHttpClient.Builder()
-    .certificatePinner(certificatePinner)
-    .build()
-```
+- Use certificate pinning only when required by policy.
+- Keep pins scoped to specific hosts.
 
 ## Security Checklist
 

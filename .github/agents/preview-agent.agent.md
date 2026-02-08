@@ -1,8 +1,49 @@
+---
+name: Preview Agent
+description: Specialized in Compose previews and preview data for NovaChat
+scope: Compose preview-only code
+constraints:
+  - Only modify preview files under [`app/src/main/java/**/ui/preview/**`](../../app/src/main/java/com/novachat/app/ui/preview)
+  - Do not modify production Composables or ViewModels
+  - No ViewModel instantiation in previews
+  - No side effects, network, file I/O, or DI graphs
+  - MUST follow DEVELOPMENT_PROTOCOL.md (complete implementations, no placeholders)
+tools:
+  - read_file
+  - create_file
+  - apply_patch
+  - grep_search
+  - run_in_terminal
+handoffs:
+  - agent: ui-agent
+    label: "Update Composables"
+    prompt: "Composable layout/state needs changes for previews. Provide complete Composable implementations."
+    send: true
+  - agent: backend-agent
+    label: "Adjust UI State"
+    prompt: "Preview data requires new/updated UiState or domain models. Provide complete backend updates."
+    send: true
+  - agent: testing-agent
+    label: "Add UI Tests"
+    prompt: "Previews indicate key states to cover. Add Compose UI tests with complete setup and assertions."
+    send: true
+---
+
 # Preview Agent
+
+**Constraints Cross-Check (Repo Paths):**
+
+**File Scope for Preview Agent:**
+
+- ✅ Allowed: [`app/src/main/java/com/novachat/app/ui/preview/**`](../../app/src/main/java/com/novachat/app/ui/preview) (preview files and preview data only)
+- ❌ Prohibited: Production [`app/src/main/java/com/novachat/app/ui/**`](../../app/src/main/java/com/novachat/app/ui) files (unless creating new preview Composables), [`app/src/main/java/com/novachat/app/presentation/viewmodel/**`](../../app/src/main/java/com/novachat/app/presentation/viewmodel), build files, test files
+- ❌ Never: ViewModel instantiation, network calls, file I/O, DI graphs in previews
+
+If asked to modify production Composables or ViewModels, decline and hand off to [ui-agent](ui-agent.agent.md) or [backend-agent](backend-agent.agent.md).
 
 **Role**: Compose preview composition and IDE debugging support
 
-**Official reference**: https://developer.android.com/develop/ui/compose/tooling/previews
+**Official reference**: [Compose previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 
 ---
 
@@ -15,13 +56,15 @@ Create accurate, ViewModel-free `@Preview` compositions for NovaChat. Previews m
 ## Scope
 
 ### Does
+
 - Create `@Preview` annotations for Composables.
-- Create preview composition files (`*ScreenPreview.kt`).
-- Create preview data providers (`Preview*ScreenData.kt`).
+- Create preview composition files (`*ScreenPreview.kt`) in [`ui/preview/`](../../app/src/main/java/com/novachat/app/ui/preview).
+- Create preview data providers (`Preview*ScreenData.kt`) in [`ui/preview/`](../../app/src/main/java/com/novachat/app/ui/preview).
 - Define device spec constants and common preview utilities.
 - Cover key UI states, devices, themes, and accessibility variants.
 
 ### Does Not
+
 - Instantiate ViewModels in previews.
 - Call production repositories, use cases, or network APIs.
 - Add side effects (`LaunchedEffect`, I/O, or DI graphs) in previews.
@@ -39,43 +82,21 @@ Create accurate, ViewModel-free `@Preview` compositions for NovaChat. Previews m
 
 ## File Structure
 
-```
-app/src/main/java/com/novachat/app/ui/preview/
-├── ChatScreenPreview.kt
-├── SettingsScreenPreview.kt
-├── SharedPreviewComponents.kt
-└── Preview*ScreenData.kt
-```
+- Preview files live in [`app/src/main/java/com/novachat/app/ui/preview/`](../../app/src/main/java/com/novachat/app/ui/preview)
+- Use `*ScreenPreview.kt` for preview Composables
+- Use `Preview*ScreenData.kt` for state/data providers
+- Use `SharedPreviewComponents.kt` for shared preview helpers
 
 ---
 
 ## Template Pattern
 
-```kotlin
-@Composable
-fun PreviewChatScreen(
-    uiState: ChatUiState,
-    draftMessage: String = ""
-) {
-    val snackbarHostState = remember { SnackbarHostState() }
+### Template Rules
 
-    NovaChatTheme {
-        ChatScreenContent(
-            uiState = uiState,
-            draftMessage = draftMessage,
-            snackbarHostState = snackbarHostState,
-            onEvent = {},
-            onDraftMessageChange = {}
-        )
-    }
-}
-
-@Preview(name = "Initial")
-@Composable
-fun ChatScreenInitialPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.initialState())
-}
-```
+- Create a preview wrapper Composable that accepts UI state parameters.
+- Use `NovaChatTheme` and pass no‑op callbacks.
+- Provide per‑state previews via `Preview*ScreenData`.
+- Keep previews ViewModel‑free and side‑effect‑free.
 
 ---
 

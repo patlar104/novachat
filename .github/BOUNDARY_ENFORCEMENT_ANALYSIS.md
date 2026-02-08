@@ -8,6 +8,7 @@
 ## Executive Summary
 
 ### Strengths ✅
+
 - **Multi-Agent Coordination sections exist** in all 4 skill files (android-testing, compose-preview, material-design, security-check)
 - **13 handoff statements documented** across skill files
 - **Clear task assessment frameworks** (yes/no checklists for scope determination)
@@ -15,6 +16,7 @@
 - **"Do NOT describe; DO implement" pattern** properly enforced (use tools immediately, no descriptions)
 
 ### Critical Gaps ⚠️
+
 - **AGENTS.md and skills lack specific violation detection examples** for real-world enforcement
 - **No explicit "STOP if agent oversteps" protocol** stated in any skill file
 - **Tunnel vision prevention checklist (Section IV) NOT referenced** in any skill file
@@ -23,6 +25,9 @@
 - **No automated enforcement mechanism** described (e.g., "reject code with placeholder" validation)
 
 ### Risk Level: **MEDIUM**
+
+Agents have good structural guidance but lack **real-world enforcement triggers** that would prevent accidental boundary violations.
+
 Agents have good structural guidance but lack **real-world enforcement triggers** that would prevent accidental boundary violations.
 
 ---
@@ -32,7 +37,7 @@ Agents have good structural guidance but lack **real-world enforcement triggers*
 ### AGENTS.md Compliance with DEVELOPMENT_PROTOCOL.md
 
 | PROTOCOL Section | AGENTS.md Coverage | Quality | Gap |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **III. Agent Domain Boundaries** | ✅ References exist (~15 mentions) | **OK** | Vague access zone descriptions (e.g., "UI-related files" not specific paths) |
 | **III. Violation Detection Table** | ❌ NOT REFERENCED | **CRITICAL** | No mention of ❌STOP actions for violations |
 | **III. Cross-Boundary Files Table** | ❌ NOT REFERENCED | **CRITICAL** | DI/UiState changes need multi-agent approval - agents don't know this |
@@ -47,60 +52,66 @@ Agents have good structural guidance but lack **real-world enforcement triggers*
 
 ### A. Android Testing Skill (`.github/skills/android-testing/SKILL.md`)
 
-**Multi-Agent Coordination: Testing Task Assessment**
-```
+### Multi-Agent Coordination: Testing Task Assessment
+
+```text
 Provided Framework:
 1. Is this a testing task? ✅ (Decision tree provided)
 2. Do I have context? ✅ (What to read)
 3. Is this in scope? ✅ (YES ✓ / NO handoff structure)
 ```
 
-**Real-World Enforcement: Scenario Analysis**
+### Real-World Enforcement: Scenario Analysis (Testing)
 
 | Scenario | Skill Guidance | Enforcement Strength | Issue |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | "Update ChatViewModelTest.kt" | ✅ Clear (testing task) | **Strong** | None |
 | "Fix ChatViewModel.kt because test fails" | ✅ "Hand off to Backend Agent" | **MEDIUM** | MISSING: "Consider this tunnel vision" warning |
 | "Add logging to UseCase" during test work | ❌ NO DETECTION | **WEAK** | Agent might slip into production code modification |
 | "Create mock for Repository" | ✅ Implied in-scope | **MEDIUM** | MISSING: Verify mock doesn't duplicate production logic |
 
 **Strengths**:
+
 - ✅ Clear handoff triggers ("fix production code" → Backend)
 - ✅ Task assessment framework prevents scope creep
 - ✅ Explicit tool instruction ("Do NOT describe; DO implement")
 
 **Gaps**:
+
 - ❌ **No tunnel vision warning**: "You're testing X. Have you checked what depends on X?"
 - ❌ **No cross-file awareness**: "Before writing test, verify all production files are complete"
-- ❌ **No violation detection**: What if agent modifies src/ instead of test/?
+- ❌ **No violation detection**: What if agent modifies src/ instead of test?
 
 ---
 
 ### B. Material Design Skill (`.github/skills/material-design/SKILL.md`)
 
-**Multi-Agent Coordination: UI Task Assessment**
-```
+### Multi-Agent Coordination: UI Task Assessment (Material Design)
+
+```text
 1. Is this a UI task? ✅
 2. Do I have context? ✅
 3. Is in scope? ✅
 ```
 
-**Real-World Enforcement: Scenario Analysis**
+### Real-World Enforcement: Scenario Analysis (Material Design)
 
 | Scenario | Skill Guidance | Enforcement Strength | Issue |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | "Create ChatScreen Composable" | ✅ Clear (UI task) | **Strong** | None |
 | "Update ChatUiState to add new field" | ⚠️ MIXED | **WEAK** | ChatUiState is "cross-boundary file" - needs Backend approval |
 | "Change theme colors for settings" | ✅ In-scope | **MEDIUM** | MISSING: Check if SettingsScreen observes these colors in all branches |
 | "I need to modify the ViewModel to handle this state" | ❌ DETECTS SLIP | **STRONG** | "Hand off to Backend Agent" |
 
 **Critical Gap**: **No mention of cross-boundary files**
+
 - UiState/UiEvent files affect BOTH UI Agent (creates interface) and Backend Agent (fills state)
 - DEVELOPMENT_PROTOCOL.md Section III lists these as requiring communication
 - **Material Design skill IGNORES this requirement**
 
 **Example Real-World Problem**:
-```
+
+```kotlin
 UI Agent creates new state branch:
 ChatUiState.Success(messages = emptyList(), showDeleteDialog = false)
 
@@ -112,11 +123,13 @@ Result: UI crashes when trying to access showDeleteDialog ❌
 ```
 
 **Strengths**:
+
 - ✅ Clear UI scope boundaries
 - ✅ Hand off detection for ViewModel work
 - ✅ Material 3 pattern consistency
 
 **Gaps**:
+
 - ❌ **CRITICAL**: Cross-boundary file communication NOT MENTIONED
 - ❌ **Tunnel vision**: No "broader context" requirement
 - ❌ **No protocol reference**: § III cross-boundary table not cited
@@ -125,28 +138,31 @@ Result: UI crashes when trying to access showDeleteDialog ❌
 
 ### C. Compose Preview Skill (`.github/skills/compose-preview/SKILL.md`)
 
-**Multi-Agent Coordination: Preview Task Assessment**
-```
+### Multi-Agent Coordination: Preview Task Assessment (Compose)
+
+```text
 1. Is this a preview task? ✅ (Yes/No with handoffs)
 2. Do I have context? ✅ (Check Composable/UiState)
 3. Is in scope? ✅ (Preview only, not Composable body)
 ```
 
-**Real-World Enforcement: Scenario Analysis**
+### Real-World Enforcement: Scenario Analysis (Compose Preview)
 
 | Scenario | Skill Guidance | Enforcement Strength | Issue |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | "Add @Preview annotation to ChatScreen" | ✅ Clear (preview task) | **Strong** | None |
 | "I want to create a mock ViewModel in preview" | ✅ Would detect issue | **MEDIUM** | "Hand off to Backend Agent" - shows understanding |
 | "Show all ChatUiState branches in preview" | ✅ Implied (preview all states) | **MEDIUM** | MISSING: "Verify Backend Agent defined all branches" |
 | "Create a preview without checking if Composable exists" | ❌ NO EXPLICIT CHECK | **WEAK** | Assumes Composable exists; could fail silently |
 
 **Strengths**:
+
 - ✅ Clear handoff to UI Agent ("create Composable")
 - ✅ Explicit no-ViewModel rule prevents logic contamination
 - ✅ Preview scope well-defined
 
 **Gaps**:
+
 - ❌ **No verification step**: "Have you confirmed the Composable exists?"
 - ❌ **Tunnel vision**: "Do all UiState branches preview correctly?"
 - ❌ **Dependency check**: "Have you verified all UiState branches are defined?"
@@ -155,30 +171,33 @@ Result: UI crashes when trying to access showDeleteDialog ❌
 
 ### D. Security Best Practices Skill (`.github/skills/security-check/SKILL.md`)
 
-**Multi-Agent Coordination: Scope Description**
-```
+### Multi-Agent Coordination: Security Scope
+
+```text
 Provided Framework:
 ✅ When Build Agent uses tools (security context)
 ✅ When to hand off (BackendAgent for auth, UI Agent for permission UI)
 ✅ Task assessment (Yes/No scope determination)
 ```
 
-**Real-World Enforcement: Scenario Analysis**
+### Real-World Enforcement: Scenario Analysis (Security)
 
 | Scenario | Skill Guidance | Enforcement Strength | Issue |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | "Configure network security in build.gradle.kts" | ✅ In-scope | **Strong** | None |
 | "Check for hardcoded API keys" | ✅ In-scope (grep_search) | **Medium** | MISSING: What to do when found? Hand off to fix? |
 | "Add SSL pinning to HttpClient" | ✅ Would hand off to Backend | **Medium** | SHOULD hand off, but decision depends on context |
 | "Update ProGuard rules for security" | ✅ In-scope | **Medium** | MISSING: Verify this doesn't break other agents' code |
 
 **Critical Missing**: **Build Agent Systemic Awareness**
+
 - DEVELOPMENT_PROTOCOL.md Section IV emphasizes Build Agent needs BROAD perspective
 - **Security skill shows NARROW focus** ("just add dependency", "just configure")
 - **No mention of ripple effects** on UI, Backend, Testing layers
 
-**Real Example**:
-```
+### Real Example (Build Agent)
+
+```text
 Build Agent narrows to: "Add security dependency X"
 Missing broader context:
 - Does UI Agent need permission handling?
@@ -186,12 +205,14 @@ Missing broader context:
 - Do tests need to mock this dependency?
 ```
 
-**Strengths**:
+### Strengths (Security Skill)
+
 - ✅ Clear handoff to Backend Agent
 - ✅ Clear handoff to UI Agent
 - ✅ Scope boundaries well-defined
 
-**Gaps**:
+### Gaps (Security Skill)
+
 - ❌ **CRITICAL**: Build Agent's systemic responsibility NOT emphasized
 - ❌ **Tunnel vision**: No "broader context" questions for Build Agent
 - ❌ **Ripple effect**: No mention of cross-layer impact analysis
@@ -202,12 +223,14 @@ Missing broader context:
 
 ### Scenario 1: UI Agent Tries to Create ViewModel
 
-**Expected Protocol Behavior** (DEVELOPMENT_PROTOCOL.md § III):
+#### Expected Protocol Behavior (DEVELOPMENT_PROTOCOL.md § III)
+
 1. Violation: UI Agent modifying `presentation/viewmodel/*.kt`
 2. Action: ❌ STOP - Hand off to Backend Agent
 
-**Actual Behavior** (Material Design skill):
-```
+#### Actual Behavior (Material Design Skill)
+
+```text
 ✅ Scenario: "Create ChatViewModel with message validation"
 
 Skill Response:
@@ -215,7 +238,10 @@ Skill Response:
 - Hand off to Backend Agent
 ```
 
-**Assessment**: ✅ **PROPERLY ENFORCED**
+#### Assessment (ViewModel Scenario)
+
+✅ **PROPERLY ENFORCED**
+
 - Skill detects violation
 - Clear handoff provided
 - Agent doesn't override
@@ -224,13 +250,15 @@ Skill Response:
 
 ### Scenario 2: Testing Agent Modifies ChatRepository
 
-**Expected Protocol Behavior** (DEVELOPMENT_PROTOCOL.md § III):
+#### Expected Protocol Behavior (Testing Production Code)
+
 1. Violation: Testing Agent modifying production code
 2. Action: ❌ STOP - Hand off to Backend Agent
 3. Rationale: "Testing Agent ONLY creates/modifies test files"
 
-**Actual Behavior** (Android Testing skill):
-```
+#### Actual Behavior (Android Testing Skill)
+
+```text
 ⚠️ Scenario: "ChatRepositoryTest is failing because ChatRepository doesn't have method X"
 
 Skill Response:
@@ -238,18 +266,24 @@ Skill Response:
 - Hand off to Backend Agent if: "Production code logic needs fixing"
 ```
 
-**Assessment**: ✅ **ENFORCED, but SOFT BOUNDARY**
+#### Assessment (Testing Repository Scenario)
+
+✅ **ENFORCED, but SOFT BOUNDARY**
+
 - Skill detects the issue
 - Provides handoff guidance
 - However, **no explicit "don't modify src/" rule** in skill
 
-**Risk**: Testing Agent might say "Let me just quickly fix the Repository" and create hybrid code
+#### Risk (Testing Agent Scope)
+
+Testing Agent might say "Let me just quickly fix the Repository" and create hybrid code
 
 ---
 
 ### Scenario 3: Backend Agent Changes UiState Structure
 
-**Expected Protocol Behavior** (DEVELOPMENT_PROTOCOL.md § III):
+#### Expected Protocol Behavior (UiState Coordination)
+
 1. Cross-boundary file: ChatUiState is modified
 2. Action: ❌ STOP - Communicate with UI Agent first
 3. Reason: "UI Agent observes this state"
@@ -258,8 +292,9 @@ Skill Response:
    - ChatViewModelTest.kt
    - All files that depend on ChatUiState
 
-**Actual Behavior** (Material Design skill & Android Testing skill):
-```
+#### Actual Behavior (Material Design & Testing Skills)
+
+```text
 ❌ SCENARIO NOT COVERED IN ANY SKILL
 
 Backend Agent won't see this in DEVELOPMENT_PROTOCOL.md § III cross-boundary table
@@ -270,9 +305,12 @@ UI Agent's ChatScreen still expects old structure.
 ChatScreen breaks. ❌
 ```
 
-**Assessment**: ❌ **NOT ENFORCED - CRITICAL VULNERABILITY**
+#### Assessment (UiState Changes)
 
-**Why This Happens**:
+❌ **NOT ENFORCED - CRITICAL VULNERABILITY**
+
+#### Why This Happens (UiState Mismatch)
+
 1. AGENTS.md doesn't quote DEVELOPMENT_PROTOCOL.md § III table
 2. Skills don't reference cross-boundary files
 3. Backend skill doesn't mention "communicate before UiState change"
@@ -282,20 +320,23 @@ ChatScreen breaks. ❌
 
 ### Scenario 4: Build Agent Adds Dependency Without Understanding Impact
 
-**Expected Protocol Behavior** (DEVELOPMENT_PROTOCOL.md § IV):
+#### Expected Protocol Behavior (DEVELOPMENT_PROTOCOL.md § IV)
+
 1. Broader Context Question: "Will this dependency affect other layers?"
 2. Systemic Check: Check UI, Backend, Testing impacts
 3. Action: Verify compatible versions with all agents
 
-**Actual Behavior** (Security skill):
-```
+#### Actual Behavior (Security Skill)
+
+```text
 ✅ Skill says: "Hand off to Backend Agent" if they need the dependency implemented
 
 ❌ But MISSES: Broader context awareness requirement
 ```
 
-**Example Real-World Case**:
-```
+#### Example: Adding Retrofit Dependency
+
+```text
 Build Agent task: "Add Retrofit for networking"
 
 Narrow Approach (WRONG - No broader context):
@@ -312,7 +353,10 @@ Systemic Approach (RIGHT - What should happen):
 5. Then add Retrofit ✓
 ```
 
-**Assessment**: ⚠️ **PARTIALLY ENFORCED**
+#### Assessment (Build Agent)
+
+⚠️ **PARTIALLY ENFORCED**
+
 - Skill has handoff logic
 - But **Section IV systemic awareness requirement NOT mentioned**
 - Build Agent could proceed narrowly without broader context check
@@ -324,7 +368,7 @@ Systemic Approach (RIGHT - What should happen):
 ### What DEVELOPMENT_PROTOCOL.md Requires (§ III-IV)
 
 | Requirement | Form | Enforcement Mechanism |
-|---|---|---|
+| --- | --- | --- |
 | Agent access control | **Access Zone Matrix** | Agents must check file path before modifying |
 | Violation detection | **Table with ❌STOP actions** | Agent must refuse and hand off |
 | Broader context | **7-item checklist** | Agent must ask 4 critical questions |
@@ -333,7 +377,7 @@ Systemic Approach (RIGHT - What should happen):
 ### What Skills Provide
 
 | Requirement | Coverage | Strength |
-|---|---|---|
+| --- | --- | --- |
 | **Agent access control** | ✅ Task assessment (Yes/No) | Medium (decision-tree, not explicit path checks) |
 | **Violation detection** | ✅ Handoff clauses | Medium (detected but no "STOP" emphasis) |
 | **Broader context** | ❌ Missing | **MISSING** |
@@ -341,8 +385,9 @@ Systemic Approach (RIGHT - What should happen):
 
 ### Critical Gaps in Real-World Enforcement
 
-**Gap 1: No Explicit STOP Protocol**
-```
+### Gap 1: No Explicit STOP Protocol
+
+```text
 What PROTOCOL says:
 "Violation: UI Agent modifying ViewModel
 Action: ❌ STOP - Hand off to Backend Agent"
@@ -354,8 +399,11 @@ Problem: "Hand off to" is polite suggestion, not STOP
 Expected behavior: Agent should reject the request entirely
 ```
 
-**Gap 2: Tunnel Vision Not Checked in Skills**
-```
+---
+
+### Gap 2: Tunnel Vision Not Checked in Skills
+
+```text
 What PROTOCOL says (§ IV):
 "Before ANY modification, ask:
 1. What files depend on mine?
@@ -370,8 +418,11 @@ Problem: No tunnel vision prevention
 Example: Testing Agent creates test without checking if code compiles
 ```
 
-**Gap 3: Cross-Boundary File Communication Missing**
-```
+---
+
+### Gap 3: Cross-Boundary File Communication Missing
+
+```text
 What PROTOCOL says (§ III table):
 "ChatUiState.kt - Primary: UI Agent, Communicate with: Backend Agent"
 
@@ -388,8 +439,9 @@ Result: Structural mismatch between state definition and consumption
 
 ### Example 1: Hidden Failure (UI/Backend Mismatch)
 
-**Scenario**:
-```
+#### Scenario
+
+```kotlin
 UI Agent creates: ChatScreen.kt
 - Observes ChatUiState.Success(messages, showDialog)
 
@@ -402,13 +454,15 @@ Testing Agent: Creates tests for ChatScreen
 Result: Feature works in preview, fails in real app ❌
 ```
 
-**Why Protocol Wasn't Followed**:
-1. ✅ UI skill says "check UiState definition" 
+#### Why Protocol Wasn't Followed (UiState Mismatch)
+
+1. ✅ UI skill says "check UiState definition"
 2. ❌ But UI Agent doesn't verify Backend Agent actually emits this state
 3. ❌ Backend skill doesn't say "communicate all state branches"
 4. ❌ Skills don't reference cross-boundary file table in protocol
 
-**Fix Required**: 
+#### Fix Required (UiState Branches)
+
 - Add to Material Design skill: "Verify all UiState branches have Backend implementation"
 - Add to Backend skill: "Verify UI Agent observes all emitted states"
 
@@ -416,8 +470,9 @@ Result: Feature works in preview, fails in real app ❌
 
 ### Example 2: Silent Build Failure (Build Tunnel Vision)
 
-**Scenario**:
-```
+#### Scenario (Retrofit Version Clash)
+
+```text
 Build Agent: "Add Retrofit 2.10.0 for networking"
 
 Narrow approach:
@@ -434,13 +489,15 @@ Misses:
 Result: Release build fails 2 weeks later ❌
 ```
 
-**Why Protocol Wasn't Followed**:
+#### Why Protocol Wasn't Followed (Build Tunnel Vision)
+
 1. ❌ Security skill doesn't require "ripple effect analysis"
 2. ❌ No mention of "check what Backend Agent uses"
 3. ❌ No "broader context" check from § IV
 4. ❌ Build Agent responsibility as systemic not emphasized
 
-**Fix Required**:
+#### Fix Required (Build Agent)
+
 - Add to Security skill: "Broader context checklist: Do you understand how this affects UI/Backend/Testing?"
 - Reference DEVELOPMENT_PROTOCOL.md § IV Build Agent section
 
@@ -448,8 +505,9 @@ Result: Release build fails 2 weeks later ❌
 
 ### Example 3: Test Contamination (Testing Scope Creep)
 
-**Scenario**:
-```
+#### Scenario (Missing Repository Method)
+
+```text
 Testing Agent: "ChatRepositoryTest is failing because sendMessage() not implemented"
 
 Narrow approach (WRONG):
@@ -463,13 +521,15 @@ Correct approach (RIGHT):
 - Backend Agent implements properly
 ```
 
-**Why Protocol Might Not Be Followed**:
+#### Why Protocol Might Not Be Followed (Testing Scope Creep)
+
 1. ⚠️ Android Testing skill says "Hand off to Backend if production needs fixing"
 2. ❌ But doesn't say "REJECT any production file modifications"
 3. ❌ No explicit "STOP if modifying src/" rule
 4. ⚠️ Testing Agent could rationalize: "I'm just adding a stub"
 
-**Fix Required**:
+#### Fix Required (Testing Agent)
+
 - Add explicit STOP rule: "STOP if modifying any file outside test/ directories"
 - Make violation a critical error, not just handoff suggestion
 
@@ -480,7 +540,7 @@ Correct approach (RIGHT):
 ### Boundary Enforcement by Agent Type
 
 | Agent | Scope Clarity | Handoff Detection | Tunnel Vision Check | Cross-Boundary Check | Overall |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | **UI** | ✅ Medium | ✅ Yes | ❌ No | ❌ No | **2/4** ⚠️ |
 | **Backend** | ✅ Medium | ✅ Yes | ❌ No | ❌ No | **2/4** ⚠️ |
 | **Testing** | ✅ Strong | ✅ Yes | ❌ No | ❌ No | **2/4** ⚠️ |
@@ -495,11 +555,13 @@ Correct approach (RIGHT):
 
 #### 1.1 Add Cross-Boundary File Awareness to All Skills
 
-**Current State**:
+##### Current State (Cross-Boundary)
+
 - Skills don't reference DEVELOPMENT_PROTOCOL.md § III cross-boundary table
 - Agents don't know to communicate about shared files
 
-**Fix**:
+##### Fix (Cross-Boundary Files)
+
 ```markdown
 # CROSS-BOUNDARY FILES - MUST COMMUNICATE BEFORE MODIFYING
 
@@ -516,17 +578,21 @@ If you modify a cross-boundary file:
 3. Wait for confirmation before proceeding
 ```
 
-**Implementation**: Add section to all skill files
+##### Implementation (Add Section)
+
+Add section to all skill files
 
 ---
 
 #### 1.2 Add Tunnel Vision Prevention Checklist to All Skills
 
-**Current State**:
+##### Current State (Prevention)
+
 - Tunnel vision prevention (§ IV) only in protocol
 - Skills don't enforce "broader context" thinking
 
-**Fix**:
+##### Fix (Broader Context)
+
 ```markdown
 ## Before ANY Modification - Tunnel Vision Check
 
@@ -552,17 +618,21 @@ STOP and ask these 4 critical questions:
 ❌ If NO to any: Ask user or analyze further
 ```
 
-**Implementation**: Add before each task assessment section
+##### Implementation (Add Checklist)
+
+Add before each task assessment section
 
 ---
 
 #### 1.3 Make Protocol Violations Explicit STOP Actions
 
-**Current State**:
+##### Current State (Soft Handoffs)
+
 - Skills say "Hand off to Agent X"
 - Phrasing is polite suggestion, not requirement
 
-**Fix**:
+##### Fix (Make STOP Required)
+
 ```markdown
 ## VIOLATION DETECTION - These Are NOT Optional
 
@@ -587,7 +657,9 @@ If you detect ANY of these, immediately STOP:
    [HAND OFF TO UI AGENT to implement: X]"
 ```
 
-**Implementation**: Make handoff a requirement, not suggestion
+##### Implementation (Enforce Requirement)
+
+Make handoff a requirement, not suggestion
 
 ---
 
@@ -595,7 +667,8 @@ If you detect ANY of these, immediately STOP:
 
 #### 2.1 Add Real-World Violation Examples to Skills
 
-**Add to each skill**:
+##### Add to Each Skill File
+
 ```markdown
 ### Real-World Examples: Don't Fall Into These Traps
 
@@ -617,7 +690,8 @@ Let me just quickly add it to the ViewModel..."
 
 #### 2.2 Add Build Agent Systemic Responsibility Emphasis
 
-**Add to Security skill specifically**:
+##### Add to Security skill specifically
+
 ```markdown
 ## Build Agent: Think Systemically, Not Narrowly
 
@@ -628,7 +702,7 @@ Let me just quickly add it to the ViewModel..."
 "Add Retrofit 2.10.0. Check:
 - Compatibility with OkHttp (used by Backend?)
 - MockWebServer version for Testing
-- Proguard rules needed?  
+- Proguard rules needed?
 - Does UI Agent need any setup?
 - Are versions consistent with other networking?"
 ```
@@ -637,7 +711,8 @@ Let me just quickly add it to the ViewModel..."
 
 #### 2.3 Add Verification Steps to Each Skill
 
-**Pattern to add**:
+##### Pattern to add
+
 ```markdown
 ### Verification Before Completion
 
@@ -656,7 +731,7 @@ Before saying "task complete":
 
 #### 3.1 Create a Real-World "Scenario Playbook" Document
 
-**New File**: `.github/BOUNDARY_SCENARIOS.md`
+##### New File: .github/BOUNDARY_SCENARIOS.md
 
 ```markdown
 # Real-World Boundary Enforcement Scenarios
@@ -684,7 +759,8 @@ Use these to understand how agents should behave in practice.
 
 #### 3.2 Create DEVELOPMENT_PROTOCOL.md Quick Reference in Skills
 
-**Add to each skill file**:
+##### Add to each skill file
+
 ```markdown
 ### 📚 Protocol References
 
@@ -721,12 +797,12 @@ This skill enforces these sections from [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT
 ### ⚠️ Risks if Not Fixed
 
 | Risk | Severity | Example |
-|---|---|---|
+| --- | --- | --- |
 | **UI/Backend state mismatch** | High | UiState has field Backend doesn't emit |
 | **Test falsely passes** | High | Test mocks structure that doesn't match runtime |
 | **Dependency conflicts** | High | Build Agent adds incompatible library versions |
 | **Silent scope creep** | Medium | Testing Agent "quickly fixes" production code |
-| **Tunnel vision**  | Medium | Agent changes structure without checking ripples |
+| **Tunnel vision** | Medium | Agent changes structure without checking ripples |
 
 ---
 
@@ -737,6 +813,7 @@ This skill enforces these sections from [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT
 The skills successfully prevent **obvious violations** (e.g., "Create ViewModel in UI Agent" → immediately detected).
 
 However, they don't prevent **subtle violations**:
+
 - ⚠️ Cross-boundary file changes without coordination
 - ⚠️ Changes without checking downstream impact
 - ⚠️ Assumptions about other agents' work
@@ -746,4 +823,4 @@ However, they don't prevent **subtle violations**:
 
 ---
 
-**End of Analysis**
+## End of Analysis

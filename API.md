@@ -210,15 +210,15 @@ suspend fun sendWithRetry(
     maxRetries: Int = 3
 ): Result<String> {
     var lastError: Exception? = null
-    
+
     repeat(maxRetries) { attempt ->
         val result = sendMessageToGemini(message, apiKey)
         if (result.isSuccess) return result
-        
+
         lastError = result.exceptionOrNull() as? Exception
         delay((2.0.pow(attempt) * 1000).toLong())
     }
-    
+
     return Result.failure(lastError!!)
 }
 ```

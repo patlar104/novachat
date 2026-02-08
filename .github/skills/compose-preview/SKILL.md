@@ -1,3 +1,13 @@
+---
+name: compose-preview
+description: Complete preview patterns for NovaChat (NO placeholders)
+category: preview
+applies_to:
+    - "**/ui/preview/**/*.kt"
+protocol_compliance: true
+note: All examples are COMPLETE and runnable - following DEVELOPMENT_PROTOCOL.md
+---
+
 # Jetpack Compose Preview Skill
 
 Reusable patterns for creating `@Preview` annotations in NovaChat.
@@ -11,12 +21,12 @@ Reusable patterns for creating `@Preview` annotations in NovaChat.
 **Use tools immediately for:**
 - Reading Composable files to understand structure → `read_file`
 - Creating preview files → `create_file`
-- Adding @Preview annotations to existing files → `replace_string_in_file`
+- Adding @Preview annotations to existing files → `apply_patch`
 - Searching for Composable patterns → `grep_search` or `semantic_search`
 - Running preview validation → `run_in_terminal`
 
 **Do NOT describe; DO implement:**
-- Don't say "add @Preview annotations"; add them using `replace_string_in_file`
+- Don't say "add @Preview annotations"; add them using `apply_patch`
 - Don't say "create a preview file"; create it using `create_file`
 - Don't say "check what preview functions exist"; search using `grep_search`
 
@@ -67,85 +77,38 @@ Reusable patterns for creating `@Preview` annotations in NovaChat.
 
 ## Core Pattern
 
-```kotlin
-@Composable
-fun PreviewChatScreen(
-    uiState: ChatUiState,
-    draftMessage: String = ""
-) {
-    val snackbarHostState = remember { SnackbarHostState() }
+Rules:
 
-    NovaChatTheme {
-        ChatScreenContent(
-            uiState = uiState,
-            draftMessage = draftMessage,
-            snackbarHostState = snackbarHostState,
-            onEvent = {},
-            onDraftMessageChange = {}
-        )
-    }
-}
-```
+- Use a preview helper composable that accepts `UiState` and optional params.
+- Wrap preview content with `NovaChatTheme`.
+- Provide empty lambdas for event handlers.
 
 ---
 
 ## State Coverage
 
-```kotlin
-@Preview(name = "Initial")
-@Composable
-fun ChatScreenInitialPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.initialState())
-}
+Rules:
 
-@Preview(name = "Loading")
-@Composable
-fun ChatScreenLoadingPreview() {
-    PreviewChatScreen(uiState = ChatUiState.Loading)
-}
-
-@Preview(name = "Error Banner")
-@Composable
-fun ChatScreenErrorBannerPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.successWithErrorBanner())
-}
-```
+- Provide previews for Initial, Loading, Success, and Error states.
+- Use descriptive `@Preview(name = "...")` labels.
 
 ---
 
 ## Device Coverage
 
-```kotlin
-@Preview(name = "Small Phone", device = PreviewDevices.DEVICE_PHONE_SMALL)
-@Composable
-fun ChatScreenSmallPhonePreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.successSingleExchange())
-}
+Rules:
 
-@Preview(name = "Tablet", device = PreviewDevices.DEVICE_TABLET_PORTRAIT)
-@Composable
-fun ChatScreenTabletPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.successSingleExchange())
-}
-```
+- Cover small phone, standard phone, and tablet device previews.
+- Use device constants from `PreviewDevices`.
 
 ---
 
 ## Theme and Accessibility
 
-```kotlin
-@PreviewLightDark
-@Composable
-fun ChatScreenLightDarkPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.successSingleExchange())
-}
+Rules:
 
-@Preview(name = "Large Font", fontScale = 1.5f)
-@Composable
-fun ChatScreenLargeFontPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.successSingleExchange())
-}
-```
+- Include `@PreviewLightDark` for theme coverage.
+- Include large font scale and RTL locale previews.
 
 ---
 

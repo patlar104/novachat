@@ -2,8 +2,9 @@
 
 NovaChat is a modern Android AI chatbot built with **Jetpack Compose + MVVM + Clean Architecture**. It demonstrates 2026 Android best practices with dual AI mode support (online Gemini API + planned offline AICore).
 
-> **⚠️ CRITICAL**: All development MUST follow [DEVELOPMENT_PROTOCOL.md](DEVELOPMENT_PROTOCOL.md):
-> - **Zero-Elision Policy**: Never use placeholders (`// ... rest of code`)  
+> **CRITICAL**: All development MUST follow [DEVELOPMENT_PROTOCOL.md](DEVELOPMENT_PROTOCOL.md):
+>
+> - **Zero-Elision Policy**: Never use placeholders (`// ... rest of code`)
 > - **Complete Implementations**: Write full, working code only
 > - **Input Disambiguation**: Ask when requests are ambiguous
 > - **Cross-File Dependencies**: Analyze ripple effects before changes
@@ -16,14 +17,15 @@ NovaChat is a modern Android AI chatbot built with **Jetpack Compose + MVVM + Cl
 - **Architecture**: MVVM + Clean Architecture (presentation/domain/data layers)
 - **DI**: Manual `AppContainer` (no Hilt/Koin) - lazy singletons pattern
 - **State**: Sealed interfaces + StateFlow (persistent) + Channel (one-time effects)
-- **⚠️ AI Mode**: ONLINE only (Gemini 1.5 Flash) - AICore commented out in [build.gradle.kts](../app/build.gradle.kts)
+- **AI Mode**: ONLINE only (Gemini 1.5 Flash) - AICore commented out in [build.gradle.kts](../app/build.gradle.kts)
+- **Compose BOM source**: Google Maven only; mapping at [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping)
 
 ## Multi-Agent System
 
 This project uses specialized agents with clear boundaries. See [AGENTS.md](AGENTS.md) for complete documentation.
 
 | Agent | Scope | Key Files |
-|-------|-------|----------|
+| --- | --- | --- |
 | **Planner** | Task breakdown, architecture planning | Creates implementation plans |
 | **UI** | Composables, Material 3, layouts | `ui/**/*.kt`, `ui/theme/*.kt` |
 | **Preview** | @Preview annotations, preview data | `ui/preview/*.kt` (no ViewModels) |
@@ -42,62 +44,24 @@ This project uses specialized agents with clear boundaries. See [AGENTS.md](AGEN
 
 NovaChat uses sealed interfaces for type-safe state management. See [presentation/model/UiState.kt](../app/src/main/java/com/novachat/app/presentation/model/UiState.kt) for complete implementation.
 
-```kotlin
-// UI Contract (presentation/model/)
-sealed interface ChatUiState { }        // All possible screen states
-sealed interface ChatUiEvent { }        // All user actions
-sealed interface UiEffect { }           // One-time actions (toast, nav)
+Instructions:
 
-// ViewModel (presentation/viewmodel/ChatViewModel.kt)
-class ChatViewModel(...) : ViewModel() {
-    private val _uiState = MutableStateFlow<ChatUiState>(ChatUiState.Initial)
-    val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
-    
-    private val _uiEffect = Channel<UiEffect>(Channel.BUFFERED)
-    val uiEffect = _uiEffect.receiveAsFlow()
-    
-    fun onEvent(event: ChatUiEvent) { /* single entry point */ }
-}
-
-// Composable (ui/ChatScreen.kt)
-@Composable
-fun ChatScreen(viewModel: ChatViewModel) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    
-    LaunchedEffect(Unit) {  // Use Unit key for one-time collection
-        viewModel.uiEffect.collect { effect -> /* handle */ }
-    }
-    
-    when (uiState) { /* exhaustive when */ }
-}
-```
+- Define `UiState`, `UiEvent`, and `UiEffect` as sealed interfaces under `presentation/model/`.
+- Expose `StateFlow` for persistent state and `Channel`/`Flow` for one‑time effects in `presentation/viewmodel/`.
+- Use a single `onEvent(event: UiEvent)` entry point for ViewModels.
+- In Composables, collect state with `collectAsStateWithLifecycle()` and effects with `LaunchedEffect(Unit)` using an exhaustive `when` on state.
 
 **Key Pattern**: StateFlow for persistent state, Channel for one-time effects. Always use `LaunchedEffect(Unit)` for effect collection.
 
 ### 2. Clean Architecture Layers
 
-```
-presentation/              # ViewModels & UI contracts
-  viewmodel/               # ChatViewModel.kt, SettingsViewModel.kt
-  model/                   # UiState, UiEvent, UiEffect interfaces
-  
-domain/                    # Business logic (Android-agnostic)
-  usecase/                 # SendMessageUseCase, ObserveMessagesUseCase, etc.
-  model/                   # Message, AiConfiguration (no Android imports)
-  repository/              # Interfaces only
-  
-data/                      # Data layer implementations
-  repository/              # AiRepositoryImpl, MessageRepositoryImpl, etc.
-  mapper/                  # Domain ↔ Data conversion
-  model/                   # Data-specific models
-  
-ui/                        # Jetpack Compose screens
-  ChatScreen.kt, SettingsScreen.kt
-  theme/                   # Material 3 theme
-  
-di/                        # Manual DI
-  AppContainer.kt          # Lazy singletons
-```
+Instructions:
+
+- Keep ViewModels and UI contracts in [`presentation/`](../app/src/main/java/com/novachat/app/presentation/).
+- Keep business logic in [`domain/`](../app/src/main/java/com/novachat/app/domain/) with no Android imports.
+- Keep data implementations in [`data/`](../app/src/main/java/com/novachat/app/data/) and use mappers for model conversion.
+- Keep Compose screens in [`ui/`](../app/src/main/java/com/novachat/app/ui/) and themes in [`ui/theme/`](../app/src/main/java/com/novachat/app/ui/theme/).
+- Keep DI wiring in [`di/AppContainer.kt`](../app/src/main/java/com/novachat/app/di/AppContainer.kt).
 
 **Critical**: ViewModels never import from `ui/` package (testable without Android UI).
 
@@ -105,99 +69,48 @@ di/                        # Manual DI
 
 See [di/AppContainer.kt](../app/src/main/java/com/novachat/app/di/AppContainer.kt) - lightweight pattern without Hilt/Koin.
 
-```kotlin
-class AppContainer(context: Context) {
-    // Repositories (eager)
-    val aiRepository: AiRepository = AiRepositoryImpl(context)
-    val messageRepository: MessageRepository = MessageRepositoryImpl()
-    
-    // Use Cases (lazy)
-    val sendMessageUseCase: SendMessageUseCase by lazy {
-        SendMessageUseCase(messageRepository, aiRepository, preferencesRepository)
-    }
-}
+Instructions:
 
-// Access from Composables
-val viewModel: ChatViewModel = viewModel(
-    factory = ViewModelFactory(LocalContext.current.appContainer)
-)
-```
+- Initialize repositories and use cases in `AppContainer`, using lazy singletons where appropriate.
+- Create ViewModels via `ViewModelFactory` using `LocalContext.current.appContainer` in Composables.
 
-### 4. Error Handling with Result<T>
+### 4. Error Handling with `Result<T>`
 
 All async operations return `Result<T>`. Use `.fold()` for handling:
 
-```kotlin
-// Repository layer
-suspend fun sendMessage(text: String): Result<String> {
-    return try {
-        val response = api.send(text)
-        Result.success(response)
-    } catch (e: Exception) {
-        Log.e(TAG, "Send failed", e)
-        Result.failure(e)
-    }
-}
+Instructions:
 
-// ViewModel layer (use fold)
-sendMessageUseCase(text).fold(
-    onSuccess = { message -> _uiState.update { /* success state */ } },
-    onFailure = { error -> _uiEffect.send(UiEffect.ShowSnackbar(error.message)) }
-)
-```
+- Wrap repository calls in `try/catch` and return `Result.success` or `Result.failure`.
+- In ViewModels, handle `Result` with `fold()` and update state/effects accordingly.
 
 ---
 
 ## Development Commands
 
-```bash
-# Build & Install
-./gradlew assembleDebug          # Build debug APK
-./gradlew installDebug           # Build + install to device
+Instructions:
 
-# Testing
-./gradlew test                   # Run unit tests
-./gradlew connectedAndroidTest   # Run instrumented tests
-
-# Quality
-./gradlew clean build            # Clean build
-./gradlew lint                   # Run lint checks
-```
+- Build debug APK: `./gradlew assembleDebug`
+- Build and install to device: `./gradlew installDebug`
+- Run unit tests: `./gradlew test`
+- Run instrumented tests: `./gradlew connectedAndroidTest`
+- Clean build: `./gradlew clean build`
+- Run lint: `./gradlew lint`
 
 ---
 
 ## Project Structure
 
-```
-app/src/main/java/com/novachat/app/
-├── presentation/           # ViewModels & UI contracts
-│   ├── viewmodel/         ChatViewModel.kt, SettingsViewModel.kt
-│   └── model/             UiState, UiEvent, UiEffect, NavigationDestination
-│
-├── domain/                # Business logic (no Android dependencies)
-│   ├── usecase/           SendMessageUseCase, ObserveMessagesUseCase, etc.
-│   ├── model/             Message, AiConfiguration, AiMode
-│   └── repository/        Interfaces: AiRepository, MessageRepository, PreferencesRepository
-│
-├── data/                  # Data layer implementations
-│   ├── repository/        AiRepositoryImpl, MessageRepositoryImpl, PreferencesRepositoryImpl
-│   ├── mapper/            MessageMapper, AiConfigurationMapper
-│   └── model/             DataModels.kt
-│
-├── ui/                    # Jetpack Compose screens
-│   ├── ChatScreen.kt, SettingsScreen.kt
-│   ├── components/        MessageBubble.kt, etc.
-│   ├── preview/           ChatScreenPreview.kt, preview data providers
-│   └── theme/             Color.kt, Theme.kt, Type.kt (Material 3)
-│
-├── di/                    # Manual dependency injection
-│   └── AppContainer.kt    Lazy singleton container
-│
-├── MainActivity.kt        # Navigation host
-└── NovaChatApplication.kt # App initialization
-```
+Instructions:
+
+- Presentation layer: [`presentation/`](../app/src/main/java/com/novachat/app/presentation/) for `viewmodel/` and `model/`.
+- Domain layer: [`domain/`](../app/src/main/java/com/novachat/app/domain/) for `usecase/`, `model/`, and `repository/` interfaces.
+- Data layer: [`data/`](../app/src/main/java/com/novachat/app/data/) for `repository/`, `mapper/`, and `model/`.
+- UI layer: [`ui/`](../app/src/main/java/com/novachat/app/ui/) for screens, `preview/`, and `theme/`.
+- DI: [`di/AppContainer.kt`](../app/src/main/java/com/novachat/app/di/AppContainer.kt).
+- App entry: [`MainActivity.kt`](../app/src/main/java/com/novachat/app/MainActivity.kt) and [`NovaChatApplication.kt`](../app/src/main/java/com/novachat/app/NovaChatApplication.kt).
 
 **Key References**:
+
 - [ChatViewModel.kt](../app/src/main/java/com/novachat/app/presentation/viewmodel/ChatViewModel.kt) - Complete ViewModel pattern
 - [UiState.kt](../app/src/main/java/com/novachat/app/presentation/model/UiState.kt) - State/Event/Effect definitions
 - [AppContainer.kt](../app/src/main/java/com/novachat/app/di/AppContainer.kt) - DI wiring pattern
@@ -208,59 +121,35 @@ app/src/main/java/com/novachat/app/
 ## NovaChat-Specific Patterns
 
 ### ViewModel Event Handling Pattern
-All ViewModels use a single `onEvent(event: UiEvent)` entry point:
-```kotlin
-// ViewModel receives event, processes, and updates state
-fun onEvent(event: ChatUiEvent) {
-    when (event) {
-        is ChatUiEvent.SendMessage -> handleSendMessage(event.text)
-        is ChatUiEvent.ClearConversation -> handleClearConversation()
-        // ... exhaustive
-    }
-}
 
-// Use cases with fold() for error handling
-result.fold(
-    onSuccess = { data -> _uiState.update { it.copy(data = data) } },
-    onFailure = { error -> emitEffect(UiEffect.ShowSnackbar(error.message)) }
-)
-```
+All ViewModels use a single `onEvent(event: UiEvent)` entry point:
+
+Instructions:
+
+- Route all UI actions through `onEvent(event: UiEvent)` with an exhaustive `when`.
+- Use `fold()` on use case results to update state and emit effects.
 
 ### UI State Transitions Pattern
-```kotlin
-// Use update { } to transform state atomically
-_uiState.update { currentState ->
-    when (currentState) {
-        is ChatUiState.Success -> currentState.copy(isProcessing = false)
-        else -> currentState
-    }
-}
-```
+
+Instructions:
+
+- Use `_uiState.update {}` for atomic state transitions.
+- Return the existing state for branches that do not change.
 
 ### Key File Patterns
+
 1. **ChatViewModel** - Copy pattern for: event handling, state updates, effect emission
 2. **ChatScreen** - Copy pattern for: state collection, effect handling, Compose layout
 3. **AppContainer** - Copy pattern for: use case wiring, lazy-loaded singletons
 4. **UiState.kt** - Copy pattern for: sealed interfaces, helper methods, exhaustive handling
 
 ### Common Imports to Include
-```kotlin
-// State Management
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 
-// Lifecycle & Coroutines
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlin.coroutines.CoroutineDispatcher
+Instructions:
 
-// Compose
-import androidx.compose.runtime.collectAsStateWithLifecycle
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-```
+- Include StateFlow, Channel, and `receiveAsFlow` for state/effects.
+- Use `ViewModel`, `viewModelScope`, and a `CoroutineDispatcher` where needed.
+- Collect state in Composables via `collectAsStateWithLifecycle`.
 
 ---
 
@@ -343,19 +232,16 @@ When receiving a request:
 ### Prohibited Practices
 
 ❌ **NEVER** use these patterns:
-```kotlin
-// ... rest of implementation     // FORBIDDEN
-// ... existing code               // FORBIDDEN  
-// TODO: implement                 // FORBIDDEN
-// Add other methods here          // FORBIDDEN
-```
+Instructions:
+
+- Do not use placeholders such as `// ...` or `TODO: implement`.
+- Do not defer missing logic or imports.
 
 ✅ **ALWAYS** write complete implementations:
-```kotlin
-// Every function fully implemented
-// Every import explicitly stated
-// Every bracket properly closed
-```
+Instructions:
+
+- Provide fully implemented functions with all required imports.
+- Ensure all braces and parentheses are balanced.
 
 ### Documentation vs. Production Code Distinction
 
@@ -401,216 +287,98 @@ These patterns violate NovaChat's architecture and will cause problems:
 ### ❌ UI Layer Anti-Patterns
 
 1. **Calling ViewModels from Composables directly**
-   ```kotlin
-   // WRONG:
-   val chatViewModel = ChatViewModel(...)  // Direct instantiation!
-   
-   // RIGHT:
-   val chatViewModel = viewModel<ChatViewModel>(factory = viewModelFactory)
-   ```
+   Instructions:
+   - Do not instantiate ViewModels directly in Composables.
+   - Use `viewModel<...>(factory = viewModelFactory)` so DI remains intact.
    Why: Violates DI, makes testing impossible
 
 2. **Storing UI state in Composables**
-   ```kotlin
-   // WRONG:
-   var messages by remember { mutableStateOf(emptyList()) }  // Won't survive rotation!
-   
-   // RIGHT:
-   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-   ```
+   Instructions:
+   - Keep UI state in the ViewModel and expose it via `StateFlow`.
+   - Collect state in Composables with `collectAsStateWithLifecycle()`.
    Why: Lost on configuration changes; ViewModels handle this
 
 3. **Using LaunchedEffect with State parameters**
-   ```kotlin
-   // WRONG:
-   LaunchedEffect(uiState) {  // Re-runs every recomposition!
-       // Side effect code
-   }
-   
-   // RIGHT:
-   LaunchedEffect(Unit) {  // Runs once
-       viewModel.uiEffect.collect { /* handle */ }
-   }
-   ```
+   Instructions:
+   - Use `LaunchedEffect(Unit)` for one‑time effect collection.
+   - Avoid using mutable state as the LaunchedEffect key for effects.
    Why: Causes repeated executions; use Unit or stable keys
 
 4. **Emit state AND effect for same action**
-   ```kotlin
-   // WRONG:
-   _uiState.update { it.copy(showDialog = true) }
-   emitEffect(UiEffect.ShowDialog(...))
-   
-   // RIGHT: Use one or the other
-   // For persistent UI elements: state
-   // For one-time actions: effect
-   ```
+   Instructions:
+   - Use state for persistent UI and effects for one‑time actions.
+   - Do not emit both state and effect for the same UI action.
 
 ### ❌ Backend Layer Anti-Patterns
 
-1. **Not using Result<T> for error handling**
-   ```kotlin
-   // WRONG:
-   suspend fun sendMessage(): String {
-       throw Exception("Network error")  // Exceptions propagate!
-   }
-   
-   // RIGHT:
-   suspend fun sendMessage(): Result<String> {
-       return try {
-           Result.success(response)
-       } catch (e: Exception) {
-           Result.failure(e)
-       }
-   }
-   ```
-   Why: Uncaught exceptions crash; Result<T> makes errors explicit
+1. **Not using `Result<T>` for error handling**
+   Instructions:
+   - Return `Result<T>` from async operations.
+   - Wrap failures in `Result.failure` rather than throwing.
+   Why: Uncaught exceptions crash; `Result<T>` makes errors explicit
 
 2. **Silent error handling without logging**
-   ```kotlin
-   // WRONG:
-   .catch { /* silently ignore */ }
-   
-   // RIGHT:
-   .catch { exception ->
-       Log.e("TAG", "DataStore failed", exception)
-       emit(defaultValue)
-   }
-   ```
+   Instructions:
+   - Never swallow exceptions silently.
+   - Log failures with context and emit a safe fallback value.
    Why: Impossible to debug silent failures
 
 3. **Use cases calling other use cases**
-   ```kotlin
-   // WRONG:
-   class SendMessageUseCase(private val retryUseCase: RetryUseCase) {
-       invoke() -> retryUseCase.invoke()  // Use case chaining!
-   }
-   
-   // RIGHT:
-   class SendMessageUseCase(private val messageRepository: MessageRepository) {
-       invoke() -> messageRepository.sendMessage()  // Use repository
-   }
-   ```
+   Instructions:
+   - Keep UseCases independent; do not chain UseCases.
+   - Use repositories as the dependency boundary for UseCases.
    Why: Violates single responsibility; use case should not depend on other use cases
 
 4. **Storing Critical Data in SavedStateHandle**
-   ```kotlin
-   // WRONG:
-   savedStateHandle["apiKey"] = userApiKey  // Lost on process death!
-   
-   // RIGHT:
-   preferencesRepository.saveApiKey(userApiKey)  // Persistent
-   ```
+   Instructions:
+   - Use `SavedStateHandle` only for non‑sensitive UI drafts.
+   - Persist secrets and config via repositories (DataStore/Encrypted prefs).
    Why: SavedStateHandle ≠ persistent storage; only use for draft messages
 
 5. **Changing AI mode without validation**
-   ```kotlin
-   // WRONG:
-   fun onEvent(ChangeAiMode(mode)) {
-       _mode.value = mode  // No validation!
-   }
-   
-   // RIGHT:
-   fun onEvent(ChangeAiMode(mode)) {
-       if (!aiRepository.isModeAvailable(mode)) {
-           emitEffect(UiEffect.ShowSnackbar("Mode not available"))
-           return
-       }
-       updateConfiguration(AiConfiguration(mode = mode, ...))
-   }
-   ```
+   Instructions:
+   - Validate AI mode availability before applying changes.
+   - Emit a user‑visible effect when a mode is unavailable.
    Why: OFFLINE mode is unavailable; silent failures confuse users
 
 ### ❌ Testing Anti-Patterns
 
 1. **Testing sealed interface instantiation**
-   ```kotlin
-   // WRONG:
-   val state = ChatUiState.Success(...)  // Not testable directly
-   when (state) {
-       is ChatUiState.Success -> { /* test something */ }
-   }
-   
-   // RIGHT:
-   // Test through ViewModel behavior that produces the state
-   viewModel.onEvent(ChatUiEvent.SendMessage("test"))
-   viewModel.uiState.test {
-       expectMostRecent().should.beInstanceOf<ChatUiState.Success>()
-   }
-   ```
+   Instructions:
+   - Test ViewModel behavior that produces the state rather than instantiating it directly.
+   - Assert on emitted state values from the ViewModel.
    Why: Sealed interfaces are implementation; test through behavior
 
 2. **Using real repositories in unit tests**
-   ```kotlin
-   // WRONG:
-   class ChatViewModelTest {
-       private val viewModel = ChatViewModel(
-           sendMessageUseCase = RealSendMessageUseCase(RealAiRepository(...))  // Real dependency!
-       )
-   }
-   
-   // RIGHT:
-   class ChatViewModelTest {
-       private val mockUseCase = mockk<SendMessageUseCase>()
-       private val viewModel = ChatViewModel(mockUseCase)
-   }
-   ```
+   Instructions:
+   - Use mocks/fakes for repositories and use cases in unit tests.
+   - Avoid real dependencies in ViewModel unit tests.
    Why: Unit tests should isolate the component; use fakes/mocks for dependencies
 
 3. **Not handling cancellation in tests**
-   ```kotlin
-   // WRONG:
-   viewModel.onEvent(...)
-   // Assert immediately without waiting
-   
-   // RIGHT:
-   val state = viewModel.uiState.test {
-       emit(ChatUiEvent.SendMessage("test"))
-       awaitItem().should.equal(/* expected state */)
-   }
-   ```
+   Instructions:
+   - Await asynchronous state changes in coroutine tests.
+   - Use Turbine or equivalent to collect and assert state updates.
    Why: Coroutines are async; tests must wait for state updates
 
 ### ❌ Multi-Agent Anti-Patterns
 
 1. **UI Agent modifying repositories**
-   ```kotlin
-   // WRONG - UI Agent task:
-   class ChatScreen {
-       fun clearConversation() {
-           messageRepository.clearAll()  // Backend responsibility!
-       }
-   }
-   
-   // RIGHT - UI Agent calls ViewModel
-   viewModel.onEvent(ChatUiEvent.ClearConversation)
-   ```
+   Instructions:
+   - UI agent must call ViewModel events, not repositories.
+   - Repository access belongs to Backend agent scope.
    Why: Violates layer separation and agent scope
 
 2. **Backend Agent implementing Compose UI logic**
-   ```kotlin
-   // WRONG - Backend Agent task:
-   class ChatViewModel {
-       val shouldShowLoadingSpinner: StateFlow<Boolean> = ...  // UI decision!
-   }
-   
-   // RIGHT - ViewModel provides state, UI decides display
-   class ChatViewModel {
-       sealed interface ChatUiState {
-           data object Loading : ChatUiState
-       }
-   }
-   ```
+   Instructions:
+   - Backend agent exposes state only; UI decides rendering.
+   - Avoid embedding UI decisions in ViewModels.
    Why: ViewModels are testable without UI; don't leak UI concerns
 
 3. **Testing Agent modifying production code**
-   ```
-   // WRONG:
-   Testing Agent NEVER modifies production files
-   
-   // RIGHT:
-   If tests fail, analyze root cause and hand off to appropriate agent
-   (Build Agent for dependency issues, Backend Agent for logic issues, etc.)
-   ```
+   Instructions:
+   - Testing agent edits test files only.
+   - Hand off production changes to the responsible agent.
    Why: Testing Agent scope is tests only; maintains isolation
 
 ---
@@ -619,76 +387,30 @@ These patterns violate NovaChat's architecture and will cause problems:
 
 ### ViewModel Unit Testing
 Test ViewModel behavior by triggering events and asserting state changes:
-```kotlin
-@Test
-fun sendMessage_success_updates_state() = runTest {
-    val mockUseCase = mockk<SendMessageUseCase>()
-    coEvery { mockUseCase("hello") } returns Result.success(aiMessage)
-    val viewModel = ChatViewModel(
-        savedStateHandle = SavedStateHandle(),
-        sendMessageUseCase = mockUseCase,
-        observeMessagesUseCase = mockk(),
-        clearConversationUseCase = mockk(),
-        retryMessageUseCase = mockk()
-    )
-    
-    viewModel.onEvent(ChatUiEvent.SendMessage("hello"))
-    
-    val state = viewModel.uiState.value
-    state.should.beInstanceOf<ChatUiState.Success>()
-}
-```
+Instructions:
+
+- Stub use cases, trigger `onEvent`, and assert state transitions.
+- Use `runTest` with coroutine test utilities.
 
 ### Use Case Testing
 Test use case logic with mocked repositories:
-```kotlin
-@Test
-fun sendMessage_calls_ai_and_stores_response() = runTest {
-    val messageRepo = mockk<MessageRepository>()
-    val aiRepo = mockk<AiRepository>()
-    coEvery { messageRepo.addMessage(any()) } returns Result.success(Unit)
-    coEvery { aiRepo.sendMessage(any(), any()) } returns Result.success("AI response")
-    
-    val useCase = SendMessageUseCase(messageRepo, aiRepo, prefsRepo)
-    val result = useCase("hello")
-    
-    result.isSuccess.should.be.true()
-    coVerify { messageRepo.addMessage(any()) }
-}
-```
+Instructions:
+
+- Mock repositories, execute the UseCase, and verify repository calls.
+- Assert success/failure via `Result`.
 
 ### Compose UI Testing
 Test critical UI paths with ComposeTestRule:
-```kotlin
-@get:Rule
-val composeTestRule = createComposeRule()
+Instructions:
 
-@Test
-fun chatScreen_displays_initial_message() {
-    composeTestRule.setContent {
-        val viewModel = mockk<ChatViewModel>()
-        every { viewModel.uiState } returns flowOf(ChatUiState.Initial).stateIn(...)
-        ChatScreen(viewModel = viewModel, onNavigateToSettings = {})
-    }
-    
-    composeTestRule.onNodeWithText("Start a conversation!").assertIsDisplayed()
-}
-```
+- Use `createComposeRule()` to render UI and assert key text/behaviors.
+- Provide a mocked ViewModel state for UI tests.
 
 ### Common Test Dependencies
-```kotlin
-// build.gradle.kts test dependencies
-testImplementation("junit:junit:4.13.2")
-testImplementation("io.mockk:mockk:1.14.9")
-testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-testImplementation("app.cash.turbine:turbine:1.2.1")  // For Flow testing
-testImplementation("io.kotest:kotest-assertions-core:6.1.2")  // For readable assertions
+Instructions:
 
-// For Compose UI tests
-androidTestImplementation(platform("androidx.compose:compose-bom:2026.01.01"))
-androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-androidTestImplementation("androidx.compose.ui:ui-test-manifest")
-```
+- Add unit test deps in `build.gradle.kts`: JUnit, MockK, Coroutines Test, Turbine, Kotest assertions.
+- Add Compose UI test deps under `androidTestImplementation` using the Compose BOM.
 
 ---
 
@@ -697,7 +419,12 @@ androidTestImplementation("androidx.compose.ui:ui-test-manifest")
 
 - **[DEVELOPMENT_PROTOCOL.md](DEVELOPMENT_PROTOCOL.md)**: Comprehensive development guidelines (MANDATORY)
 - **[AGENTS.md](AGENTS.md)**: Multi-agent system documentation
+- **[HANDOFF_MATRIX.md](HANDOFF_MATRIX.md)**: Complete agent-to-agent handoff routing
 - **Skills**: Reusable patterns in `.github/skills/`
-  - `android-testing/`: Testing patterns and examples
-  - `material-design/`: Compose UI patterns
-  - `security-check/`: Security best practices
+  - `backend-patterns/`: ViewModel, UseCase, Repository, error handling patterns
+  - `clean-architecture/`: MVVM + Clean Architecture layer separation and data flow
+  - `dependency-injection/`: Manual DI pattern with AppContainer and lazy singletons
+  - `android-testing/`: Unit tests, Compose UI tests, MockK patterns
+  - `compose-preview/`: @Preview annotations and preview data providers
+  - `material-design/`: Material 3 Compose components and theme configuration
+  - `security-check/`: Security best practices and secure storage patterns

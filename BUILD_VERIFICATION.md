@@ -56,7 +56,7 @@
   kotlinOptions {
       jvmTarget = "17"
   }
-  
+
   // NEW (AGP 9.0+)
   kotlin {
       compilerOptions {
@@ -70,6 +70,8 @@
 
 ### 3. Compose BOM
 - **Updated**: From 2024.12.01 to 2026.01.01
+- **Source**: [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping)
+- **Repository**: Google Maven only (requires `google()` in repositories)
 
 ### 4. compileSdk
 - **Updated**: From 35 to 36 (required by androidx.core:core-ktx:1.17.0)
@@ -153,7 +155,7 @@ All dependencies downloaded successfully with full network egress enabled.
 4. ✅ Lint warnings are cosmetic and can be addressed gradually
 
 ### For Future Updates
-1. Monitor AICore availability on Maven Central
+1. Monitor AICore availability on Google Maven
 2. Update launcher icons per Android design guidelines
 3. Consider removing unused string resources
 4. Update to Gradle 9.3.x when it becomes stable for Android

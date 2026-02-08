@@ -37,39 +37,19 @@ Preview Agent creates ViewModel-free `@Preview` compositions that render paramet
 
 ## Preview Infrastructure
 
-```
-.github/skills/compose-preview/
-├── COMPOSE_PREVIEW_COMPREHENSIVE_GUIDE.md
-├── examples/
-│   ├── PreviewScreenData.kt
-│   ├── ChatScreenPreview.kt
-│   └── SettingsScreenPreview.kt
-└── PREVIEW_AGENT_ROLE.md
-```
+Rules:
+
+- See `COMPOSE_PREVIEW_COMPREHENSIVE_GUIDE.md` for full guidance.
+- Keep preview data and preview composables in the compose preview skill directory.
 
 ---
 
 ## Example Pattern
 
-```kotlin
-@Composable
-fun PreviewChatScreen(
-    uiState: ChatUiState,
-    draftMessage: String = ""
-) {
-    val snackbarHostState = remember { SnackbarHostState() }
+Rules:
 
-    NovaChatTheme {
-        ChatScreenContent(
-            uiState = uiState,
-            draftMessage = draftMessage,
-            snackbarHostState = snackbarHostState,
-            onEvent = {},
-            onDraftMessageChange = {}
-        )
-    }
-}
-```
+- Use a preview helper composable and pass preview state.
+- Wrap content with `NovaChatTheme` and provide no‑op handlers.
 
 ---
 

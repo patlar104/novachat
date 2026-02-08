@@ -13,6 +13,7 @@ A comprehensive new **Preview Agent** system for NovaChat to enable rapid UI/UX 
 ### Files Added/Modified
 
 #### 1. **Agent Definition** (NEW)
+
 - **Location**: [`.github/agents/preview-agent.agent.md`](./.github/agents/preview-agent.agent.md)
 - **Size**: ~1,300 lines
 - **Contains**:
@@ -23,6 +24,7 @@ A comprehensive new **Preview Agent** system for NovaChat to enable rapid UI/UX 
   - Quality gates and checklist
 
 #### 2. **Skills Library** (NEW)
+
 - **Location**: [`.github/skills/compose-preview/SKILL.md`](./.github/skills/compose-preview/SKILL.md)
 - **Size**: ~800 lines
 - **Contains**:
@@ -35,12 +37,14 @@ A comprehensive new **Preview Agent** system for NovaChat to enable rapid UI/UX 
   - Performance optimization tips
 
 #### 3. **AGENTS.md Updates**
+
 - Added Preview Agent to agent overview (now 7 agents total)
 - Updated workflow diagram to include Preview Agent
 - Updated directory structure references
 - Clarified agent handoff protocols
 
 #### 4. **copilot-instructions.md Updates**
+
 - Added Preview Agent section to agent-specific guidance
 - Updated agent focus quick reference table
 - Added [PREVIEW-FOCUS] tags to relevant sections
@@ -53,7 +57,7 @@ A comprehensive new **Preview Agent** system for NovaChat to enable rapid UI/UX 
 
 The Preview Agent specializes in:
 
-```
+```text
 UI Composable → Preview Agent → @Preview Annotations + Preview Files
                                 ↓
                         Android Studio IDE Debugging
@@ -63,6 +67,7 @@ UI Composable → Preview Agent → @Preview Annotations + Preview Files
 ### Scope
 
 **✅ What Preview Agent Does**:
+
 - Create `@Preview` annotations on Composables
 - Create `*ScreenPreview.kt` files with comprehensive previews
 - Create `Preview*ScreenData.kt` sample state providers
@@ -71,6 +76,7 @@ UI Composable → Preview Agent → @Preview Annotations + Preview Files
 - Document preview purpose and performance notes
 
 **❌ What Preview Agent Does NOT Do**:
+
 - Modify business logic or repositories
 - Change UI layouts (that's UI Agent's job)
 - Implement production ViewModels (Backend Agent handles that)
@@ -80,7 +86,7 @@ UI Composable → Preview Agent → @Preview Annotations + Preview Files
 
 When adding a new screen, Preview Agent creates:
 
-```
+```text
 app/src/main/java/com/novachat/app/ui/preview/
 ├── ChatScreenPreview.kt           # All preview variants of ChatScreen
 ├── SettingsScreenPreview.kt       # All preview variants of SettingsScreen
@@ -139,7 +145,7 @@ object PreviewChatScreenData {
 
 ### Workflow: Creating a New Screen
 
-```
+```text
 1. UI Agent creates ChatScreen.kt
            ↓
 2. Preview Agent creates ChatScreenPreview.kt
@@ -197,31 +203,39 @@ fun ChatScreenMultiDevicePreview() { ... }
 ## Agent Integration Points
 
 ### Handoff FROM UI Agent
-```
+
+```text
 "Created ChatScreen.kt - ready for preview composition.
 Please create ChatScreenPreview.kt with empty/loading/success/error states."
 ```
+
 → Preview Agent creates comprehensive preview file
 
 ### Handoff FROM Backend Agent
-```
+
+```text
 "Updated ChatUiState with new 'archived' field.
 Preview Agent should add preview for archived message list."
 ```
+
 → Preview Agent adds new state preview
 
 ### Handoff TO Testing Agent
-```
+
+```text
 "Preview composition complete in ChatScreenPreview.kt.
 Ready for automated UI tests using ComposeTestRule."
 ```
+
 → Testing Agent creates automated tests
 
 ### Handoff TO Reviewer
-```
+
+```text
 "Preview file complete with 12 state variants, 3 device sizes,
 light/dark themes, and comprehensive documentation."
 ```
+
 → Reviewer validates coverage and quality
 
 ---
@@ -281,7 +295,7 @@ All Preview Agent code MUST comply with:
 
 The Preview Agent operates within this structure:
 
-```
+```text
 app/src/main/java/com/novachat/app/ui/
 ├── ChatScreen.kt
 ├── SettingsScreen.kt
@@ -347,13 +361,15 @@ fun ChatScreenPreview() {
 ### Using the Preview Agent
 
 Invoke when:
+
 - A new UI screen is created by UI Agent
 - UI screen states change (need new state previews)
 - You want to iterate on UI/UX in Android Studio IDE
 - You need to test responsive design across devices
 
 Example invocation:
-```
+
+```text
 @copilot using preview-agent.agent.md
 
 Create comprehensive previews for [ScreenName]:
@@ -364,7 +380,7 @@ Create comprehensive previews for [ScreenName]:
 
 ### Handoff Chain
 
-```
+```text
 new feature request
     ↓
 Planner Agent (planning)
@@ -389,17 +405,20 @@ Ready for production!
 ## Documentation References
 
 ### Agent-Focused Files
+
 - **Preview Agent**: [`.github/agents/preview-agent.agent.md`]
 - **UI Agent**: [`.github/agents/ui-agent.agent.md`]
 - **Backend Agent**: [`.github/agents/backend-agent.agent.md`]
 - **Testing Agent**: [`.github/agents/testing-agent.agent.md`]
 
 ### Skills
+
 - **Compose Preview Skill**: [`.github/skills/compose-preview/SKILL.md`]
 - **Material Design Skill**: [`.github/skills/material-design/SKILL.md`]
 - **Android Testing Skill**: [`.github/skills/android-testing/SKILL.md`]
 
 ### Guidelines
+
 - **Development Protocol**: [`DEVELOPMENT_PROTOCOL.md`]
 - **Multi-Agent System**: [`AGENTS.md`]
 - **Copilot Instructions**: [`copilot-instructions.md`]

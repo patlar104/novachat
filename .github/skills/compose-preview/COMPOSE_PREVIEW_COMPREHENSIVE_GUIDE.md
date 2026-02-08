@@ -2,14 +2,14 @@
 
 **Document Version**: 1.1
 **Last Updated**: February 2026
-**Compose BOM**: 2026.01.01
+**Compose BOM**: 2026.01.01 (Google Maven; mapping: [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping))
 **Target**: Android 28+ (API 28)
 
 ---
 
 **NovaChat rule (Feb 2026)**: Do not pass a `ViewModel` into previews. Preview a parameterized UI composable (for example, `ChatScreenContent`) with sample `ChatUiState` from `Preview*ScreenData`.
 
-**Official reference**: https://developer.android.com/develop/ui/compose/tooling/previews
+**Official reference**: [Compose previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 
 ## Overview
 
@@ -42,110 +42,25 @@ Android Studio supports multipreview templates like `@PreviewScreenSizes`, `@Pre
 
 ### Preview Data Provider
 
-```kotlin
-object PreviewChatScreenData {
-    fun initialState(): ChatUiState = ChatUiState.Initial
+Rules:
 
-    fun successSingleExchange(): ChatUiState {
-        val now = Instant.now()
-        return ChatUiState.Success(
-            messages = listOf(
-                Message(
-                    id = MessageId("user-1"),
-                    content = "Hello!",
-                    sender = MessageSender.USER,
-                    timestamp = now
-                ),
-                Message(
-                    id = MessageId("ai-1"),
-                    content = "Hi there!",
-                    sender = MessageSender.ASSISTANT,
-                    timestamp = now.plusSeconds(2)
-                )
-            )
-        )
-    }
-
-    fun successWithErrorBanner(): ChatUiState {
-        val now = Instant.now()
-        return ChatUiState.Success(
-            messages = listOf(
-                Message(
-                    id = MessageId("user-2"),
-                    content = "This message failed to send.",
-                    sender = MessageSender.USER,
-                    timestamp = now
-                )
-            ),
-            error = "Network error. Tap to retry."
-        )
-    }
-}
-```
+- Use a `Preview*ScreenData` object with functions per state.
+- Return complete `UiState` objects with realistic sample data.
 
 ### Preview Helper
 
-```kotlin
-@Composable
-fun PreviewChatScreen(
-    uiState: ChatUiState,
-    draftMessage: String = ""
-) {
-    val snackbarHostState = remember { SnackbarHostState() }
+Rules:
 
-    NovaChatTheme {
-        ChatScreenContent(
-            uiState = uiState,
-            draftMessage = draftMessage,
-            snackbarHostState = snackbarHostState,
-            onEvent = {},
-            onDraftMessageChange = {}
-        )
-    }
-}
-```
+- Use a preview helper composable that accepts `UiState`.
+- Wrap with `NovaChatTheme` and pass no‑op callbacks.
 
 ---
 
 ## Example: ChatScreen Previews
 
-```kotlin
-@Preview(name = "Initial")
-@Composable
-fun ChatScreenInitialPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.initialState())
-}
+Rules:
 
-@Preview(name = "Loading")
-@Composable
-fun ChatScreenLoadingPreview() {
-    PreviewChatScreen(uiState = ChatUiState.Loading)
-}
-
-@Preview(name = "Success - Error Banner")
-@Composable
-fun ChatScreenErrorBannerPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.successWithErrorBanner())
-}
-
-@Preview(name = "Tablet", device = "spec:width=600dp,height=800dp,dpi=160")
-@Composable
-fun ChatScreenTabletPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.successSingleExchange())
-}
-
-@Preview(name = "Large Font", fontScale = 1.5f)
-@Composable
-fun ChatScreenLargeFontPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.successSingleExchange())
-}
-
-@Preview(name = "Arabic (RTL)", locale = "ar-SA")
-@Composable
-fun ChatScreenArabicPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.successSingleExchange())
-}
-```
+- Provide previews for Initial, Loading, Success, Error Banner, Tablet, Large Font, and RTL.
 
 ---
 
@@ -177,15 +92,7 @@ Use `LocalInspectionMode.current` to substitute placeholder data in previews wit
 
 Previews are not tests, but you can mirror preview states in Compose UI tests to validate key UI paths.
 
-```kotlin
-@get:Rule
-val composeRule = createComposeRule()
+Rules:
 
-@Test
-fun chatScreenInitialPreviewRenders() {
-    composeRule.setContent {
-        PreviewChatScreen(uiState = PreviewChatScreenData.initialState())
-    }
-    composeRule.onNodeWithText("Start a conversation!").assertExists()
-}
-```
+- Mirror preview states in Compose UI tests when needed.
+- Use `createComposeRule()` and assert key UI text.

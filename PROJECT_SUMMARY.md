@@ -7,12 +7,12 @@ NovaChat is a complete, production-ready Android AI chatbot application that dem
 ## Features Implemented
 
 ### Core Functionality
-✅ **Dual AI Mode Support**
+**Dual AI Mode Support**
 - Online mode using Google Gemini 1.5 Flash API
 - Offline mode planned with Google AICore for on-device AI (currently unavailable)
 - Seamless switching between modes via Settings
 
-✅ **Modern Chat Interface**
+**Modern Chat Interface**
 - Material Design 3 UI with Jetpack Compose
 - Dynamic theming (supports light/dark modes)
 - Real-time message display with auto-scrolling
@@ -20,13 +20,13 @@ NovaChat is a complete, production-ready Android AI chatbot application that dem
 - Loading indicators during AI processing
 - Error handling with user-friendly messages
 
-✅ **Settings Management**
+**Settings Management**
 - Secure API key storage using DataStore
 - AI mode selection (Online/Offline)
 - Persistent preferences across app launches
 - Clean, intuitive settings screen
 
-✅ **State Management**
+**State Management**
 - MVVM architecture with ViewModels
 - Kotlin Coroutines for asynchronous operations
 - StateFlow for reactive UI updates
@@ -46,15 +46,15 @@ NovaChat is a complete, production-ready Android AI chatbot application that dem
 - **Compile SDK**: 35
 
 ### UI Framework
-- **Jetpack Compose**: BOM 2026.01.01 (declarative UI)
+- **Jetpack Compose**: BOM 2026.01.01 (Google Maven only; mapping: [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping))
 - **Material Design 3**: Latest material components
--- **Navigation Compose**: 2.9.7 (screen navigation)
--- **Compose UI Tooling**: For preview and debugging
+- **Navigation Compose**: 2.9.7 (screen navigation)
+- **Compose UI Tooling**: For preview and debugging
 
 ### Architecture Components
--- **ViewModel**: 2.10.0 (UI state management)
--- **Lifecycle Runtime**: 2.10.0 (lifecycle-aware components)
--- **DataStore Preferences**: 1.2.0 (key-value storage)
+- **ViewModel**: 2.10.0 (UI state management)
+- **Lifecycle Runtime**: 2.10.0 (lifecycle-aware components)
+- **DataStore Preferences**: 1.2.0 (key-value storage)
 
 ### AI Libraries
 - **Google Generative AI SDK**: 0.9.0 (Gemini API)

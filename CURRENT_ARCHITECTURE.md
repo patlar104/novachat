@@ -96,7 +96,7 @@ All screens use sealed interfaces for type-safe state management:
 ```kotlin
 // UI Contract (presentation/model/)
 sealed interface ChatUiState { }        // All possible screen states
-sealed interface ChatUiEvent { }        // All user actions/events  
+sealed interface ChatUiEvent { }        // All user actions/events
 sealed interface UiEffect { }           // One-time actions (toast, nav)
 
 // ViewModel exposes state
@@ -110,11 +110,11 @@ class ChatViewModel(...) : ViewModel() {
 @Composable
 fun ChatScreen(viewModel: ChatViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    
+
     LaunchedEffect(Unit) {
         viewModel.uiEffect.collect { /* handle one-time effects */ }
     }
-    
+
     when (uiState) { /* exhaustive rendering */ }
 }
 ```
@@ -150,9 +150,9 @@ class AppContainer(context: Context) {
     // Repositories (eager initialization)
     val aiRepository: AiRepository = AiRepositoryImpl(context)
     val messageRepository: MessageRepository = MessageRepositoryImpl()
-    val preferencesRepository: PreferencesRepository = 
+    val preferencesRepository: PreferencesRepository =
         PreferencesRepositoryImpl(context)
-    
+
     // Use Cases (lazy initialization)
     val sendMessageUseCase: SendMessageUseCase by lazy {
         SendMessageUseCase(
@@ -234,7 +234,7 @@ fun onEvent(event: ChatUiEvent.SendMessage) {
 | **OFFLINE (AICore)** | ❌ Not Available | Dependency commented out in build.gradle.kts |
 
 **Why OFFLINE mode is unavailable:**
-- AICore library not yet published to Maven Central (as of Feb 2026)
+- AICore library not yet published to Google Maven (as of Feb 2026)
 - Dependency line is commented out: `// implementation("androidx.ai:ai-core:1.0.0-alpha01")`
 - Attempting to use offline mode will fail validation
 
@@ -294,9 +294,9 @@ fun sendMessage_success_updates_state() = runTest {
     val mockUseCase = mockk<SendMessageUseCase>()
     coEvery { mockUseCase("hello") } returns Result.success(aiMessage)
     val viewModel = ChatViewModel(mockUseCase, ...)
-    
+
     viewModel.onEvent(ChatUiEvent.SendMessage("hello"))
-    
+
     val state = viewModel.uiState.value
     assertThat(state).isInstanceOf(ChatUiState.Success::class.java)
 }
@@ -307,7 +307,7 @@ fun chatScreen_displays_welcome_when_empty() {
     composeTestRule.setContent {
         ChatScreen(viewModel = mockViewModel, ...)
     }
-    
+
     composeTestRule
         .onNodeWithText("Start a conversation")
         .assertIsDisplayed()
@@ -344,9 +344,9 @@ class ChatViewModel(
     private val savedStateHandle: SavedStateHandle,
     // ... use cases
 ) : ViewModel() {
-    val draftMessage: StateFlow<String> = 
+    val draftMessage: StateFlow<String> =
         savedStateHandle.getStateFlow(KEY_DRAFT_MESSAGE, "")
-    
+
     fun updateDraftMessage(text: String) {
         savedStateHandle[KEY_DRAFT_MESSAGE] = text
     }
@@ -471,11 +471,11 @@ NovaChat development uses specialized agents with clear boundaries:
 
 | Agent | Scope | Tools Used |
 |-------|-------|------------|
-| **UI Agent** | Composables, Material 3, layouts | `create_file`, `replace_string_in_file` for .kt files in ui/ |
-| **Preview Agent** | @Preview annotations, preview data | `replace_string_in_file` for preview functions |
-| **Backend Agent** | ViewModels, use cases, repositories | `create_file`, `replace_string_in_file` for presentation/, domain/, data/ |
+| **UI Agent** | Composables, Material 3, layouts | `create_file`, `apply_patch` for .kt files in ui/ |
+| **Preview Agent** | @Preview annotations, preview data | `apply_patch` for preview functions |
+| **Backend Agent** | ViewModels, use cases, repositories | `create_file`, `apply_patch` for presentation/, domain/, data/ |
 | **Testing Agent** | Unit, integration, UI tests | `create_file` for *Test.kt files |
-| **Build Agent** | Gradle, dependencies, manifest | `replace_string_in_file` for build.gradle.kts, AndroidManifest.xml |
+| **Build Agent** | Gradle, dependencies, manifest | `apply_patch` for build.gradle.kts, AndroidManifest.xml |
 
 **Critical Rule:** Agents NEVER create documentation summaries. They implement code only.
 

@@ -3,7 +3,7 @@
 **Version**: 1.1
 **Date**: February 2026
 
-**Official reference**: https://developer.android.com/develop/ui/compose/tooling/previews
+**Official reference**: <https://developer.android.com/develop/ui/compose/tooling/previews>
 
 ---
 
@@ -28,10 +28,6 @@
 
 ## Quick Example
 
-```kotlin
-@Preview(name = "Initial")
-@Composable
-fun ChatScreenInitialPreview() {
-    PreviewChatScreen(uiState = PreviewChatScreenData.initialState())
-}
-```
+Rules:
+
+- Keep previews small and parameterized with preview data.

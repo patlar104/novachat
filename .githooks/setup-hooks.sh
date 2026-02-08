@@ -4,9 +4,9 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
 HOOKS_DIR="$REPO_ROOT/.githooks"
-GIT_HOOKS_DIR="$REPO_ROOT/.git/hooks"
+GIT_HOOKS_DIR="$(git rev-parse --git-path hooks)"
 
 echo "🔧 Setting up Git hooks for NovaChat..."
 echo ""
@@ -21,16 +21,29 @@ if [ ! -d "$HOOKS_DIR" ]; then
     exit 1
 fi
 
-# Create .git/hooks directory if it doesn't exist
+# Create hooks directory if it doesn't exist
 mkdir -p "$GIT_HOOKS_DIR"
 
 # Make all hook scripts executable
 echo "📝 Making hook scripts executable..."
 chmod +x "$HOOKS_DIR"/*
 
-# Create symlinks to Git hooks directory
+# Configure Git to use .githooks directory
+echo ""
+echo "📌 Configuring Git to use .githooks directory..."
+git config core.hooksPath ".githooks"
+echo "  ✅ Git configured to use custom hooks directory"
+
+# Create symlinks to Git hooks directory (only if inside repo)
 echo ""
 echo "🔗 Creating symlinks..."
+
+if [[ "$GIT_HOOKS_DIR" != "$REPO_ROOT"* ]]; then
+    echo "  ⚠️  Skipping symlinks (hooks dir outside repo): $GIT_HOOKS_DIR"
+    echo ""
+    echo "✅ Git hooks setup completed successfully!"
+    exit 0
+fi
 
 for hook in pre-commit pre-push commit-msg; do
     SOURCE="$HOOKS_DIR/$hook"
@@ -53,12 +66,6 @@ for hook in pre-commit pre-push commit-msg; do
         echo "  ⚠️  Skipped: $hook (file not found)"
     fi
 done
-
-# Alternative: Configure Git to use .githooks directory
-echo ""
-echo "📌 Configuring Git to use .githooks directory..."
-git config core.hooksPath "$HOOKS_DIR"
-echo "  ✅ Git configured to use custom hooks directory"
 
 echo ""
 echo "✅ Git hooks setup completed successfully!"
