@@ -15,6 +15,9 @@ tools:
   - read_file (review only; never modify)
   - grep_search
   - list_dir
+  - Playwright MCP (browser_navigate, browser_snapshot, browser_click, browser_evaluate) - use instead of fetch when verifying external docs, security references, or version claims
+  - GitKraken MCP (git_status, git_log_or_diff, git_blame, pull_request_get_detail, pull_request_get_comments) - diff context, authorship, PR review
+  - Pieces MCP (ask_pieces_ltm) - find previous feedback or decisions about this code
   # No create_file or apply_patch - reviewer only reviews, never implements
 handoffs:
   - agent: ui-agent

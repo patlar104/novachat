@@ -14,6 +14,8 @@ tools:
   - create_file (ui/preview/ only)
   - apply_patch (ui/preview/ only; never modify production Composables)
   - run_in_terminal (./gradlew :app:compileDebugKotlin to verify)
+  - GitKraken MCP (git_status, git_log_or_diff) - repo state and related changes
+  - Pieces MCP (ask_pieces_ltm) - find older preview/auth data edits from other IDEs
 handoffs:
   - agent: ui-agent
     label: "Update Composables"

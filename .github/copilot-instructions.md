@@ -212,6 +212,18 @@ All code submissions MUST pass these checks (from DEVELOPMENT_PROTOCOL.md):
 - [ ] **Dependencies**: Cross-file impacts analyzed and addressed
 - [ ] **Architecture**: Follows MVVM + Clean Architecture patterns
 
+### Web Content Verification
+
+- **Use Playwright MCP** (not fetch) when verifying external docs, BOM mapping, AGP release notes, or security references. See [playwright-mcp skill](skills/playwright-mcp/SKILL.md).
+
+### Git Context
+
+- **Use GitKraken MCP** for git_status, git_log_or_diff, git_blame, PR details. See [gitkraken-mcp skill](skills/gitkraken-mcp/SKILL.md).
+
+### Long-Term Memory (Older Edits)
+
+- **Use Pieces MCP** (`ask_pieces_ltm`) when edits or context might exist from other IDEs or past sessions. See [pieces-mcp skill](skills/pieces-mcp/SKILL.md).
+
 ### Verification & Duplication Guard
 
 - **No guessing**: Read the current file(s) before editing; never infer content.
@@ -428,3 +440,6 @@ Instructions:
   - `compose-preview/`: @Preview annotations and preview data providers
   - `material-design/`: Material 3 Compose components and theme configuration
   - `security-check/`: Security best practices and secure storage patterns
+  - `playwright-mcp/`: **Use Playwright MCP instead of fetch** for web content verification, browser automation, docs lookup
+  - `gitkraken-mcp/`: **Git context** – git_status, git_log_or_diff, git_blame, PR/issue tools
+  - `pieces-mcp/`: **Long-Term Memory** – ask_pieces_ltm to find older edits from other IDEs

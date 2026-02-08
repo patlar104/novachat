@@ -15,6 +15,8 @@ tools:
   - grep_search
   - create_file (viewmodel, data, domain, di only)
   - apply_patch (backend scope only; never ui or build)
+  - GitKraken MCP (git_status, git_log_or_diff) - repo state and related changes
+  - Pieces MCP (ask_pieces_ltm) - find older ViewModel/repository edits from other IDEs
 handoffs:
   - agent: ui-agent
     label: "Update Compose UI"

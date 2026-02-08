@@ -15,6 +15,9 @@ tools:
   - grep_search
   - create_file (build files only: build.gradle.kts, settings.gradle.kts, gradle.properties, etc.)
   - apply_patch (build config only; never application code)
+  - Playwright MCP (browser_navigate, browser_snapshot, browser_click, browser_fill, browser_evaluate) - use instead of fetch for verifying AGP release notes, Compose BOM mapping, dependency versions, and external docs
+  - GitKraken MCP (git_status, git_log_or_diff, git_branch) - repo state and recent build-related changes
+  - Pieces MCP (ask_pieces_ltm) - find older build/dependency edits from other IDEs
 handoffs:
   - agent: backend-agent
     label: "Implement Features"
@@ -71,6 +74,8 @@ You are a specialized build configuration agent for NovaChat. Your role is to ma
 
 - [AGP 9.0.0 release notes](https://developer.android.com/build/releases/agp-9-0-0-release-notes)
 - [Compose BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping)
+
+**Verification**: Use **Playwright MCP** (not fetch) to verify versions against these URLs. See [playwright-mcp skill](../skills/playwright-mcp/SKILL.md).
 
 1. **Build Optimization**
    - Configure R8/ProGuard when minify is enabled

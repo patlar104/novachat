@@ -1,0 +1,67 @@
+# Playwright MCP Skill
+
+Use the **Playwright MCP** tools instead of fetch for web content retrieval, verification, and browser automation. Playwright MCP provides full browser control (navigation, form filling, snapshots, screenshots) that fetch cannot do.
+
+## When to Use Playwright MCP (NOT fetch)
+
+- **Verify external docs** – AGP release notes, Compose BOM mapping, dependency versions
+- **Navigate multi-step flows** – Sites requiring login, form fills, or multiple clicks
+- **Extract structured content** – Pages with dynamic content, SPAs, or auth-gated content
+- **Take snapshots** – Accessibility tree for page structure (better than raw HTML)
+- **Form filling** – `browser_fill`, `browser_fill_form`, `browser_select_option`
+- **Complex navigation** – `browser_navigate`, `browser_click`, `browser_hover`, `browser_drag`
+
+## When NOT to Use Playwright MCP
+
+- Simple static JSON/XML APIs (use appropriate API tools if available)
+- Content that fetch can reliably retrieve (consider Playwright for reliability)
+
+## Core Tools (Playwright MCP)
+
+| Tool | Purpose |
+|------|---------|
+| `browser_navigate` | Navigate to a URL |
+| `browser_snapshot` | Get accessibility snapshot (preferred over screenshot for structure) |
+| `browser_click` | Click element (use ref from snapshot) |
+| `browser_fill` | Fill input field |
+| `browser_fill_form` | Fill multiple fields at once |
+| `browser_type` | Type into editable element |
+| `browser_select_option` | Select dropdown option |
+| `browser_take_screenshot` | Capture visual when needed |
+| `browser_evaluate` | Run JavaScript on page |
+| `browser_wait_for` | Wait for text or time |
+
+## Workflow
+
+1. **Navigate**: `browser_navigate` to target URL
+2. **Snapshot**: `browser_snapshot` to get element refs
+3. **Interact**: Use refs from snapshot for `browser_click`, `browser_fill`, etc.
+4. **Re-snapshot**: After navigation or significant DOM changes
+5. **Extract**: Use snapshot content or `browser_evaluate` for data
+
+## Example: Verify Compose BOM Version
+
+Instead of fetch (which may fail on SPAs or auth):
+
+1. `browser_navigate` → `https://developer.android.com/develop/ui/compose/bom/bom-mapping`
+2. `browser_snapshot` → Get page structure
+3. Extract version info from snapshot or via `browser_evaluate`
+
+## Example: Form Fill / Multi-Step Flow
+
+1. `browser_navigate` to form URL
+2. `browser_snapshot` to get refs
+3. `browser_fill_form` or `browser_fill` + `browser_click` for submit
+4. `browser_snapshot` to verify result
+
+## Related MCP Skills
+
+- **GitKraken MCP** – git context (status, log, diff, blame, PR details). See [gitkraken-mcp skill](../gitkraken-mcp/SKILL.md).
+- **Pieces MCP** – older edits from other IDEs. See [pieces-mcp skill](../pieces-mcp/SKILL.md).
+
+## Guardrails
+
+- **Snapshot before interact**: Always get a fresh snapshot before using element refs
+- **Re-snapshot after navigation**: Refs go stale after page changes
+- **Prefer snapshot over screenshot**: Use `browser_snapshot` for structure; `browser_take_screenshot` when visual check is needed
+- **Agent mode**: Playwright MCP tools require Cursor Agent mode (not Ask mode)

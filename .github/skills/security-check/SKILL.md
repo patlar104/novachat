@@ -33,6 +33,9 @@ This skill provides **COMPLETE** security implementations for Android developmen
 - Reviewing network security configuration → `read_file`
 - Adding security dependencies → `apply_patch`
 - Updating ProGuard/R8 rules → `apply_patch`
+- Verifying OWASP, GitHub Advisory, security docs → **Playwright MCP** (browser_navigate, browser_snapshot, browser_evaluate) - use instead of fetch
+- Checking git status or diff for security-related changes → **GitKraken MCP** (git_status, git_log_or_diff)
+- Finding older security-related edits from other IDEs → **Pieces MCP** (ask_pieces_ltm)
 
 **Do NOT describe; DO implement:**
 - Don't say "add secure encryption"; implement using `apply_patch`
@@ -253,6 +256,8 @@ Before releasing:
 - Android Security Best Practices (official docs)
 - GitHub Advisory Database
 - CWE (Common Weakness Enumeration)
+
+**Verification**: Use **Playwright MCP** (not fetch) to verify these resources. See [playwright-mcp skill](../playwright-mcp/SKILL.md). Use **GitKraken MCP** (git_status, git_log_or_diff) for git context. See [gitkraken-mcp skill](../gitkraken-mcp/SKILL.md). Use **Pieces MCP** (ask_pieces_ltm) for older security edits from other IDEs. See [pieces-mcp skill](../pieces-mcp/SKILL.md).
 
 ## Protocol Compliance Checklist
 

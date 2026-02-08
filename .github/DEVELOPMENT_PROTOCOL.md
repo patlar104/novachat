@@ -28,6 +28,52 @@ This document defines the comprehensive development protocol for NovaChat to ens
 3. **Review related files** for context dependencies
 4. **Document assumptions** when state is uncertain
 
+### Web Content & Verification Tools
+
+When agents need to fetch web content, verify external docs, or automate browser flows:
+
+- **Use Playwright MCP** (not fetch) for:
+  - Verifying AGP release notes, Compose BOM mapping, dependency versions
+  - Multi-step navigation, form filling, or auth-gated content
+  - Pages with dynamic content or SPAs
+  - Any flow that requires clicks, form input, or complex navigation
+
+- **Reference**: [`.github/skills/playwright-mcp/SKILL.md`](skills/playwright-mcp/SKILL.md)
+
+- **Core tools**: `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_fill`, `browser_fill_form`, `browser_select_option`, `browser_evaluate`, `browser_take_screenshot`
+
+- **Workflow**: Navigate → Snapshot → Interact (using refs from snapshot) → Re-snapshot after DOM changes
+
+### Git Context & Workflow (GitKraken MCP)
+
+When agents need git context, history, or workflow operations:
+
+- **Use GitKraken MCP** for:
+  - `git_status` – Working tree status before/after work
+  - `git_log_or_diff` – Commit history, diffs, changes in revision range
+  - `git_blame` – Line-level authorship (reviewer)
+  - `git_branch`, `git_checkout` – Branch management
+  - `pull_request_get_detail`, `pull_request_get_comments` – PR context (reviewer)
+  - `issues_assigned_to_me`, `issues_get_detail` – Issue context
+
+- **Reference**: [`.github/skills/gitkraken-mcp/SKILL.md`](skills/gitkraken-mcp/SKILL.md)
+
+- **Guardrails**: Reviewer and Planner use git tools read-only; `git_add_or_commit`, `git_push`, `git_stash` only when explicitly requested or approved
+
+### Long-Term Memory (Pieces MCP)
+
+When agents need to find older edits, changes, or context that may exist outside the current repo:
+
+- **Use Pieces MCP** (`ask_pieces_ltm`) for:
+  - Edits made in other IDEs (Android Studio, VS Code) that may not be committed
+  - Previous implementations or decisions from past sessions
+  - Cross-IDE context before reimplementing or duplicating work
+  - Time-based recall: "What was I working on yesterday?"
+
+- **Reference**: [`.github/skills/pieces-mcp/SKILL.md`](skills/pieces-mcp/SKILL.md)
+
+- **Requirement**: PiecesOS running with LTM enabled; all data stored locally
+
 ---
 
 ## II. Zero-Elision Policy (Strictly Enforced)

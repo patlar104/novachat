@@ -14,6 +14,8 @@ tools:
   - grep_search
   - create_file (ui/, ui/theme/, MainActivity, strings.xml only)
   - apply_patch (ui scope only; never viewmodel, data, domain)
+  - GitKraken MCP (git_status, git_log_or_diff) - repo state and related changes
+  - Pieces MCP (ask_pieces_ltm) - find older Composable/UI edits from other IDEs
 handoffs:
   - agent: backend-agent
     label: "Connect to ViewModel"

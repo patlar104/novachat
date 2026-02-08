@@ -343,6 +343,44 @@ Provides:
 
 **Protocol**: All security examples are complete implementations
 
+### Playwright MCP Skill
+
+Location: [`.github/skills/playwright-mcp/`](skills/playwright-mcp)
+
+Provides:
+
+- **Use Playwright MCP instead of fetch** for web content retrieval and verification
+- Browser automation (navigate, snapshot, click, fill, form submit)
+- Verifying external docs (AGP release notes, Compose BOM, OWASP, etc.)
+- Multi-step flows, form filling, dynamic content
+
+**Protocol**: Use `browser_navigate` → `browser_snapshot` → interact with refs; re-snapshot after DOM changes
+
+### GitKraken MCP Skill
+
+Location: [`.github/skills/gitkraken-mcp/`](skills/gitkraken-mcp)
+
+Provides:
+
+- **Git context** – git_status, git_log_or_diff, git_blame
+- **Branch management** – git_branch, git_checkout
+- **PR/issue context** – pull_request_get_detail, issues_assigned_to_me, issues_get_detail
+- **Workflow** – git_add_or_commit, git_push, git_stash (when approved)
+
+**Protocol**: Reviewer/Planner use read-only; implementation agents use for context; commit/push only when explicitly requested
+
+### Pieces MCP Skill
+
+Location: [`.github/skills/pieces-mcp/`](skills/pieces-mcp)
+
+Provides:
+
+- **Find older edits** – `ask_pieces_ltm` queries Long-Term Memory for edits from other IDEs
+- **Cross-session context** – Previous implementations, decisions, notes
+- **Avoid rework** – Check LTM before reimplementing; find forgotten changes
+
+**Protocol**: Use when something might exist in LTM but not in current repo; PiecesOS + LTM must be running
+
 ---
 
 ## How to Use the Multi-Agent System
@@ -575,7 +613,13 @@ Review the authentication feature for:
 │   │   └── SKILL.md
 │   ├── compose-preview/
 │   │   └── SKILL.md
-│   └── security-check/
+│   ├── security-check/
+│   │   └── SKILL.md
+│   ├── playwright-mcp/
+│   │   └── SKILL.md
+│   ├── gitkraken-mcp/
+│   │   └── SKILL.md
+│   └── pieces-mcp/
 │       └── SKILL.md
 └── copilot-instructions.md
 ```

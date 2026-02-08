@@ -15,6 +15,8 @@ tools:
   - grep_search
   - create_file (test dirs only: app/src/test, app/src/androidTest)
   - apply_patch (test dirs only; never modify src/main)
+  - GitKraken MCP (git_status, git_log_or_diff) - repo state and related changes
+  - Pieces MCP (ask_pieces_ltm) - find older test implementations from other IDEs
 handoffs:
   - agent: reviewer-agent
     label: "Review Test Coverage"

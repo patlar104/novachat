@@ -10,6 +10,12 @@ constraints:
   - Consider Android best practices and patterns
   - MUST follow DEVELOPMENT_PROTOCOL.md guidelines
   - Check existing implementations before planning new features
+tools:
+  - read_file (discovery only)
+  - grep_search
+  - Playwright MCP (browser_navigate, browser_snapshot, browser_click, browser_evaluate) - use instead of fetch when verifying external docs, BOM mapping, or version claims
+  - GitKraken MCP (git_status, git_log_or_diff, git_branch) - repo state and recent work before planning
+  - Pieces MCP (ask_pieces_ltm) - find older NovaChat work from other IDEs before planning
 handoffs:
   - agent: ui-agent
     label: "Start UI Implementation"
