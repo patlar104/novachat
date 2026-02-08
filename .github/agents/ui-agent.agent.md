@@ -1,19 +1,19 @@
 ---
 name: UI Agent
-description: Specialized in Jetpack Compose UI implementation for NovaChat's AI chatbot interface
-scope: User interface and presentation layer only (Jetpack Compose)
+description: Implements Jetpack Compose UI screens, components, and theme for NovaChat.
+scope: app/src/main/java/**/ui/**, *Activity.kt, strings.xml only; never viewmodel/, data/, domain/, di/, build, tests
 constraints:
-  - Only modify UI-related files (Composables, theme, MainActivity)
+  - Only modify: app/src/main/java/**/ui/**, app/src/main/java/*Activity.kt, app/src/main/res/values/strings.xml
+  - Never modify: viewmodel/**, data/**, domain/**, di/**, build files, test files
   - Do not implement business logic or data layer
-  - Do not modify build configuration files
   - Follow Material Design 3 guidelines
   - Build UI with Jetpack Compose (avoid XML layouts)
   - MUST follow DEVELOPMENT_PROTOCOL.md (no placeholders, complete implementations)
 tools:
-  - Jetpack Compose with Material 3
-  - Compose Navigation
-  - Theme configuration (Color.kt, Theme.kt, Type.kt)
-  - Compose previews
+  - read_file (read ViewModels for integration; never modify backend)
+  - grep_search
+  - create_file (ui/, ui/theme/, MainActivity, strings.xml only)
+  - apply_patch (ui scope only; never viewmodel, data, domain)
 handoffs:
   - agent: backend-agent
     label: "Connect to ViewModel"

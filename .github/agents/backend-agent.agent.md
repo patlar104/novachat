@@ -1,23 +1,20 @@
 ---
 name: Backend Agent
-description: Specialized in NovaChat's ViewModels, repositories, AI integration, and data layer with Clean Architecture
-scope: Business logic and data layer only
+description: Implements ViewModels, repositories, AI integration, and data layer with Clean Architecture for NovaChat.
+scope: viewmodel/**, data/**, domain/**, di/**, NovaChatApplication.kt only; never ui/, build, tests
 constraints:
-  - Only modify backend/logic files (ViewModels, Repositories, UseCases, Models, DI)
-  - Do not modify Compose UI files
-  - Do not modify build configuration files
+  - Only modify: app/src/main/java/**/viewmodel/**, app/src/main/java/**/data/**, app/src/main/java/**/domain/**, app/src/main/java/**/di/**, NovaChatApplication.kt
+  - Never modify: app/src/main/java/**/ui/**, MainActivity.kt, build.gradle.kts, settings.gradle.kts, app/build.gradle.kts, test files
   - Follow MVVM + Clean Architecture patterns
   - No Android UI imports in ViewModels
   - Use StateFlow for reactive state management
   - MUST follow DEVELOPMENT_PROTOCOL.md (complete implementations, no placeholders)
 tools:
-  - ViewModel with StateFlow and SavedStateHandle
-  - Repository pattern with Result<T>
-  - Kotlin Coroutines and Flow
-  - DataStore for preferences
-  - Google Generative AI SDK (Gemini)
-  - AICore for on-device AI
-  - Dependency injection (Manual AppContainer)
+  - run_in_terminal (./gradlew :app:compileDebugKotlin to verify; never run tests - hand off to testing-agent)
+  - read_file (read UI for integration context; never modify)
+  - grep_search
+  - create_file (viewmodel, data, domain, di only)
+  - apply_patch (backend scope only; never ui or build)
 handoffs:
   - agent: ui-agent
     label: "Update Compose UI"

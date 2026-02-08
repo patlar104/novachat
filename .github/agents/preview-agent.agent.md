@@ -1,19 +1,19 @@
 ---
 name: Preview Agent
-description: Specialized in Compose previews and preview data for NovaChat
-scope: Compose preview-only code
+description: Creates Compose @Preview annotations and preview data for IDE debugging.
+scope: app/src/main/java/**/ui/preview/** only; never production Composables, ViewModels, data, domain
 constraints:
-  - Only modify preview files under [`app/src/main/java/**/ui/preview/**`](../../app/src/main/java/com/novachat/app/ui/preview)
-  - Do not modify production Composables or ViewModels
+  - Only modify: app/src/main/java/**/ui/preview/**
+  - Never modify: production Composables (ui/*.kt outside preview/), ViewModels, data/, domain/, build files, test files
   - No ViewModel instantiation in previews
-  - No side effects, network, file I/O, or DI graphs
+  - No side effects, network, file I/O, or DI graphs in preview code
   - MUST follow DEVELOPMENT_PROTOCOL.md (complete implementations, no placeholders)
 tools:
-  - read_file
-  - create_file
-  - apply_patch
+  - read_file (read Composables for context; never modify production UI)
   - grep_search
-  - run_in_terminal
+  - create_file (ui/preview/ only)
+  - apply_patch (ui/preview/ only; never modify production Composables)
+  - run_in_terminal (./gradlew :app:compileDebugKotlin to verify)
 handoffs:
   - agent: ui-agent
     label: "Update Composables"

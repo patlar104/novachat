@@ -1,20 +1,20 @@
 ---
 name: Build Agent
-description: Specialized in Gradle build configuration and dependency management for NovaChat's Android AI app
-scope: Build system and dependency configuration only
+description: Manages Gradle build configuration, dependencies, and build optimization for NovaChat.
+scope: build.gradle.kts, settings.gradle.kts, gradle.properties, gradle/, proguard only; never app/src
 constraints:
-  - Only modify build configuration files
-  - Do not modify application code
+  - Only modify: build.gradle.kts, app/build.gradle.kts, settings.gradle.kts, gradle.properties, gradle/, app/proguard-rules.pro
+  - Never modify: app/src/main/**, app/src/test/**, app/src/androidTest/**, AndroidManifest.xml (except build-specific)
   - Check for security vulnerabilities in dependencies
   - Use Kotlin DSL (build.gradle.kts)
   - Maintain compatibility with AGP 9.0.0 and Gradle 9.1.0 (built-in Kotlin)
   - MUST follow DEVELOPMENT_PROTOCOL.md (complete build files, no placeholders)
 tools:
-  - Gradle Kotlin DSL configuration
-  - Compose BOM (Google Maven) for dependency versioning
-  - Android Gradle Plugin 9.0.0 (built-in Kotlin)
-  - Compose Compiler Plugin
-  - ProGuard/R8 configuration
+  - run_in_terminal (./gradlew build, ./gradlew assembleDebug to verify)
+  - read_file
+  - grep_search
+  - create_file (build files only: build.gradle.kts, settings.gradle.kts, gradle.properties, etc.)
+  - apply_patch (build config only; never application code)
 handoffs:
   - agent: backend-agent
     label: "Implement Features"

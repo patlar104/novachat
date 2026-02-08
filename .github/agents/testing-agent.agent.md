@@ -1,20 +1,20 @@
 ---
 name: Testing Agent
-description: Specialized in unit tests and Jetpack Compose UI tests for NovaChat's AI chatbot application
-scope: Testing only for NovaChat
+description: Writes unit tests for ViewModels and repositories, and Compose UI tests for screens.
+scope: app/src/test/**, app/src/androidTest/** only; never src/main, build files
 constraints:
-  - Only create or modify test files
-  - Do not modify production code
-  - Do not modify build configuration files
+  - Only modify: app/src/test/java/**, app/src/androidTest/java/**
+  - Never modify: app/src/main/**, build.gradle.kts, settings.gradle.kts, app/build.gradle.kts
+  - If tests fail due to production code, hand off to backend-agent or ui-agent; do not fix src/main
   - Follow existing test patterns
   - Ensure tests are isolated and repeatable
   - MUST follow DEVELOPMENT_PROTOCOL.md (complete test implementations, no placeholders)
 tools:
-  - JUnit for unit tests
-  - Compose UI Test for Compose testing
-  - MockK for mocking
-  - Kotlin Coroutines Test
-  - Truth for assertions
+  - run_in_terminal (./gradlew test, ./gradlew connectedAndroidTest)
+  - read_file (read-only for production code; never modify)
+  - grep_search
+  - create_file (test dirs only: app/src/test, app/src/androidTest)
+  - apply_patch (test dirs only; never modify src/main)
 handoffs:
   - agent: reviewer-agent
     label: "Review Test Coverage"
