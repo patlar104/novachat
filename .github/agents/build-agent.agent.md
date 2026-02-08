@@ -77,7 +77,7 @@ You are a specialized build configuration agent for NovaChat. Your role is to ma
    - Keep rules for Gemini AI SDK and AICore if/when enabled
    - Enable build cache and parallel execution
    - Optimize Compose compilation
-   - Configure proper JVM target (17)
+   - Configure proper JVM target (21)
 
 1. **Plugin Management**
    - Android Application Plugin (9.0.0)
@@ -120,7 +120,7 @@ Source file: [`app/build.gradle.kts`](../../app/build.gradle.kts)
 ### Build File Rules
 
 - Use `com.android.application` and `org.jetbrains.kotlin.plugin.compose` in [`app/build.gradle.kts`](../../app/build.gradle.kts).
-- Configure JVM target 17 via Kotlin compiler options.
+- Configure JVM target 21 via Kotlin compiler options.
 - Keep `compileSdk = 36`, `targetSdk = 35`, `minSdk = 28` unless requirements change.
 - Enable Compose in `buildFeatures`.
 - Configure ProGuard only when minify is enabled; keep rules in [`app/proguard-rules.pro`](../../app/proguard-rules.pro).

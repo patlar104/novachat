@@ -789,7 +789,7 @@ Do you want:
 - **Version**: 9.0.0+
 - **Gradle**: 9.1.0+
 - **Build Features**: Compose, BuildConfig
-- **Kotlin Options**: JVM target 17
+- **Kotlin Options**: JVM target 21
 
 #### Jetpack Compose
 

@@ -162,11 +162,11 @@ chmod +x .githooks/*
 
 ### "CI failing locally passing"
 
-Ensure you're using JDK 17:
+Ensure you're using JDK 21:
 
 ```bash
 java -version
-# Should show version 17
+# Should show version 21
 ```
 
 ### "Tests too slow"

@@ -40,7 +40,7 @@ Located in `.github/workflows/`
 **Configuration**:
 
 - Runs on: `ubuntu-latest` (build), `macos-latest` (instrumentation)
-- JDK: 17 (Temurin distribution)
+- JDK: 21 (Temurin distribution)
 - Timeout: 30 minutes (build), 45 minutes (instrumentation)
 
 ---
@@ -462,11 +462,11 @@ plugins {
 
 Common causes:
 
-- Different JDK versions (CI uses JDK 17)
+- Different JDK versions (CI uses JDK 21)
 - Missing environment variables
 - Timezone/locale differences
 
-Fix: Ensure local environment matches CI (JDK 17, UTF-8, etc.)
+Fix: Ensure local environment matches CI (JDK 21, UTF-8, etc.)
 
 ---
 

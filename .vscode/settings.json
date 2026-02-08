@@ -1,3 +1,9 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic"
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "kotlin.languageServer.enabled": true,
+  "kotlin.scripts.buildScriptsEnabled": true,
+  "kotlin.indexing.enabled": true,
+  "kotlin.diagnostics.enabled": true,
+  "kotlin.debugAdapter.enabled": true,
+  "kotlin.externalSources.useKlsScheme": true
 }

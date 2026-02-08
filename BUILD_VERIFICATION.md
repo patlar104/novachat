@@ -11,7 +11,7 @@
 - **Android Gradle Plugin**: 9.0.0 (released January 2026)
 - **Gradle**: 9.1.0 (required for AGP 9.0.0)
 - **Kotlin**: 2.2.21 (via Compose Compiler Plugin)
-- **JDK**: 17
+- **JDK**: 21
 
 ### Android Configuration
 - **compileSdk**: 36
@@ -54,13 +54,13 @@
   ```kotlin
   // OLD (deprecated in AGP 9.0)
   kotlinOptions {
-      jvmTarget = "17"
+      jvmTarget = "21"
   }
 
   // NEW (AGP 9.0+)
   kotlin {
       compilerOptions {
-          jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+          jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
       }
   }
   ```
