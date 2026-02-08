@@ -1,6 +1,7 @@
 package com.novachat.app
 
 import android.app.Application
+import com.google.firebase.FirebaseApp
 import com.novachat.app.di.AppContainer
 
 /**
@@ -25,6 +26,8 @@ class NovaChatApplication : Application() {
     
     override fun onCreate() {
         super.onCreate()
+        
+        FirebaseApp.initializeApp(this)
         
         // Initialize dependency injection container
         container = AppContainer(this)

@@ -141,18 +141,18 @@ class SendMessageUseCaseTest {
     }
 
     @Test
-    fun invoke_validates_configuration_before_sending() = runTest {
-        // Arrange
+    fun invoke_succeeds_with_online_mode_without_api_key() = runTest {
+        // Arrange: Firebase AI handles auth; API key is optional for online mode
         val messageText = "message"
+        val configuration = AiConfiguration(
+            mode = AiMode.ONLINE,
+            apiKey = null,
+            modelParameters = ModelParameters.DEFAULT
+        )
 
         coEvery { mockMessageRepository.addMessage(any()) } returns Result.success(Unit)
-        // Return configuration without API key
-        coEvery { mockPreferencesRepository.observeAiConfiguration() } returns flowOf(
-            AiConfiguration(
-                mode = AiMode.ONLINE,
-                apiKey = null
-            )
-        )
+        coEvery { mockPreferencesRepository.observeAiConfiguration() } returns flowOf(configuration)
+        coEvery { mockAiRepository.generateResponse(messageText, configuration) } returns Result.success("response")
         coEvery { mockMessageRepository.updateMessage(any()) } returns Result.success(Unit)
 
         val useCase = createUseCase()
@@ -160,8 +160,8 @@ class SendMessageUseCaseTest {
         // Act
         val result = useCase(messageText)
 
-        // Assert: Should fail validation
-        result.isFailure.shouldBe(true)
+        // Assert: Succeeds with Firebase (API key not required)
+        result.isSuccess.shouldBe(true)
     }
 
     @Test

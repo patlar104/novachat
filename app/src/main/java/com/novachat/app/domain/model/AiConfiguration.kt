@@ -20,18 +20,16 @@ data class AiConfiguration(
     /**
      * Validates that the configuration is properly set up for the selected mode.
      *
+     * For ONLINE mode with Firebase AI: API key is optional (Firebase handles auth).
+     * For ONLINE mode with legacy SDK: API key would be required (not used with Firebase).
+     *
      * @return Result.success(Unit) if valid, Result.failure with explanation if invalid
      */
     fun validate(): Result<Unit> {
         return when (mode) {
             AiMode.ONLINE -> {
-                if (apiKey == null || !apiKey.isValid()) {
-                    Result.failure(
-                        IllegalStateException("API key is required for online mode")
-                    )
-                } else {
-                    Result.success(Unit)
-                }
+                // Firebase AI handles auth; API key is optional for user-provided keys
+                Result.success(Unit)
             }
             AiMode.OFFLINE -> {
                 // Offline mode doesn't require API key but needs device support
@@ -48,7 +46,7 @@ data class AiConfiguration(
      */
     fun supportsMode(targetMode: AiMode): Boolean {
         return when (targetMode) {
-            AiMode.ONLINE -> apiKey != null && apiKey.isValid()
+            AiMode.ONLINE -> true // Firebase handles auth; always available
             AiMode.OFFLINE -> true // Always attempt offline if requested
         }
     }
@@ -74,7 +72,7 @@ sealed interface AiMode {
     data object OFFLINE : AiMode
 
     companion object {
-        const val DEFAULT_MODEL_NAME = "gemini-1.5-flash"
+        const val DEFAULT_MODEL_NAME = "gemini-2.5-flash"
         
         /**
          * Converts a string representation to an AiMode.

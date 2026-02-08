@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     // Note: kotlin.android plugin is no longer needed in AGP 9.0.0 - Kotlin support is built-in
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.gms.google-services")
 }
 
 // Configure Kotlin compiler options for AGP 9.0+
@@ -79,8 +80,9 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     
-    // Google Generative AI (Gemini)
-    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    // Firebase AI Logic (Gemini)
+    implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
+    implementation("com.google.firebase:firebase-ai")
     
     // AICore for on-device AI
     // NOTE: AICore is experimental and not yet publicly available on Google Maven (as of Jan 2026)

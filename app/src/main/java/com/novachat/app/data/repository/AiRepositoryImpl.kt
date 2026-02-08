@@ -1,12 +1,15 @@
 package com.novachat.app.data.repository
 
 import android.content.Context
+import com.google.firebase.FirebaseApp
+import com.google.firebase.ai.FirebaseAI
+import com.google.firebase.ai.type.FirebaseAIException
+import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.generationConfig
 import com.novachat.app.domain.model.AiConfiguration
 import com.novachat.app.domain.model.AiMode
 import com.novachat.app.domain.repository.AiRepository
 import com.novachat.app.domain.repository.AiServiceStatus
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.generationConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,9 +19,9 @@ import java.io.IOException
 import java.net.UnknownHostException
 
 /**
- * Implementation of AiRepository using Google's Generative AI SDK.
+ * Implementation of AiRepository using Firebase AI Logic (Gemini).
  *
- * This implementation handles both online (Gemini) and offline (AICore) modes,
+ * This implementation handles both online (Gemini via Firebase) and offline (AICore) modes,
  * though offline mode is currently unavailable as AICore is not yet published
  * to Maven repositories.
  *
@@ -96,26 +99,21 @@ class AiRepositoryImpl(
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                // API key is required for online mode
-                val apiKey = configuration.apiKey
-                    ?: return@withContext Result.failure(
-                        IllegalStateException("API key is required for online mode")
+                // Create Firebase AI model with configuration (API key handled by Firebase)
+                val config = generationConfig {
+                    temperature = configuration.modelParameters.temperature
+                    topK = configuration.modelParameters.topK
+                    topP = configuration.modelParameters.topP
+                    maxOutputTokens = configuration.modelParameters.maxOutputTokens
+                }
+                val firebaseAI = FirebaseAI.getInstance(FirebaseApp.getInstance(), GenerativeBackend.googleAI())
+                val model = firebaseAI.generativeModel(
+                        modelName = AiMode.DEFAULT_MODEL_NAME,
+                        generationConfig = config
                     )
 
-                // Create Gemini model with configuration
-                val generativeModel = GenerativeModel(
-                    modelName = AiMode.DEFAULT_MODEL_NAME,
-                    apiKey = apiKey.value,
-                    generationConfig = generationConfig {
-                        temperature = configuration.modelParameters.temperature
-                        topK = configuration.modelParameters.topK
-                        topP = configuration.modelParameters.topP
-                        maxOutputTokens = configuration.modelParameters.maxOutputTokens
-                    }
-                )
-
                 // Generate content
-                val response = generativeModel.generateContent(message)
+                val response = model.generateContent(message)
                 val responseText = response.text
 
                 // Validate response
@@ -154,9 +152,20 @@ class AiRepositoryImpl(
                 )
                 Result.failure(error)
 
+            } catch (e: FirebaseAIException) {
+                // Firebase AI error (auth, quota, invalid request, etc.)
+                val error = Exception("AI service error: ${e.message}", e)
+                updateServiceStatus(
+                    AiServiceStatus.Error(
+                        error = error,
+                        isRecoverable = e.message?.contains("quota", ignoreCase = true) != true
+                    )
+                )
+                Result.failure(error)
+
             } catch (e: SecurityException) {
-                // API key error
-                val error = SecurityException("Invalid API key. Please check your settings.", e)
+                // Auth/API key error
+                val error = SecurityException("Invalid configuration. Please check Firebase setup.", e)
                 updateServiceStatus(
                     AiServiceStatus.Error(error = error, isRecoverable = false)
                 )

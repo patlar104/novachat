@@ -143,8 +143,8 @@ class PreferencesRepositoryImplTest {
     }
 
     @Test
-    fun configuration_validate_fails_without_api_key_in_online_mode() = runTest {
-        // Arrange
+    fun configuration_validate_succeeds_without_api_key_in_online_mode() = runTest {
+        // Arrange: Firebase AI handles auth; API key is optional
         val configWithoutKey = AiConfiguration(
             mode = AiMode.ONLINE,
             apiKey = null
@@ -154,7 +154,7 @@ class PreferencesRepositoryImplTest {
         val validationResult = configWithoutKey.validate()
 
         // Assert
-        validationResult.isFailure.shouldBe(true)
+        validationResult.isSuccess.shouldBe(true)
     }
 
     @Test
