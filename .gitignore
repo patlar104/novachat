@@ -109,3 +109,7 @@ Thumbs.db
 secrets.properties
 secret.properties
 api_keys.properties
+
+# Google Cloud SDK (local install, not part of project)
+google-cloud-sdk/
+google-cloud-cli*.tar.gz
