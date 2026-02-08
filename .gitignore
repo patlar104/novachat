@@ -102,6 +102,9 @@ fastlane/readme.md
 ehthumbs.db
 Thumbs.db
 
+# Playwright CLI session files
+.playwright-cli/
+
 # Secrets
 secrets.properties
 secret.properties
