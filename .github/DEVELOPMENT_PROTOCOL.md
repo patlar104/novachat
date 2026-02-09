@@ -32,7 +32,8 @@ This document defines the comprehensive development protocol for NovaChat to ens
 
 When agents need to fetch web content, verify external docs, or automate browser flows:
 
-- **Use Cursor's built-in browser** (cursor-ide-browser MCP, not fetch) for:
+- **Use Cursor's built-in browser** (cursor-ide-browser MCP) for:
+  - **Note**: This is Cursor's native browser automation, NOT Playwright MCP or external tools
   - Verifying AGP release notes, Compose BOM mapping, dependency versions
   - Multi-step navigation, form filling, or auth-gated content
   - Pages with dynamic content or SPAs
@@ -571,13 +572,13 @@ Example file:
 When updating any file, search for:
 - **Semantic synonyms**: "verify" vs "check" vs "validate" vs "ensure"
 - **Related concepts**: "fetch" vs "retrieve" vs "access" vs "get" vs "lookup"
-- **Tool references**: "browser" vs "playwright" vs "web" vs "navigate"
+- **Tool references**: "browser" vs "web" vs "navigate" vs "automation"
 - **Workflow mentions**: References to processes, protocols, or patterns
 - **Cross-file patterns**: Similar patterns in other files that might need updates
 
-**Example**: When updating "Playwright MCP" to "Cursor Browser":
-- ✅ Explicit: "Playwright MCP" → Updated
-- ✅ Explicit: "playwright-mcp" → Updated  
+**Example**: When updating a tool name (e.g., "OldTool" → "NewTool"):
+- ✅ Explicit: "OldTool" → Updated
+- ✅ Explicit: "old-tool" → Updated  
 - ❌ **MISSED**: "verify external docs" (implicit reference) → **MUST UPDATE**
 - ❌ **MISSED**: "check dependencies" (implicit reference) → **MUST UPDATE**
 - ❌ **MISSED**: "validate versions" (implicit reference) → **MUST UPDATE**
@@ -589,7 +590,7 @@ When updating any file, search for:
 #### Step 1: Identify Semantic Concepts
 
 Before updating, identify the semantic concepts involved:
-- **Tool names**: "Playwright MCP" → Also search for "browser", "web", "navigate", "fetch"
+- **Tool names**: "OldTool" → Also search for related terms like "browser", "web", "navigate", "fetch", "automation"
 - **Actions**: "verify" → Also search for "check", "validate", "ensure", "confirm"
 - **Concepts**: "external docs" → Also search for "official sources", "release notes", "documentation"
 
@@ -603,7 +604,7 @@ Use semantic search across the entire `.github/` directory for:
 #### Step 3: Update All Found References
 
 Update BOTH:
-- **Explicit references**: Exact name matches (e.g., "Playwright MCP")
+- **Explicit references**: Exact name matches (e.g., "OldTool", "old-tool")
 - **Implicit references**: Semantic matches (e.g., "verify external docs", "check dependencies")
 
 #### Step 4: Verify No References Were Missed
@@ -616,12 +617,12 @@ After updating, search again with:
 **Example Workflow**:
 
 ```text
-Updating: "Playwright MCP" → "Cursor Browser"
+Updating: "OldTool" → "NewTool"
 
 Step 1 - Identify concepts:
-- Tool: browser automation
+- Tool: browser automation (or whatever the tool does)
 - Action: verify/check/validate external sources
-- Purpose: web content retrieval
+- Purpose: web content retrieval (or tool's purpose)
 
 Step 2 - Search for implicit references:
 - "verify" → Found in build-agent.agent.md (line 48)
@@ -631,13 +632,13 @@ Step 2 - Search for implicit references:
 - "dependencies" → Found in security-check/SKILL.md (line 204)
 
 Step 3 - Update all found references:
-✅ Updated explicit: "Playwright MCP" → "Cursor Browser"
-✅ Updated implicit: "verify external docs" → "verify external docs using Cursor Browser"
-✅ Updated implicit: "check dependencies" → "check dependencies using Cursor Browser"
+✅ Updated explicit: "OldTool" → "NewTool"
+✅ Updated implicit: "verify external docs" → "verify external docs using NewTool"
+✅ Updated implicit: "check dependencies" → "check dependencies using NewTool"
 
 Step 4 - Verify:
 - Search again for "verify", "check", "validate" → All updated
-- Search for "fetch" → All updated to mention Cursor Browser
+- Search for related terms → All updated to mention NewTool
 ```
 
 #### Mandatory Checklist for Any Update
