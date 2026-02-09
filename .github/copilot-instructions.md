@@ -214,7 +214,7 @@ All code submissions MUST pass these checks (from DEVELOPMENT_PROTOCOL.md):
 
 ### Web Content Verification
 
-- **Use Cursor Browser** (not fetch) when verifying external docs, BOM mapping, AGP release notes, or security references. See [cursor-browser skill](skills/cursor-browser/SKILL.md).
+- **MANDATORY: Use ONLY Cursor's built-in browser** (cursor-ide-browser MCP) when verifying external docs, BOM mapping, AGP release notes, or security references. This is the ONLY browser tool available. Do NOT use fetch or any other browser tools. See [cursor-browser skill](skills/cursor-browser/SKILL.md).
 
 ### Git Context
 
@@ -440,6 +440,6 @@ Instructions:
   - `compose-preview/`: @Preview annotations and preview data providers
   - `material-design/`: Material 3 Compose components and theme configuration
   - `security-check/`: Security best practices and secure storage patterns
-  - `cursor-browser/`: **Use Cursor Browser instead of fetch** for web content verification, browser automation, docs lookup
+  - `cursor-browser/`: **MANDATORY: Use ONLY Cursor's built-in browser** (cursor-ide-browser MCP) for web content verification, browser automation, docs lookup - This is the ONLY browser tool available
   - `gitkraken-mcp/`: **Git context** – git_status, git_log_or_diff, git_blame, PR/issue tools
   - `pieces-mcp/`: **Long-Term Memory** – ask_pieces_ltm to find older edits from other IDEs

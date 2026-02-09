@@ -32,12 +32,13 @@ This document defines the comprehensive development protocol for NovaChat to ens
 
 When agents need to fetch web content, verify external docs, or automate browser flows:
 
-- **Use Cursor's built-in browser** (cursor-ide-browser MCP) for:
-  - **Note**: This is Cursor's native browser automation, NOT Playwright MCP or external tools
+- **MANDATORY: Use ONLY Cursor's built-in browser** (cursor-ide-browser MCP) for:
+  - **CRITICAL**: This is the ONLY browser tool available. Do NOT use fetch, web_fetch, Playwright MCP, or any other browser tools.
   - Verifying AGP release notes, Compose BOM mapping, dependency versions
   - Multi-step navigation, form filling, or auth-gated content
   - Pages with dynamic content or SPAs
   - Any flow that requires clicks, form input, or complex navigation
+  - **ALL web content retrieval** - There is no alternative browser tool
 
 - **Reference**: [`.github/skills/cursor-browser/SKILL.md`](skills/cursor-browser/SKILL.md)
 

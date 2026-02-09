@@ -1,6 +1,16 @@
 # Cursor Browser Skill
 
-Use **Cursor's built-in browser** (cursor-ide-browser MCP) instead of fetch for web content retrieval, verification, and browser automation. Cursor's browser provides full browser control (navigation, form filling, snapshots, screenshots) that fetch cannot do.
+**MANDATORY**: Use **ONLY Cursor's built-in browser** (cursor-ide-browser MCP) for all web content retrieval, verification, and browser automation. 
+
+**DO NOT USE:**
+- ❌ `fetch` or `mcp_web_fetch` tools
+- ❌ Playwright MCP or any external browser automation tools
+- ❌ Any other browser automation tools
+
+**MUST USE:**
+- ✅ **Cursor's built-in browser** (cursor-ide-browser MCP) - This is the ONLY browser tool available to agents
+
+Cursor's built-in browser provides full browser control (navigation, form filling, snapshots, screenshots) that fetch cannot do.
 
 ## When to Use Cursor Browser (NOT fetch)
 
