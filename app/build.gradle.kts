@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     // Note: kotlin.android plugin is no longer needed in AGP 9.0.0 - Kotlin support is built-in
     id("org.jetbrains.kotlin.plugin.compose")
+    id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.gms.google-services")
 }
 
@@ -87,6 +88,7 @@ dependencies {
     // Note: All KTX modules removed - KTX functionality now in main modules (BOM v34.0.0+)
     implementation("com.google.firebase:firebase-functions")
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-dataconnect")
     
     // AICore for on-device AI
     // NOTE: AICore is experimental and not yet publicly available on Google Maven (as of Jan 2026)
