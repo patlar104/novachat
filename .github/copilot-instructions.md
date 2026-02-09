@@ -20,6 +20,12 @@ NovaChat is a modern Android AI chatbot built with **Jetpack Compose + MVVM + Cl
 - **AI Mode**: ONLINE only (Gemini 1.5 Flash) - AICore commented out in [build.gradle.kts](../app/build.gradle.kts)
 - **Compose BOM source**: Google Maven only; mapping at [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping)
 
+## Tooling Rules (MCP)
+
+- **Git context**: Use GitKraken MCP for `git_status`, `git_log_or_diff`, and `git_blame` (see [gitkraken-mcp skill](skills/gitkraken-mcp/SKILL.md)).
+- **Web verification**: Use Cursor's built-in browser MCP for any external docs (see [cursor-browser skill](skills/cursor-browser/SKILL.md)).
+- **Long-term memory**: Use Pieces MCP when prior edits may exist (see [pieces-mcp skill](skills/pieces-mcp/SKILL.md)).
+
 ## Multi-Agent System
 
 This project uses specialized agents with clear boundaries. See [AGENTS.md](AGENTS.md) for complete documentation.
