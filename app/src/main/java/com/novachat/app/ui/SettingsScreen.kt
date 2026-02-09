@@ -18,7 +18,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.novachat.app.R
 import com.novachat.app.domain.model.AiConfiguration
 import com.novachat.app.domain.model.AiMode
-import com.novachat.app.domain.model.ApiKey
 import com.novachat.app.domain.model.ThemeMode
 import com.novachat.app.domain.model.ThemePreferences
 import com.novachat.app.presentation.model.SettingsUiEvent
@@ -27,7 +26,6 @@ import com.novachat.app.presentation.model.UiEffect
 import com.novachat.app.presentation.viewmodel.SettingsViewModel
 import com.novachat.app.presentation.viewmodel.ThemeViewModel
 import com.novachat.app.ui.theme.NovaChatTheme
-import kotlinx.coroutines.delay
 
 /**
  * Settings screen composable using the new architecture.
@@ -46,8 +44,6 @@ fun SettingsScreen(
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val draftApiKey by viewModel.draftApiKey.collectAsStateWithLifecycle()
-    val showSaveSuccess by viewModel.showSaveSuccess.collectAsStateWithLifecycle()
     
     val snackbarHostState = remember { SnackbarHostState() }
     
@@ -131,12 +127,7 @@ fun SettingsScreen(
                 )
                 SettingsScreenContent(
                     configuration = state.configuration,
-                    draftApiKey = draftApiKey,
-                    onDraftApiKeyChange = { viewModel.updateDraftApiKey(it) },
-                    onSaveApiKey = { viewModel.onEvent(SettingsUiEvent.SaveApiKey(draftApiKey)) },
                     onChangeAiMode = { viewModel.onEvent(SettingsUiEvent.ChangeAiMode(it)) },
-                    showSaveSuccess = showSaveSuccess,
-                    onDismissSaveSuccess = { viewModel.onEvent(SettingsUiEvent.DismissSaveSuccess) },
                     themePrefs = themePrefs,
                     onThemeModeChange = { themeViewModel.setThemeMode(it) },
                     onDynamicColorChange = { themeViewModel.setDynamicColor(it) },
@@ -237,12 +228,7 @@ private fun ThemeSection(
 @Composable
 fun SettingsScreenContent(
     configuration: AiConfiguration,
-    draftApiKey: String,
-    onDraftApiKeyChange: (String) -> Unit,
-    onSaveApiKey: () -> Unit,
     onChangeAiMode: (AiMode) -> Unit,
-    showSaveSuccess: Boolean,
-    onDismissSaveSuccess: () -> Unit,
     themePrefs: ThemePreferences,
     onThemeModeChange: (ThemeMode) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
@@ -319,53 +305,27 @@ fun SettingsScreenContent(
             }
         }
         
-        // API Key Configuration
+        // Online Mode Info Card
         if (configuration.mode == AiMode.ONLINE) {
-            Card(modifier = Modifier.fillMaxWidth()) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.api_key_label),
+                        text = stringResource(R.string.online_mode_info_title),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    
-                    OutlinedTextField(
-                        value = draftApiKey,
-                        onValueChange = onDraftApiKeyChange,
-                        label = { Text(stringResource(R.string.api_key_hint)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-                    
                     Text(
-                        text = stringResource(R.string.api_key_source), // Fixed: Hardcoded string
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary
+                        text = stringResource(R.string.online_mode_info_description),
+                        style = MaterialTheme.typography.bodyMedium
                     )
-                    
-                    Button(
-                        onClick = onSaveApiKey,
-                        modifier = Modifier.align(Alignment.End),
-                        enabled = draftApiKey.isNotBlank()
-                    ) {
-                        Text(stringResource(R.string.save))
-                    }
-                    
-                    if (showSaveSuccess) {
-                        LaunchedEffect(Unit) { // Use Unit as key for a non-restarting effect unless state changes
-                            delay(3000) // Display for 3 seconds
-                            onDismissSaveSuccess()
-                        }
-                        
-                        Text(
-                            text = stringResource(R.string.api_key_saved),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
                 }
             }
         }
@@ -407,7 +367,7 @@ fun SettingsScreenContent(
 
 private val mockOnlineConfig = AiConfiguration(
     mode = AiMode.ONLINE,
-    apiKey = ApiKey.unsafe("sk-test-api-key-1234567890"),
+    apiKey = null, // API key not required - Firebase Functions handles it
 )
 
 private val mockOfflineConfig = AiConfiguration(
@@ -421,31 +381,7 @@ fun SettingsScreenContentOnlinePreview() {
     NovaChatTheme {
         SettingsScreenContent(
             configuration = mockOnlineConfig,
-            draftApiKey = "sk-test-api-key-1234567890",
-            onDraftApiKeyChange = {},
-            onSaveApiKey = {},
             onChangeAiMode = {},
-            showSaveSuccess = false,
-            onDismissSaveSuccess = {},
-            themePrefs = ThemePreferences.DEFAULT,
-            onThemeModeChange = {},
-            onDynamicColorChange = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Settings - Online Mode Saved")
-@Composable
-fun SettingsScreenContentOnlineSavedPreview() {
-    NovaChatTheme {
-        SettingsScreenContent(
-            configuration = mockOnlineConfig,
-            draftApiKey = "sk-test-api-key-1234567890",
-            onDraftApiKeyChange = {},
-            onSaveApiKey = {},
-            onChangeAiMode = {},
-            showSaveSuccess = true,
-            onDismissSaveSuccess = {},
             themePrefs = ThemePreferences.DEFAULT,
             onThemeModeChange = {},
             onDynamicColorChange = {}
@@ -459,12 +395,7 @@ fun SettingsScreenContentOfflinePreview() {
     NovaChatTheme {
         SettingsScreenContent(
             configuration = mockOfflineConfig,
-            draftApiKey = "",
-            onDraftApiKeyChange = {},
-            onSaveApiKey = {},
             onChangeAiMode = {},
-            showSaveSuccess = false,
-            onDismissSaveSuccess = {},
             themePrefs = ThemePreferences.DEFAULT,
             onThemeModeChange = {},
             onDynamicColorChange = {}

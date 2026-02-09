@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.novachat.app.domain.model.AiMode
-import com.novachat.app.domain.model.ApiKey
 import com.novachat.app.domain.usecase.ObserveAiConfigurationUseCase
 import com.novachat.app.domain.usecase.UpdateAiConfigurationUseCase
 import com.novachat.app.presentation.model.SettingsUiEvent
@@ -49,19 +48,8 @@ class SettingsViewModel(
     val uiEffect = _uiEffect.receiveAsFlow()
     
     private companion object {
-        private const val KEY_DRAFT_API_KEY = "draft_api_key"
-        private const val KEY_SHOW_SAVE_SUCCESS = "show_save_success"
+        // Removed API key state - no longer needed with Firebase Functions proxy
     }
-    
-    val draftApiKey: StateFlow<String> = savedStateHandle.getStateFlow(
-        key = KEY_DRAFT_API_KEY,
-        initialValue = ""
-    )
-    
-    val showSaveSuccess: StateFlow<Boolean> = savedStateHandle.getStateFlow(
-        key = KEY_SHOW_SAVE_SUCCESS,
-        initialValue = false
-    )
     
     init {
         observeConfiguration()
@@ -78,11 +66,6 @@ class SettingsViewModel(
                     }
                 }
                 .collect { configuration ->
-                    // Update draft with current API key if draft is empty
-                    if (draftApiKey.value.isEmpty()) {
-                        updateDraftApiKey(configuration.apiKey?.value ?: "")
-                    }
-                    
                     _uiState.update {
                         SettingsUiState.Success(configuration = configuration)
                     }
@@ -92,63 +75,17 @@ class SettingsViewModel(
     
     fun onEvent(event: SettingsUiEvent) {
         when (event) {
-            is SettingsUiEvent.SaveApiKey -> handleSaveApiKey(event.apiKey)
+            is SettingsUiEvent.SaveApiKey -> {
+                // API key saving no longer needed - Firebase Functions handles authentication
+                // Keep event handler for compatibility but do nothing
+            }
             is SettingsUiEvent.ChangeAiMode -> handleChangeAiMode(event.mode)
             is SettingsUiEvent.TestConfiguration -> handleTestConfiguration()
-            is SettingsUiEvent.DismissSaveSuccess -> handleDismissSaveSuccess()
+            is SettingsUiEvent.DismissSaveSuccess -> {
+                // No-op - kept for compatibility
+            }
             is SettingsUiEvent.NavigateBack -> handleNavigateBack()
             is SettingsUiEvent.ScreenLoaded -> handleScreenLoaded()
-        }
-    }
-    
-    fun updateDraftApiKey(apiKey: String) {
-        savedStateHandle[KEY_DRAFT_API_KEY] = apiKey
-    }
-    
-    private fun handleSaveApiKey(apiKeyString: String) {
-        viewModelScope.launch {
-            val currentState = _uiState.value
-            
-            if (currentState !is SettingsUiState.Success) {
-                emitEffect(UiEffect.ShowToast("Please wait for settings to load"))
-                return@launch
-            }
-            
-            val apiKey = if (apiKeyString.isBlank()) {
-                null
-            } else {
-                ApiKey.create(apiKeyString)
-            }
-            
-            if (apiKey == null && apiKeyString.isNotBlank()) {
-                emitEffect(UiEffect.ShowSnackbar(
-                    message = "Invalid API key format",
-                    actionLabel = "Dismiss"
-                ))
-                return@launch
-            }
-            
-            val updatedConfig = currentState.configuration.copy(apiKey = apiKey)
-            val result = updateAiConfigurationUseCase(updatedConfig)
-            
-            result.fold(
-                onSuccess = {
-                    savedStateHandle[KEY_SHOW_SAVE_SUCCESS] = true
-                    emitEffect(UiEffect.ShowToast("API key saved successfully"))
-                    
-                    // Auto-hide success message after 2 seconds
-                    viewModelScope.launch {
-                        kotlinx.coroutines.delay(2000)
-                        savedStateHandle[KEY_SHOW_SAVE_SUCCESS] = false
-                    }
-                },
-                onFailure = { exception ->
-                    emitEffect(UiEffect.ShowSnackbar(
-                        message = "Failed to save: ${exception.message}",
-                        actionLabel = "Dismiss"
-                    ))
-                }
-            )
         }
     }
     
@@ -199,9 +136,6 @@ class SettingsViewModel(
         }
     }
     
-    private fun handleDismissSaveSuccess() {
-        savedStateHandle[KEY_SHOW_SAVE_SUCCESS] = false
-    }
     
     private fun handleNavigateBack() {
         emitEffect(UiEffect.NavigateBack)

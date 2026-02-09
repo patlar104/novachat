@@ -121,3 +121,11 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Firebase Functions
+functions/node_modules/
+functions/lib/
+functions/.env
+functions/.env.local
+functions/*.log
+functions/.firebase/

@@ -970,8 +970,11 @@ dependencies {
     // Lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
 
-    // Google AI
-    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    // Firebase (for AI proxy)
+    implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
+    // Note: All KTX modules removed - KTX functionality now in main modules (BOM v34.0.0+)
+    implementation("com.google.firebase:firebase-functions")
+    implementation("com.google.firebase:firebase-auth")
 }
 ```
 

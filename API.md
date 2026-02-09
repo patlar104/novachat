@@ -2,23 +2,29 @@
 
 ## Overview
 
-NovaChat uses two AI APIs:
-1. **Google Gemini API** - Cloud-based AI for online mode
+NovaChat uses Firebase Cloud Functions as a proxy for AI requests:
+1. **Firebase Functions Proxy** - Cloud-based AI via Firebase Functions (`aiProxy`)
 2. **Google AICore** - On-device AI for offline mode (planned; currently unavailable)
 
-## Google Gemini API
+## Firebase Functions Proxy
+
+### Architecture
+
+NovaChat uses Firebase Cloud Functions (`aiProxy`) deployed at `us-central1-novachat-13010.cloudfunctions.net/aiProxy` to handle AI requests. This provides:
+- **Centralized API key management** - API keys stored securely on the server
+- **Authentication** - All requests require Firebase Authentication (anonymous sign-in)
+- **Usage tracking** - Server logs all AI usage for analytics
 
 ### Setup
 
-1. Visit [Google AI Studio](https://ai.google.dev/)
-2. Sign in with your Google account  
-3. Click "Get API Key"
-4. Create a new project or select existing
-5. Copy the generated API key
+**No user setup required** - The app automatically:
+1. Signs in anonymously with Firebase Authentication
+2. Calls the Firebase Function proxy for AI requests
+3. Handles authentication and API key management server-side
 
 ### Usage in NovaChat
 
-The app uses the Gemini 1.5 Flash model for:
+The app uses the Gemini 2.5 Flash model (via Firebase Functions proxy) for:
 - Fast responses
 - Cost-effective operations
 - Good balance of quality and speed
@@ -43,10 +49,11 @@ Common errors and solutions:
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| `API key not valid` | Invalid or expired key | Generate new key in AI Studio |
-| `Quota exceeded` | Rate limit reached | Wait or upgrade plan |
+| `UNAUTHENTICATED` | User not signed in | App should auto-sign-in; check Firebase Auth setup |
+| `PERMISSION_DENIED` | User lacks permission | Check Firebase project permissions |
+| `UNAVAILABLE` | Service unavailable | Check internet connection; retry later |
 | `Network error` | No internet connection | Check connectivity |
-| `Model not found` | Wrong model name | Verify model name in code |
+| `INTERNAL` | Server error | Check Firebase Function logs; contact support |
 
 ## Google AICore
 
@@ -77,38 +84,39 @@ AICore provides:
 
 ## API Comparison
 
-| Feature | Gemini API | AICore |
-|---------|-----------|--------|
+| Feature | Firebase Functions Proxy | AICore |
+|---------|------------------------|--------|
 | Internet Required | Yes | No |
-| API Key Required | Yes | No |
+| API Key Required | No (server-managed) | No |
 | Cost | Free tier + paid | Free |
 | Response Quality | Excellent | Good |
 | Speed | Fast | Very Fast |
-| Privacy | Cloud-based | On-device |
+| Privacy | Cloud-based (via proxy) | On-device |
 | Availability | All devices | Limited and device-dependent |
 
 ## Security Best Practices
 
-### API Key Storage
+### API Key Management
 
-✅ **Do:**
-- Store API keys in DataStore (encrypted)
-- Use environment variables for development
-- Keep keys out of version control
-- Rotate keys periodically
+✅ **Current Architecture:**
+- API keys stored securely on Firebase server (not in app)
+- Firebase Functions handles API key management
+- No user API keys required - app works automatically
+- Anonymous authentication for user identification
 
 ❌ **Don't:**
 - Hard-code keys in source code
-- Share keys publicly
-- Commit keys to Git
-- Use the same key for multiple apps
+- Store API keys in the Android app
+- Make direct API calls to external services
 
 ### Data Privacy
 
-**Online Mode (Gemini):**
-- Messages sent to Google servers
+**Online Mode (Firebase Functions Proxy):**
+- Messages sent to Firebase Functions proxy
+- Proxy forwards to Gemini API (Google servers)
 - Subject to [Google's Privacy Policy](https://policies.google.com/privacy)
-- Data used to improve models (unless opted out)
+- Usage logged server-side for analytics
+- Anonymous authentication used for user identification
 
 **Offline Mode (AICore):**
 - All processing on-device (when available)
@@ -119,11 +127,13 @@ AICore provides:
 
 ### Sending a Message (Online)
 
+The app automatically uses Firebase Functions proxy - no API key needed:
+
 ```kotlin
 val repository = AiRepositoryImpl(context)
 val config = AiConfiguration(
     mode = AiMode.ONLINE,
-    apiKey = ApiKey.create("your-api-key-here")
+    apiKey = null  // Not required - Firebase Functions handles it
 )
 val result = repository.generateResponse(
     message = "Hello, how are you?",
@@ -191,14 +201,7 @@ val fullMessage = "$systemPrompt\n\nUser: $userMessage"
 
 ### Streaming Responses
 
-For real-time responses, use the streaming API:
-
-```kotlin
-generativeModel.generateContentStream(message)
-    .collect { chunk ->
-        println(chunk.text)
-    }
-```
+Streaming responses are not currently supported via Firebase Functions proxy. The function returns complete responses.
 
 ### Error Retry Logic
 
@@ -247,17 +250,18 @@ Log.d("Performance", "Response time: ${duration}ms")
 
 ## Resources
 
-- [Gemini API Documentation](https://ai.google.dev/docs)
+- [Firebase Cloud Functions Documentation](https://firebase.google.com/docs/functions)
+- [Firebase Authentication Documentation](https://firebase.google.com/docs/auth)
 - [AICore Documentation](https://developer.android.com/ai/aicore)
-- [Google AI Studio](https://ai.google.dev/)
 - [Android AI Developer Guide](https://developer.android.com/ai)
 
 ## Support
 
 For API issues:
-- Gemini API: [Google AI Support](https://ai.google.dev/support)
+- Firebase Functions: Check Firebase Console logs for function errors
 - AICore: [Android Issue Tracker](https://issuetracker.google.com/issues?q=componentid:192708%2B)
 
 For app-specific issues:
 - Check the [GitHub Issues](https://github.com/patlar104/novachat/issues)
 - Read the [Development Guide](DEVELOPMENT.md)
+- See [Firebase Proxy Architecture](docs/FIREBASE_AI_MIGRATION_PLAN.md)

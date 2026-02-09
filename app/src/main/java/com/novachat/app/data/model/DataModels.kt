@@ -84,7 +84,7 @@ data class MessageEntity(
  * All complex types from the domain model are flattened to primitives.
  *
  * @property aiModeValue The AI mode as a string ("ONLINE" or "OFFLINE")
- * @property apiKeyValue The API key string (null if not set)
+ * @property apiKeyValue Deprecated - Always null. Kept for backward compatibility. Firebase Functions handles authentication.
  * @property temperature Model temperature parameter (0.0 - 2.0)
  * @property topK Model top-K parameter
  * @property topP Model top-P parameter (0.0 - 1.0)
@@ -94,7 +94,7 @@ data class MessageEntity(
  */
 data class AiConfigurationEntity(
     val aiModeValue: String,
-    val apiKeyValue: String?,
+    val apiKeyValue: String? = null, // Deprecated - Firebase Functions proxy handles authentication
     val temperature: Float = 0.7f,
     val topK: Int = 40,
     val topP: Float = 0.95f,
@@ -145,6 +145,8 @@ data class AiConfigurationEntity(
 
     /**
      * Checks if an API key is configured.
+     * 
+     * **Deprecated**: Always returns false. API keys are not used with Firebase Functions proxy.
      */
-    fun hasApiKey(): Boolean = !apiKeyValue.isNullOrBlank()
+    fun hasApiKey(): Boolean = false // Always false - Firebase Functions handles authentication
 }

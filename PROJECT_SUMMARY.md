@@ -8,7 +8,7 @@ NovaChat is a complete, production-ready Android AI chatbot application that dem
 
 ### Core Functionality
 **Dual AI Mode Support**
-- Online mode using Google Gemini 1.5 Flash API
+- Online mode using Firebase Functions proxy (Gemini 2.5 Flash via server)
 - Offline mode planned with Google AICore for on-device AI (currently unavailable)
 - Seamless switching between modes via Settings
 
@@ -57,7 +57,8 @@ NovaChat is a complete, production-ready Android AI chatbot application that dem
 - **DataStore Preferences**: 1.2.0 (key-value storage)
 
 ### AI Libraries
-- **Google Generative AI SDK**: 0.9.0 (Gemini API)
+- **Firebase Functions**: Proxy for Gemini API (server-side)
+- **Firebase Authentication**: Anonymous sign-in
 - **Google AICore**: Not yet available on Maven (offline mode disabled)
 
 ### Other Dependencies

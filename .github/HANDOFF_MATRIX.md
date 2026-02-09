@@ -139,9 +139,13 @@ Task: Add Google Generative AI SDK dependency
 Reference: specs/PHASE_010_GEMINI_INTEGRATION.md
 
 Dependencies Needed:
-□ Google AI Client Library (com.google.ai.client.generativeai)
-   Version: 0.9.0+ (2026 standard)
-□ Kotlin Serialization (for API models)
+□ Firebase Functions (com.google.firebase:firebase-functions)
+   Via Firebase BOM 34.9.0
+   Note: KTX functionality now in main module (BOM v34.0.0+)
+□ Firebase Auth (com.google.firebase:firebase-auth)
+   Via Firebase BOM 34.9.0
+   Note: KTX functionality now in main module (BOM v34.0.0+)
+□ Kotlin Coroutines Play Services (for Firebase Tasks await())
    Version: 1.6.0+
 
 Dependency Compatibility:

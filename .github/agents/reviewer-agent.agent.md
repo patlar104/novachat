@@ -134,6 +134,9 @@ You are a specialized code review agent for Android development. Your role is to
 - [ ] Proper use of Kotlin Flow
 - [ ] Thread-safe operations
 - [ ] Appropriate use of Dispatchers
+- [ ] **Firebase Functions Proxy**: AiRepositoryImpl uses `functions.getHttpsCallable("aiProxy")` - no direct API calls
+- [ ] **Authentication Check**: NovaChatApplication initializes Firebase Auth and signs in anonymously
+- [ ] **Error Handling**: FirebaseFunctionsException handled with proper error code mapping
 
 ### Test Review
 
@@ -177,6 +180,8 @@ You are a specialized code review agent for Android development. Your role is to
 
 - Hardcoded secrets (API keys, tokens, passwords).
 - SQL injection risks (string‑built queries with user input).
+- Direct API calls to Gemini API (should use Firebase Functions proxy).
+- Missing Firebase Authentication initialization.
 - Cleartext traffic enabled without justification.
 
 ### Architecture Red Flags

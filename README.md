@@ -5,7 +5,7 @@ NovaChat is a modern Android AI chatbot application that supports online (cloud-
 ## Features
 
 - **Dual AI Mode Support**
-  - Online mode using Google Gemini API (gemini-1.5-flash)
+  - Online mode using Firebase Functions proxy (Gemini 2.5 Flash via server)
   - Offline mode planned with Google AICore for on-device AI (Android 15+), currently unavailable
 - Modern chat interface built with Jetpack Compose
 - Easy settings management for API keys and AI mode selection
@@ -19,7 +19,8 @@ NovaChat is a modern Android AI chatbot application that supports online (cloud-
 - **Build System**: Gradle 9.1.0 with Android Gradle Plugin 9.0.0
 - **Architecture**: MVVM with ViewModels
 - **AI Libraries**:
-  - Google Generative AI SDK 0.9.0 (Gemini)
+  - Firebase Functions (proxy for Gemini API)
+  - Firebase Authentication (anonymous sign-in)
   - Google AICore (not yet available on Maven; offline mode disabled)
 - **Data Storage**: DataStore Preferences
 - **Async**: Kotlin Coroutines
@@ -41,12 +42,9 @@ git clone https://github.com/patlar104/novachat.git
 cd novachat
 ```
 
-### 2. Get a Google AI API Key (for Online Mode)
+### 2. Firebase Setup
 
-1. Visit [Google AI Studio](https://ai.google.dev/)
-2. Sign in with your Google account
-3. Create a new API key
-4. Copy the API key for use in the app
+The app uses Firebase Cloud Functions as a proxy for AI requests. No API key setup required - the app automatically signs in anonymously and uses the Firebase proxy.
 
 ### 3. Build and Run
 
@@ -58,11 +56,11 @@ cd novachat
 ### 4. Configure the App
 
 1. Launch the app on your device
-2. Tap the Settings icon (gear icon) in the top-right corner
-3. Choose your AI mode:
-   - **Online (Gemini)**: Cloud-based, requires internet and API key
-  - **Offline (On-device)**: Planned; requires Android 15+ with AICore support (currently unavailable)
-4. If using Online mode, enter your API key and tap "Save"
+2. The app automatically signs in anonymously with Firebase
+3. Tap the Settings icon (gear icon) in the top-right corner
+4. Choose your AI mode:
+   - **Online (Gemini)**: Cloud-based via Firebase Functions proxy, requires internet
+   - **Offline (On-device)**: Planned; requires Android 15+ with AICore support (currently unavailable)
 5. Return to the chat screen and start chatting!
 
 ## Building from Command Line
@@ -115,15 +113,15 @@ app/
 
 ### Settings Screen
 - Toggle between Online and Offline AI modes
-- Configure your Google AI API key for online mode
 - View app information
+- (API key configuration is optional - Firebase Functions handles authentication)
 
 ### AI Modes
 
-#### Online Mode (Google Gemini)
-- Uses Google's Gemini 1.5 Flash model
+#### Online Mode (Firebase Functions Proxy)
+- Uses Firebase Cloud Functions proxy to access Gemini 2.5 Flash model
 - Requires internet connection
-- Requires API key from Google AI Studio
+- No API key required - Firebase handles authentication server-side
 - Advanced capabilities and up-to-date knowledge
 
 #### Offline Mode (On-device)
@@ -151,9 +149,10 @@ This app requires access to Google's Maven repository. If you're building in a r
 - Offline mode is currently disabled because AICore is not yet available on Maven
 - Use Online mode instead
 
-### "Please set your API key in Settings"
-- Open Settings and enter a valid Google AI API key
-- Get a key from https://ai.google.dev/
+### "Authentication required" error
+- Check that Anonymous Authentication is enabled in Firebase Console
+- Verify Firebase project is properly configured
+- Check app logs for sign-in errors
 
 ### Build errors
 - Ensure you have JDK 17 installed

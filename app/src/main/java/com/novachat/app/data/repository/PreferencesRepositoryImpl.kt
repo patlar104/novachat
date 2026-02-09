@@ -91,10 +91,11 @@ class PreferencesRepositoryImpl(
             }
             .map { preferences ->
                 // Read all values from DataStore with fallback to defaults
+                // Note: API key is always null - Firebase Functions handles authentication
                 val entity = AiConfigurationEntity(
                     aiModeValue = preferences[KEY_AI_MODE] 
                         ?: AiConfigurationEntity.MODE_ONLINE,
-                    apiKeyValue = preferences[KEY_API_KEY],
+                    apiKeyValue = null, // Always null - Firebase Functions proxy handles auth
                     temperature = preferences[KEY_TEMPERATURE] ?: 0.7f,
                     topK = preferences[KEY_TOP_K] ?: 40,
                     topP = preferences[KEY_TOP_P] ?: 0.95f,
@@ -143,13 +144,10 @@ class PreferencesRepositoryImpl(
             val entity = AiConfigurationMapper.toEntity(configuration)
 
             // Atomic update of all preferences
+            // Note: API key is always cleared - Firebase Functions handles authentication
             context.dataStore.edit { preferences ->
                 preferences[KEY_AI_MODE] = entity.aiModeValue
-                if (entity.apiKeyValue != null) {
-                    preferences[KEY_API_KEY] = entity.apiKeyValue
-                } else {
-                    preferences.remove(KEY_API_KEY)
-                }
+                preferences.remove(KEY_API_KEY) // Always clear - not used with Firebase proxy
                 preferences[KEY_TEMPERATURE] = entity.temperature
                 preferences[KEY_TOP_K] = entity.topK
                 preferences[KEY_TOP_P] = entity.topP
@@ -197,26 +195,23 @@ class PreferencesRepositoryImpl(
     /**
      * Updates only the API key, preserving other configuration.
      *
-     * This is a convenience method for the common operation of setting
-     * or changing the API key.
+     * **Deprecated**: API keys are not used with Firebase Functions proxy.
+     * This method always clears the API key for backward compatibility.
      *
-     * @param apiKey The new API key (null to clear)
+     * @param apiKey The new API key (ignored - always cleared)
      * @return Result.success if saved successfully, Result.failure on error
      */
     override suspend fun updateApiKey(apiKey: ApiKey?): Result<Unit> {
         return try {
+            // Always clear API key - Firebase Functions handles authentication
             context.dataStore.edit { preferences ->
-                if (apiKey != null) {
-                    preferences[KEY_API_KEY] = apiKey.value
-                } else {
-                    preferences.remove(KEY_API_KEY)
-                }
+                preferences.remove(KEY_API_KEY)
             }
 
             Result.success(Unit)
 
         } catch (e: IOException) {
-            Result.failure(IOException("Failed to save API key", e))
+            Result.failure(IOException("Failed to clear API key", e))
         } catch (e: Exception) {
             Result.failure(e)
         }

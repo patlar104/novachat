@@ -100,6 +100,10 @@ Rules:
 
 Rules:
 
+- **Firebase Functions Proxy**: NovaChat uses Firebase Cloud Functions as a proxy for AI requests - API keys are stored server-side, never in the app.
+- All AI requests go through Firebase Functions (`aiProxy`) which handles authentication and API key management.
+- Never make direct API calls to external AI services from the Android app.
+
 - Set `android:usesCleartextTraffic="false"` in [`AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml).
 - If a network security config is needed, place it in `app/src/main/res/xml/` and set `android:networkSecurityConfig` in the manifest.
 

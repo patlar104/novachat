@@ -174,7 +174,8 @@ object AiConfigurationMapper {
             AiMode.OFFLINE -> AiConfigurationEntity.MODE_OFFLINE
         }
 
-        val apiKeyValue = configuration.apiKey?.value
+        // API key always null - Firebase Functions proxy handles authentication server-side
+        val apiKeyValue = null
 
         return AiConfigurationEntity(
             aiModeValue = aiModeValue,
@@ -210,11 +211,9 @@ object AiConfigurationMapper {
             )
         }
 
-        val apiKey = entity.apiKeyValue?.let { keyValue ->
-            ApiKey.create(keyValue) ?: throw IllegalArgumentException(
-                "Invalid API key format in entity"
-            )
-        }
+        // API key always null - Firebase Functions proxy handles authentication
+        // Legacy API keys in storage are ignored
+        val apiKey: ApiKey? = null
 
         val modelParameters = ModelParameters(
             temperature = entity.temperature,

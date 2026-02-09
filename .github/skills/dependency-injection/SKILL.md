@@ -43,6 +43,7 @@ Rules:
 - Use lazy singletons for data sources, repositories, and use cases.
 - ViewModel factories live in `AppContainer` and accept `SavedStateHandle`.
 - Composables access the container via `LocalContext.current.appContainer`.
+- **Firebase Dependencies**: AppContainer provides Firebase Functions and Firebase Auth instances for repositories. These are initialized in NovaChatApplication and passed to repositories that need them (e.g., AiRepositoryImpl).
 
 
 ---
@@ -92,6 +93,7 @@ Rules:
 - `AppContainer` owns repositories, use cases, and ViewModel factories.
 - Repositories are singletons reused across ViewModels.
 - UseCases depend on repositories and are singletons.
+- **Firebase Dependencies**: Firebase Functions and Firebase Auth instances are provided to repositories (e.g., AiRepositoryImpl) that need them. These are initialized in NovaChatApplication before AppContainer creation.
 
 ---
 

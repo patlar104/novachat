@@ -94,14 +94,14 @@ interface AiRepository {
      *
      * This is the primary method for AI interaction. It handles:
      * - Selecting the appropriate AI service based on configuration
-     * - Network communication (for online mode)
+     * - Network communication via Firebase Functions proxy (for online mode)
      * - Error handling and retry logic
      * - Response parsing and validation
      *
      * The operation is cancellable and respects coroutine cancellation.
      *
      * @param message The user's message to send to the AI
-     * @param configuration The AI configuration specifying mode, API key, and parameters
+     * @param configuration The AI configuration specifying mode and model parameters
      * @return Result.success with AI response text, Result.failure with error details
      */
     suspend fun generateResponse(
@@ -182,7 +182,7 @@ interface PreferencesRepository {
      * Observes the current AI configuration.
      *
      * Emits the complete configuration whenever any part of it changes
-     * (mode, API key, or model parameters).
+     * (mode or model parameters). API key is deprecated and always null.
      *
      * @return Flow emitting current AI configuration
      */
@@ -212,9 +212,10 @@ interface PreferencesRepository {
     /**
      * Updates only the API key, preserving other configuration.
      *
-     * This is a convenience method for setting/changing the API key.
+     * **Deprecated**: API keys are not used with Firebase Functions proxy.
+     * This method is kept for backward compatibility but always clears the API key.
      *
-     * @param apiKey The new API key (null to clear)
+     * @param apiKey The new API key (ignored - always cleared)
      * @return Result.success if saved successfully, Result.failure on error
      */
     suspend fun updateApiKey(apiKey: com.novachat.app.domain.model.ApiKey?): Result<Unit>

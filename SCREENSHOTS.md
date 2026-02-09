@@ -34,8 +34,7 @@ The settings interface includes:
 
 ### Online Mode Settings
 - Radio button selection for Online mode
-- Text field to enter your Gemini API key
-- Link to get an API key from Google AI Studio
+- (API key field is optional/legacy - Firebase Functions handles authentication)
 - Save button to persist your settings
 - Confirmation message when saved
 
@@ -74,10 +73,10 @@ Then launch the app from your device's app drawer.
 
 ### Recommended Testing Scenarios
 
-1. **First Launch**: See the empty state and settings prompt
-2. **Configure Settings**: Add your API key and select AI mode
-3. **Send Messages**: Try various prompts to test AI responses
-4. **Error Handling**: Try sending without API key (online mode)
+1. **First Launch**: See the empty state and automatic Firebase sign-in
+2. **Configure Settings**: Select AI mode (no API key required)
+3. **Send Messages**: Try various prompts to test AI responses via Firebase proxy
+4. **Error Handling**: Test network errors and Firebase authentication errors
 5. **Mode Switching**: Toggle between online and offline modes
 6. **Theme Testing**: Switch device between light and dark mode
 

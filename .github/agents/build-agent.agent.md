@@ -53,7 +53,11 @@ You are a specialized build configuration agent for NovaChat. Your role is to ma
 
 1. **Dependency Management for NovaChat**
    - Manage Jetpack Compose BOM (currently 2026.01.01)
-   - Configure Google Generative AI SDK (gemini-ai version 0.9.0)
+   - Configure Firebase dependencies (Firebase BOM 34.9.0):
+     - `firebase-functions` - Required for Firebase Functions proxy (KTX now in main module)
+     - `firebase-auth` - Required for anonymous authentication (KTX now in main module)
+     - `firebase-ai` - Legacy (kept for compatibility)
+   - Configure `kotlinx-coroutines-play-services` - Required for Firebase Tasks await() support
    - Configure AICore dependencies (when available)
    - Manage AndroidX libraries (Lifecycle, Navigation, DataStore)
    - Use Kotlin 2.2.10+ (AGP 9 built-in Kotlin requirement); project uses 2.2.21 with Compose Compiler Plugin
@@ -132,6 +136,23 @@ Source file: [`app/build.gradle.kts`](../../app/build.gradle.kts)
 - Configure ProGuard only when minify is enabled; keep rules in [`app/proguard-rules.pro`](../../app/proguard-rules.pro).
 - Use the Compose BOM for Compose dependencies and avoid per‑artifact versions.
 - Keep dependency versions aligned with official sources and project baselines.
+
+### Firebase Functions Dependencies
+
+**CRITICAL**: NovaChat uses Firebase Cloud Functions proxy for AI requests. Required dependencies:
+
+- `firebase-functions` - Firebase Functions SDK (via Firebase BOM 34.9.0)
+  - **Note**: KTX functionality is now in the main module (BOM v34.0.0+). Use `FirebaseFunctions.getInstance()` instead of `Firebase.functions()` extension.
+- `firebase-auth` - Firebase Authentication SDK (via Firebase BOM 34.9.0)
+  - **Note**: KTX functionality is now in the main module (BOM v34.0.0+). Use `FirebaseAuth.getInstance()` instead of `Firebase.auth` extension.
+- `kotlinx-coroutines-play-services` - Coroutines support for Firebase Tasks await()
+
+**Maintenance Rules:**
+- Always use Firebase BOM for version management: `implementation(platform("com.google.firebase:firebase-bom:34.9.0"))`
+- Never remove Firebase Functions dependencies - app depends on proxy architecture
+- When updating Firebase BOM, verify function compatibility with deployed `aiProxy` function
+- Use `FirebaseFunctions.getInstance("region")` and `FirebaseAuth.getInstance()` APIs - KTX extensions deprecated in BOM v34.0.0+
+- See `docs/FIREBASE_AI_MIGRATION_PLAN.md` for architecture details
 
 ## Project-level build.gradle.kts
 

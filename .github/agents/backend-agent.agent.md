@@ -58,7 +58,7 @@ You are a specialized backend agent for NovaChat's AI chatbot application. Your 
    - Use SavedStateHandle for transient UI state (like draft message)
 
 2. **Repository Pattern**
-   - **AiRepository**: Interface for AI interactions (Gemini API, AICore)
+   - **AiRepository**: Interface for AI interactions via Firebase Functions proxy
    - **PreferencesRepository**: Interface for settings (API key, AI mode)
    - **MessageRepository**: Interface for chat history
    - Abstract data sources and provide clean APIs
@@ -69,7 +69,7 @@ You are a specialized backend agent for NovaChat's AI chatbot application. Your 
    - Create data models in [`data/model/`](../../app/src/main/java/com/novachat/app/data/model)
    - Implement mappers in [`data/mapper/`](../../app/src/main/java/com/novachat/app/data/mapper) for DTO → Domain conversions
    - Use DataStore Preferences for settings persistence
-   - Integrate Google Generative AI SDK for Gemini
+   - **Firebase Functions Integration**: AiRepositoryImpl MUST use Firebase Functions callable (`aiProxy`) - never call Gemini API directly
 
 4. **Domain Layer**
    - Create use cases in [`domain/`](../../app/src/main/java/com/novachat/app/domain) for business logic
@@ -144,6 +144,42 @@ NovaChat uses a manual dependency injection container located in [`di/AppContain
 
 - Importing Compose UI packages in ViewModels.
 - Performing UI operations inside ViewModels.
+
+## Firebase Proxy Integration Rules
+
+**CRITICAL**: NovaChat uses Firebase Cloud Functions as a proxy for AI requests. When modifying AI integration:
+
+1. **Always use Firebase Functions callable** - Never call Gemini API directly from Android app
+   - Get instance: `FirebaseFunctions.getInstance("us-central1")` (KTX extensions deprecated in BOM v34.0.0+)
+   - Use `functions.getHttpsCallable("aiProxy")` in AiRepositoryImpl
+   - Function name: `aiProxy` (deployed at us-central1)
+   - Reference: `functions/src/index.ts` for function implementation
+
+2. **Authentication is required** - All function calls require Firebase Authentication
+   - Anonymous sign-in happens automatically in `NovaChatApplication.onCreate()`
+   - Check `auth.currentUser` before making function calls
+   - Handle UNAUTHENTICATED errors gracefully
+
+3. **Error handling** - Handle FirebaseFunctionsException with proper error codes:
+   - UNAUTHENTICATED - User not signed in
+   - PERMISSION_DENIED - User lacks permission
+   - INVALID_ARGUMENT - Invalid request format
+   - INTERNAL - Server error
+   - UNAVAILABLE - Service unavailable
+
+4. **Request format** - Function expects:
+   - `message`: String (user's message)
+   - `modelParameters`: Map with temperature, topK, topP, maxOutputTokens
+
+5. **Response format** - Function returns:
+   - `response`: String (AI generated text)
+   - `model`: String (model name, e.g., "gemini-2.5-flash")
+
+6. **Maintenance** - When updating AI integration:
+   - Update `AiRepositoryImpl.generateOnlineResponse()` to match function contract
+   - Ensure `NovaChatApplication` initializes Firebase Auth
+   - Never add direct API calls - always use the proxy function
+   - See `docs/FIREBASE_AI_MIGRATION_PLAN.md` for architecture details
 
 ## Constraints Cross-Check (Repo Paths)
 

@@ -1,138 +1,59 @@
-# Firebase AI Logic Migration Plan
+# Firebase Proxy Architecture
 
-Migration from deprecated `com.google.ai.client.generativeai` to Firebase AI Logic for NovaChat.
+NovaChat uses Firebase Cloud Functions as a proxy for AI requests, providing centralized API key management, authentication, and usage tracking.
 
-**Completed:** Firebase project, Android app registration, `google-services.json`, Gemini Developer API, `firebase init`.
+## Current Architecture
 
----
+**Firebase Function:** `aiProxy` deployed at `us-central1-novachat-13010.cloudfunctions.net/aiProxy`
 
-## Remaining Steps
+**Authentication:** Anonymous Firebase Authentication (auto-sign-in on app startup)
 
-### 1. Gradle — Replace SDK & Add Firebase AI
+**Dependencies Required:**
+- `firebase-functions` - Firebase Functions SDK (KTX functionality now in main module, BOM v34.0.0+)
+- `firebase-auth` - Firebase Authentication SDK (KTX functionality now in main module, BOM v34.0.0+)
+- `kotlinx-coroutines-play-services` - Coroutines support for Firebase Tasks
 
-**App `build.gradle.kts`:**
+**API Usage:**
+- Use `FirebaseFunctions.getInstance("region")` instead of deprecated `Firebase.functions()` extension
+  - Example: `FirebaseFunctions.getInstance("us-central1")`
+- Use `FirebaseAuth.getInstance()` instead of deprecated `Firebase.auth` extension
+  - Example: `FirebaseAuth.getInstance()`
 
-- Remove: `implementation("com.google.ai.client.generativeai:generativeai:0.9.0")`
-- Add:
+## Key Files
 
-```kotlin
-implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
-implementation("com.google.firebase:firebase-ai")
-```
+- `NovaChatApplication.kt` - Initializes Firebase Auth and signs in anonymously
+- `AiRepositoryImpl.kt` - Calls Firebase Function `aiProxy` instead of direct API calls
+- `functions/src/index.ts` - Cloud Function implementation (TypeScript)
 
----
+## Maintenance Rules
 
-### 2. Initialize Firebase in Application
+### Backend Agent Responsibilities
 
-In `NovaChatApplication.kt`:
+When modifying AI integration:
+- Always use Firebase Functions callable (`functions.getHttpsCallable("aiProxy")`)
+- Never call Gemini API directly from Android app
+- Ensure anonymous authentication is initialized before making requests
+- Handle FirebaseFunctionsException with proper error codes (UNAUTHENTICATED, PERMISSION_DENIED, etc.)
+- Validate authentication state before calling functions
 
-```kotlin
-import com.google.firebase.FirebaseApp
+### Function Deployment
 
-class NovaChatApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        FirebaseApp.initializeApp(this)
-        // ...
-    }
-}
-```
+- Function code lives in `functions/src/index.ts`
+- Deploy with: `firebase deploy --only functions`
+- API key stored in Firebase config/secrets (GEMINI_API_KEY parameter)
+- Function requires Firebase ID token authentication
 
----
+### Authentication Flow
 
-### 3. Rewrite `AiRepositoryImpl.kt`
-
-Replace the old SDK with Firebase AI Logic:
-
-**Remove:**
-```kotlin
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.generationConfig
-
-val generativeModel = GenerativeModel(
-    modelName = AiMode.DEFAULT_MODEL_NAME,
-    apiKey = apiKey.value,
-    generationConfig = generationConfig { ... }
-)
-val response = generativeModel.generateContent(message)
-```
-
-**Add:**
-```kotlin
-import com.google.firebase.FirebaseApp
-import com.google.firebase.ai.FirebaseAI
-import com.google.firebase.ai.type.GenerativeBackend
-import com.google.firebase.ai.type.generationConfig
-
-// Use FirebaseApp.getInstance() — NOT Firebase.app (KTX extension removed from Firebase BOM v34+)
-val firebaseAI = FirebaseAI.getInstance(FirebaseApp.getInstance(), GenerativeBackend.googleAI())
-val model = firebaseAI.generativeModel(
-    modelName = "gemini-2.5-flash",
-    generationConfig = generationConfig { ... }
-)
-val response = model.generateContent(message)
-```
-
-**Differences:**
-- No API key in app — Firebase handles it
-- Model: `gemini-2.5-flash` (replaces `gemini-1.5-flash`)
-- `generateContent()` remains a suspend function in Kotlin
-- Use `FirebaseApp.getInstance()` for the default app — `Firebase.app` is a KTX extension removed from Firebase BOM v34.0.0
-
----
-
-### 4. Update `AiConfiguration` / `AiMode`
-
-- Set `DEFAULT_MODEL_NAME` to `"gemini-2.5-flash"`
-- With Gemini Developer API, online mode can omit user API key — Firebase stores it
-
----
-
-### 5. API Key in Settings (Optional)
-
-For Gemini Developer API, user API key is not required. You can:
-
-- **Remove** API key from Settings, DataStore, and `AiConfiguration` for online mode
-- **Keep** if you want users to provide their own key (e.g. for Vertex AI backend)
-
----
-
-### 6. Adjust Tests
-
-Update or remove tests that depend on the old SDK or `ApiKey`.
-
----
+- App automatically signs in anonymously in `NovaChatApplication.onCreate()`
+- Sign-in happens asynchronously in applicationScope
+- Repository checks `auth.currentUser` before making function calls
+- Errors handled gracefully if sign-in fails
 
 ## Checklist
 
-- [x] Firebase project
-- [x] Android app + `google-services.json`
-- [x] Firebase AI Logic (Gemini Developer API)
-- [x] `firebase init` + `google-services` plugin
-- [x] Add Firebase BoM and `firebase-ai`, remove old SDK
-- [x] Initialize Firebase in `Application`
-- [x] Rewrite `AiRepositoryImpl` to use Firebase AI
-- [x] Update model to `gemini-2.5-flash`
-- [x] Simplify API key handling (optional; Firebase handles auth)
-- [x] Update `AiConfiguration` / `AiMode`
-- [x] Adjust tests
-- [ ] Manually test chat flow
-
----
-
-## Troubleshooting
-
-### Unresolved reference 'app'
-
-If you see `Unresolved reference 'app'` when using `Firebase.app`:
-
-- **Cause:** The `Firebase.app` extension property was in Firebase KTX modules, which were removed from the Firebase BOM in v34.0.0.
-- **Fix:** Use `FirebaseApp.getInstance()` instead. It's the standard API and is always available in the core Firebase library.
-
----
-
-## References
-
-- [Firebase AI Logic – Get Started](https://firebase.google.com/docs/ai-logic/get-started)
-- [Firebase AI Logic models](https://firebase.google.com/docs/ai-logic/models)
-- [Firebase Android setup](https://firebase.google.com/docs/android/setup)
+- [x] Firebase project configured
+- [x] Cloud Function deployed
+- [x] Anonymous Authentication enabled in Firebase Console
+- [x] Android app uses Firebase Functions proxy
+- [x] Error handling for all Firebase Functions exceptions

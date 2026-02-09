@@ -79,10 +79,14 @@ dependencies {
     
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
     
-    // Firebase AI Logic (Gemini)
+    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
-    implementation("com.google.firebase:firebase-ai")
+    // Note: firebase-ai removed - using Firebase Functions proxy instead
+    // Note: All KTX modules removed - KTX functionality now in main modules (BOM v34.0.0+)
+    implementation("com.google.firebase:firebase-functions")
+    implementation("com.google.firebase:firebase-auth")
     
     // AICore for on-device AI
     // NOTE: AICore is experimental and not yet publicly available on Google Maven (as of Jan 2026)

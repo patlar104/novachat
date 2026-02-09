@@ -7,28 +7,28 @@ package com.novachat.app.domain.model
  * following the principle of explicit configuration over implicit defaults.
  *
  * @property mode The AI execution mode (online cloud-based or offline on-device)
- * @property apiKey Optional API key for online mode, null for offline mode
+ * @property apiKey Deprecated - Not used with Firebase Functions proxy. Kept for backward compatibility, always null.
  * @property modelParameters Parameters controlling AI generation behavior
  *
  * @since 1.0.0
  */
 data class AiConfiguration(
     val mode: AiMode,
-    val apiKey: ApiKey?,
+    val apiKey: ApiKey? = null, // Deprecated - Firebase Functions handles authentication server-side
     val modelParameters: ModelParameters = ModelParameters.DEFAULT
 ) {
     /**
      * Validates that the configuration is properly set up for the selected mode.
      *
-     * For ONLINE mode with Firebase AI: API key is optional (Firebase handles auth).
-     * For ONLINE mode with legacy SDK: API key would be required (not used with Firebase).
+     * For ONLINE mode: Uses Firebase Functions proxy - no API key required.
+     * For OFFLINE mode: Requires device support (AICore not yet available).
      *
      * @return Result.success(Unit) if valid, Result.failure with explanation if invalid
      */
     fun validate(): Result<Unit> {
         return when (mode) {
             AiMode.ONLINE -> {
-                // Firebase AI handles auth; API key is optional for user-provided keys
+                // Firebase Functions proxy handles authentication - no API key needed
                 Result.success(Unit)
             }
             AiMode.OFFLINE -> {
@@ -60,8 +60,8 @@ data class AiConfiguration(
  */
 sealed interface AiMode {
     /**
-     * Online mode using cloud-based AI services (Google Gemini).
-     * Requires internet connectivity and a valid API key.
+     * Online mode using Firebase Functions proxy to access Gemini AI.
+     * Requires internet connectivity. No API key needed - Firebase handles authentication server-side.
      */
     data object ONLINE : AiMode
 

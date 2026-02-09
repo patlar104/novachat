@@ -52,9 +52,37 @@ Then open the folder in Android Studio:
 - Navigate to the cloned folder
 - Click OK
 
-### 3. Wait for Gradle Sync
+### 3. Set Up Firebase
 
-When you first open the project:
+**This is a critical step!** This app uses Firebase for its backend. You need to connect the app to your own Firebase project.
+
+1. **Create a Firebase Project:**
+   - Go to the [Firebase Console](https://console.firebase.google.com/).
+   - Click "Add project" and follow the on-screen instructions.
+
+2. **Add an Android App to your Project:**
+   - In your new project, click the Android icon (</>) to add an Android app.
+   - For **Android package name**, enter `com.novachat.app`.
+   - You can leave the other fields blank.
+   - Click "Register app".
+
+3. **Download `google-services.json`:**
+   - After registering, you will be prompted to download a `google-services.json` file. Download it.
+   - **Important:** If you miss this, go to Project Settings (⚙️) > Your apps, and you can download it from there.
+
+4. **Add the file to your project:**
+   - Move the downloaded `google-services.json` file into the `app` folder of the project (`novachat/app/`).
+
+5. **Add SHA-1 Fingerprints (to prevent runtime errors):**
+   - In the Firebase Console, go to Project Settings (⚙️) > Your apps > SHA certificate fingerprints.
+   - Click "Add fingerprint".
+   - In Android Studio, open the **Terminal** and run `./gradlew signingReport`.
+   - Find the SHA-1 key for the `debug` variant and copy it.
+   - Paste the SHA-1 key into the Firebase console and save.
+
+### 4. Wait for Gradle Sync
+
+When you first open the project (or after adding `google-services.json`):
 1. Android Studio will show "Gradle Sync" in the bottom
 2. This downloads all dependencies (may take 5-10 minutes)
 3. Watch the progress bar at the bottom
@@ -65,7 +93,7 @@ When you first open the project:
 - Try: File → Invalidate Caches → Invalidate and Restart
 - Ensure JDK 17 is installed
 
-### 4. Set Up an Android Device
+### 5. Set Up an Android Device
 
 **Option A: Use a Real Device (Recommended)**
 1. Enable Developer Options on your phone:
@@ -83,14 +111,6 @@ When you first open the project:
 4. Download a system image (API 35 / Android 16)
 5. Click "Finish" and start the emulator
 
-### 5. Get a Google AI API Key
-
-1. Visit: https://ai.google.dev/
-2. Sign in with your Google account
-3. Click "Get API Key" button
-4. Choose "Create API key in new project"
-5. Copy the generated key (keep it safe!)
-
 ### 6. Run the App
 
 1. In Android Studio toolbar, select your device
@@ -100,11 +120,10 @@ When you first open the project:
 
 ### 7. Configure the App
 
-1. When app opens, tap the ⚙️ (Settings) icon
-2. Choose "Online (Gemini)" mode
-3. Paste your API key in the text field
-4. Tap "Save"
-5. Tap the back arrow to return to chat
+1. When app opens, it will automatically sign in anonymously with Firebase
+2. Tap the ⚙️ (Settings) icon
+3. Choose "Online (Gemini)" mode (default)
+4. Tap the back arrow to return to chat
 
 ### 8. Start Chatting!
 
@@ -115,9 +134,18 @@ When you first open the project:
 
 ## Common Beginner Issues
 
+### "App Crashes on Launch" or "SecurityException"
+
+**Problem**: The app can't connect to Firebase.
+**Solution**:
+1. Ensure you have correctly completed **Step 3: Set Up Firebase**.
+2. Make sure `google-services.json` is in the `novachat/app/` directory.
+3. Check that you have added the SHA-1 fingerprint to your Firebase project settings.
+4. Try: Build → Clean Project → Rebuild
+
 ### "Gradle Sync Failed"
 
-**Problem**: Dependencies couldn't download  
+**Problem**: Dependencies couldn't download
 **Solution**:
 1. Check internet connection
 2. Wait a few minutes and retry
@@ -126,7 +154,7 @@ When you first open the project:
 
 ### "SDK Not Found"
 
-**Problem**: Android SDK not installed  
+**Problem**: Android SDK not installed
 **Solution**:
 1. Tools → SDK Manager
 2. Check "Android 16 (API 35)" and "Android 17 (API 36)"
@@ -135,7 +163,7 @@ When you first open the project:
 
 ### "Device Not Detected"
 
-**Problem**: Phone not showing in device list  
+**Problem**: Phone not showing in device list
 **Solution**:
 1. Check USB cable is connected
 2. Try a different USB port
@@ -145,21 +173,12 @@ When you first open the project:
 
 ### "Build Failed with Errors"
 
-**Problem**: Code won't compile  
+**Problem**: Code won't compile
 **Solution**:
 1. Build → Clean Project
 2. Build → Rebuild Project
 3. Check the "Build" tab for specific errors
 4. File → Invalidate Caches → Restart
-
-### "App Crashes on Launch"
-
-**Problem**: App opens then closes immediately  
-**Solution**:
-1. Check Logcat in Android Studio (bottom panel)
-2. Look for error messages in red
-3. Ensure target device is API 28 or higher
-4. Try: Build → Clean Project → Rebuild
 
 ## Learning Resources
 

@@ -143,6 +143,7 @@ Rules:
 - Convert data source responses into `Result<T>`.
 - Handle mode switches (online/offline) explicitly.
 - Catch exceptions and return `Result.failure`.
+- **Firebase Functions Integration**: AiRepositoryImpl uses Firebase Functions callable (`aiProxy`) as the data source - never direct API calls. Function handles authentication, API key management, and external service communication.
 
 ### DI Layer (AppContainer)
 

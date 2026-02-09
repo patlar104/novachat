@@ -199,7 +199,10 @@ sealed interface SettingsUiEvent {
     /**
      * User wants to save a new API key.
      *
-     * @property apiKey The API key to save
+     * **Deprecated**: API keys are not used with Firebase Functions proxy.
+     * This event is kept for backward compatibility but is handled as a no-op.
+     *
+     * @property apiKey The API key to save (ignored)
      */
     data class SaveApiKey(val apiKey: String) : SettingsUiEvent
 

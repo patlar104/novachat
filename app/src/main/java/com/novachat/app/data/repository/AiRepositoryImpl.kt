@@ -1,11 +1,9 @@
 package com.novachat.app.data.repository
 
 import android.content.Context
-import com.google.firebase.FirebaseApp
-import com.google.firebase.ai.FirebaseAI
-import com.google.firebase.ai.type.FirebaseAIException
-import com.google.firebase.ai.type.GenerativeBackend
-import com.google.firebase.ai.type.generationConfig
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.FirebaseFunctionsException
 import com.novachat.app.domain.model.AiConfiguration
 import com.novachat.app.domain.model.AiMode
 import com.novachat.app.domain.repository.AiRepository
@@ -14,14 +12,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.UnknownHostException
 
 /**
- * Implementation of AiRepository using Firebase AI Logic (Gemini).
+ * Implementation of AiRepository using Firebase Cloud Functions as a proxy.
  *
- * This implementation handles both online (Gemini via Firebase) and offline (AICore) modes,
+ * This implementation handles both online (via Firebase Functions proxy) and offline (AICore) modes,
  * though offline mode is currently unavailable as AICore is not yet published
  * to Maven repositories.
  *
@@ -35,6 +34,9 @@ import java.net.UnknownHostException
 class AiRepositoryImpl(
     private val context: Context
 ) : AiRepository {
+    
+    private val functions: FirebaseFunctions = FirebaseFunctions.getInstance("us-central1")
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     /**
      * Current service status.
@@ -54,7 +56,7 @@ class AiRepositoryImpl(
      * 4. Updates service status based on the result
      *
      * @param message The user's message to send
-     * @param configuration AI configuration including mode, API key, and parameters
+     * @param configuration AI configuration including mode and model parameters
      * @return Result.success with response text, Result.failure with error details
      */
     override suspend fun generateResponse(
@@ -85,12 +87,14 @@ class AiRepositoryImpl(
     }
 
     /**
-     * Generates a response using the online Gemini API.
+     * Generates a response using Firebase Cloud Functions proxy.
      *
-     * This method handles network communication, API errors, and response parsing.
+     * This method calls the Firebase Function 'aiProxy' which handles
+     * authentication (Firebase Auth), server-side API key management, and communication with Gemini API.
+     * No client-side API key is required - authentication is handled automatically.
      *
      * @param message The user's message
-     * @param configuration AI configuration with API key and parameters
+     * @param configuration AI configuration with model parameters
      * @return Result with response text or error
      */
     private suspend fun generateOnlineResponse(
@@ -99,22 +103,36 @@ class AiRepositoryImpl(
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                // Create Firebase AI model with configuration (API key handled by Firebase)
-                val config = generationConfig {
-                    temperature = configuration.modelParameters.temperature
-                    topK = configuration.modelParameters.topK
-                    topP = configuration.modelParameters.topP
-                    maxOutputTokens = configuration.modelParameters.maxOutputTokens
-                }
-                val firebaseAI = FirebaseAI.getInstance(FirebaseApp.getInstance(), GenerativeBackend.googleAI())
-                val model = firebaseAI.generativeModel(
-                        modelName = AiMode.DEFAULT_MODEL_NAME,
-                        generationConfig = config
+                // Ensure user is authenticated (required for Firebase Functions)
+                if (auth.currentUser == null) {
+                    val error = SecurityException(
+                        "Authentication required. Please wait for sign-in to complete."
                     )
+                    updateServiceStatus(
+                        AiServiceStatus.Error(error = error, isRecoverable = true)
+                    )
+                    return@withContext Result.failure(error)
+                }
 
-                // Generate content
-                val response = model.generateContent(message)
-                val responseText = response.text
+                // Prepare request data
+                val data = hashMapOf(
+                    "message" to message,
+                    "modelParameters" to hashMapOf(
+                        "temperature" to configuration.modelParameters.temperature,
+                        "topK" to configuration.modelParameters.topK,
+                        "topP" to configuration.modelParameters.topP,
+                        "maxOutputTokens" to configuration.modelParameters.maxOutputTokens
+                    )
+                )
+
+                // Call Firebase Function
+                val function = functions.getHttpsCallable("aiProxy")
+                val result = function.call(data).await()
+                
+                // Extract response from result
+                @Suppress("UNCHECKED_CAST")
+                val resultData = result.data as? Map<String, Any>
+                val responseText = resultData?.get("response") as? String
 
                 // Validate response
                 if (responseText.isNullOrBlank()) {
@@ -152,22 +170,39 @@ class AiRepositoryImpl(
                 )
                 Result.failure(error)
 
-            } catch (e: FirebaseAIException) {
-                // Firebase AI error (auth, quota, invalid request, etc.)
-                val error = Exception("AI service error: ${e.message}", e)
+            } catch (e: FirebaseFunctionsException) {
+                // Firebase Functions error
+                val errorMessage = when (e.code) {
+                    FirebaseFunctionsException.Code.UNAUTHENTICATED -> 
+                        "Authentication required. Please sign in."
+                    FirebaseFunctionsException.Code.PERMISSION_DENIED -> 
+                        "Permission denied. Please check your account."
+                    FirebaseFunctionsException.Code.INVALID_ARGUMENT -> 
+                        "Invalid request. Please check your message."
+                    FirebaseFunctionsException.Code.INTERNAL -> 
+                        "Server error. Please try again later."
+                    FirebaseFunctionsException.Code.UNAVAILABLE -> 
+                        "Service unavailable. Please try again later."
+                    else -> 
+                        "AI service error: ${e.message}"
+                }
+                
+                val error = Exception(errorMessage, e)
+                val isRecoverable = e.code != FirebaseFunctionsException.Code.PERMISSION_DENIED
+                
                 updateServiceStatus(
                     AiServiceStatus.Error(
                         error = error,
-                        isRecoverable = e.message?.contains("quota", ignoreCase = true) != true
+                        isRecoverable = isRecoverable
                     )
                 )
                 Result.failure(error)
 
             } catch (e: SecurityException) {
-                // Auth/API key error
-                val error = SecurityException("Invalid configuration. Please check Firebase setup.", e)
+                // Auth error
+                val error = SecurityException("Authentication error: ${e.message}", e)
                 updateServiceStatus(
-                    AiServiceStatus.Error(error = error, isRecoverable = false)
+                    AiServiceStatus.Error(error = error, isRecoverable = true)
                 )
                 Result.failure(error)
 

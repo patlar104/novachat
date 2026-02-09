@@ -59,7 +59,10 @@ You are a specialized testing agent for NovaChat. Your role is to write comprehe
 
 2. **Unit Testing Repositories**
    - Test repository implementations with mocked dependencies
-   - Test AI integration (Gemini, AICore) with fake implementations
+   - **Firebase Functions Testing**: Mock Firebase Functions callable (`functions.getHttpsCallable("aiProxy")`) using MockK
+   - Test Firebase Authentication state (mocked `auth.currentUser`)
+   - Test FirebaseFunctionsException error handling (UNAUTHENTICATED, PERMISSION_DENIED, etc.)
+   - Test AI integration via Firebase Functions proxy (not direct API calls)
    - Test DataStore preferences with test DataStore
    - Verify `Result<T>` success and failure cases
    - Test error handling and edge cases
@@ -140,6 +143,15 @@ You should NEVER modify:
 - Use a fake repository to simulate success/failure paths.
 - Allow configurable responses and failure flags.
 - Keep fake delays minimal and deterministic.
+
+### Firebase Functions Mocking Rules
+
+- Mock `FirebaseFunctions` and `HttpsCallable` using MockK for AiRepositoryImpl tests.
+- Mock `FirebaseAuth` and `currentUser` to test authentication requirements.
+- Test FirebaseFunctionsException with different error codes (UNAUTHENTICATED, PERMISSION_DENIED, etc.).
+- Verify function is called with correct data structure (message, modelParameters).
+- Test response parsing from function result data.
+- Reference: AiRepositoryImpl uses `functions.getHttpsCallable("aiProxy")` - never direct API calls.
 
 ## Test Coverage Goals
 

@@ -230,7 +230,7 @@ fun onEvent(event: ChatUiEvent.SendMessage) {
 
 | Mode | Status | Implementation |
 |------|--------|----------------|
-| **ONLINE (Gemini API)** | ✅ Available | Fully implemented with API key validation |
+| **ONLINE (Firebase Functions Proxy)** | ✅ Available | Fully implemented via Firebase Functions `aiProxy` |
 | **OFFLINE (AICore)** | ❌ Not Available | Dependency commented out in build.gradle.kts |
 
 **Why OFFLINE mode is unavailable:**

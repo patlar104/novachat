@@ -111,6 +111,25 @@ Rules:
 - Map online/offline behavior explicitly in AI repository.
 - Use DataStore/Preferences repositories for persisted config.
 
+### Firebase Functions Proxy Pattern (AiRepository)
+
+Rules:
+
+- **MUST use Firebase Functions callable** - Never call Gemini API directly from Android app.
+- Get instance: `FirebaseFunctions.getInstance("us-central1")` (KTX extensions deprecated in BOM v34.0.0+)
+- Use `functions.getHttpsCallable("aiProxy")` to get the callable function.
+- Function name: `aiProxy` (deployed at us-central1 region).
+- Check `auth.currentUser` before making function calls - authentication is required.
+- Handle FirebaseFunctionsException with proper error code mapping:
+  - UNAUTHENTICATED → SecurityException with user-friendly message
+  - PERMISSION_DENIED → Non-recoverable error
+  - INVALID_ARGUMENT → IllegalArgumentException
+  - INTERNAL/UNAVAILABLE → Recoverable IOException
+- Request format: Map with `message` (String) and `modelParameters` (Map).
+- Response format: Extract `response` (String) from result data.
+- Always validate response is not null/blank before returning success.
+- See `AiRepositoryImpl.generateOnlineResponse()` for reference implementation.
+
 ---
 
 ## Error Handling Pattern

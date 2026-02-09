@@ -48,7 +48,7 @@ class AppContainer(private val context: Context) {
     
     /**
      * AI repository singleton.
-     * Handles communication with AI services (Gemini API, AICore).
+     * Handles communication with AI services via Firebase Functions proxy (Gemini API) and AICore (when available).
      */
     val aiRepository: AiRepository by lazy {
         AiRepositoryImpl(context)
