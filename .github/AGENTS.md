@@ -13,7 +13,7 @@ This repository uses a specialized multi-agent system with GitHub Copilot to pre
 > - **Cross-File Dependencies**: Analyze ripple effects before changes (code + documentation + implicit references)
 > - **Implicit Reference Checking**: When updating files, search for semantic synonyms and related concepts, not just exact name matches
 > - **Atomic Processing**: One complete file at a time
-> - **Source Verification**: Validate external versions against official sources using **ONLY Cursor's built-in browser** (cursor-ide-browser MCP - the ONLY browser tool available); do not use fetch or any other tools; do not assume docs are current or user-authored
+> - **Source Verification**: Validate external versions against official sources only after asking which tool to use. Do not pick a tool unilaterally; use the user-selected tool for the full verification flow.
 > - **2026 Standards**: Kotlin 2.2.21, AGP 9.0.0, Compose BOM 2026.01.01 (Google Maven only; [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping))
 
 ## Diff-Style Summary Format
@@ -205,7 +205,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 
 - ONLY modifies build configuration files
 - Never modifies application code
-- Must check dependencies for security vulnerabilities using **ONLY Cursor's built-in browser** (cursor-ide-browser MCP - the ONLY browser tool available. Do NOT use fetch or any other browser tools)
+- Must check dependencies for security vulnerabilities using the user-selected verification tool (ask first; do not choose a tool unilaterally)
 - No secrets in build files
 - **MUST provide complete build configurations**
 
@@ -214,7 +214,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 - **Complete build.gradle.kts files** (no `// ... dependencies` placeholders) in [`build.gradle.kts`](../build.gradle.kts) and [`app/build.gradle.kts`](../app/build.gradle.kts)
 - **All plugin configurations shown**
 - **Version catalog entries complete** (if used; see [`gradle/`](../gradle))
-- **Verify 2026 dependency versions** (Compose BOM 2026.01.01, Kotlin 2.2.21) using **ONLY Cursor's built-in browser** (cursor-ide-browser MCP - the ONLY browser tool available) against official sources
+- **Verify 2026 dependency versions** (Compose BOM 2026.01.01, Kotlin 2.2.21) against official sources using the user-selected tool (ask first; do not choose a tool unilaterally)
 
 **Handoffs**: To Backend (after adding dependencies), Testing (for test setup), or Reviewer
 
@@ -350,7 +350,7 @@ Location: [`.github/skills/cursor-browser/`](skills/cursor-browser)
 
 Provides:
 
-- **MANDATORY: Use ONLY Cursor's built-in browser** (cursor-ide-browser MCP) for web content retrieval and verification - This is the ONLY browser tool available
+- Use when the user selects Cursor's built-in browser for web content retrieval and verification
 - Browser automation (navigate, snapshot, click, fill, form submit)
 - Verifying external docs (AGP release notes, Compose BOM, OWASP, etc.)
 - Multi-step flows, form filling, dynamic content

@@ -16,3 +16,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "NovaChat"
 include(":app")
+include(":core-common")
+include(":core-network")
+include(":feature-ai")

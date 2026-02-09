@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chat_title">AI Chat</string>
+    <string name="settings_title">Settings</string>
+    <string name="type_message">Type a message...</string>
+    <string name="send">Send</string>
+    <!-- Deprecated: API key strings kept for backward compatibility but not used -->
+    <string name="api_key_label">Gemini API Key</string>
+    <string name="api_key_hint">Enter your Google AI API key</string>
+    <string name="save">Save</string>
+    <string name="ai_mode">AI Mode</string>
+    <string name="online_mode">Online (Gemini)</string>
+    <string name="offline_mode">Offline (On-device)</string>
+    <string name="error_no_api_key">Authentication required. Please wait for sign-in to complete.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="api_key_saved">API key saved successfully</string>
+    <string name="clear_chat">Clear Chat</string>
+    <string name="chat_cleared">Chat cleared</string>
+
+    <!-- Added missing strings for SettingsScreen.kt -->
+    <string name="back">Back</string>
+    <string name="note_offline_mode">Note: Offline mode requires Google AICore support (currently unavailable)</string>
+    <!-- Deprecated: API key source string kept for backward compatibility but not used -->
+    <string name="api_key_source">Get your API key from https://ai.google.dev/</string>
+
+    <!-- Added missing strings for ChatScreen.kt -->
+    <string name="dismiss">Dismiss</string>
+    <string name="emoji_wave">👋</string>
+    <string name="empty_state_title">Start a conversation!</string>
+    <string name="empty_state_subtitle">Type a message below to chat with AI</string>
+    <string name="emoji_error">❌</string>
+    <string name="try_again">Try Again</string>
+
+    <!-- Theme customization -->
+    <string name="appearance">Appearance</string>
+    <string name="theme_mode">Theme</string>
+    <string name="theme_system">System default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="dynamic_color">Dynamic colors</string>
+    <string name="dynamic_color_summary">Use system accent colors (Android 12+)</string>
+
+    <!-- Online mode info -->
+    <string name="online_mode_info_title">Online Mode</string>
+    <string name="online_mode_info_description">Uses Firebase Functions proxy to access Gemini AI. No API key required - authentication is handled automatically.</string>
+</resources>

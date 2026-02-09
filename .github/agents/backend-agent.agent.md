@@ -109,7 +109,7 @@ You should NEVER modify:
 - **StateFlow Only**: Use StateFlow, not LiveData, for state management
 - **Testability First**: All business logic must be unit testable
 - **Dependency Direction**: UI → ViewModel → UseCase → Repository → DataSource
-- **Source Verification**: Validate external version claims against official docs using **Cursor's built-in browser** (MANDATORY: This is the ONLY browser tool available. Do NOT use fetch or any other browser tools) before citing them
+- **Source Verification**: Validate external version claims against official docs only after asking which tool to use; use the user-selected tool for the full verification flow
 
 ## Code Standards - NovaChat Patterns
 

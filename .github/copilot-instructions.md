@@ -23,7 +23,7 @@ NovaChat is a modern Android AI chatbot built with **Jetpack Compose + MVVM + Cl
 ## Tooling Rules (MCP)
 
 - **Git context**: Use GitKraken MCP for `git_status`, `git_log_or_diff`, and `git_blame` (see [gitkraken-mcp skill](skills/gitkraken-mcp/SKILL.md)).
-- **Web verification**: Use Cursor's built-in browser MCP for any external docs (see [cursor-browser skill](skills/cursor-browser/SKILL.md)).
+- **Web verification**: Ask which tool to use before retrieving or verifying external docs (for example: Cursor browser MCP, `fetch_webpage`, or another available browser tool). Do not proceed until a tool is chosen (see [cursor-browser skill](skills/cursor-browser/SKILL.md)).
 - **Long-term memory**: Use Pieces MCP when prior edits may exist (see [pieces-mcp skill](skills/pieces-mcp/SKILL.md)).
 
 ## Multi-Agent System
@@ -220,7 +220,7 @@ All code submissions MUST pass these checks (from DEVELOPMENT_PROTOCOL.md):
 
 ### Web Content Verification
 
-- **MANDATORY: Use ONLY Cursor's built-in browser** (cursor-ide-browser MCP) when verifying external docs, BOM mapping, AGP release notes, or security references. This is the ONLY browser tool available. Do NOT use fetch or any other browser tools. See [cursor-browser skill](skills/cursor-browser/SKILL.md).
+- **MANDATORY: Ask which tool to use** when verifying external docs, BOM mapping, AGP release notes, or security references. Use the user-selected tool for the entire verification flow; do not choose a tool unilaterally. See [cursor-browser skill](skills/cursor-browser/SKILL.md).
 
 ### Git Context
 
@@ -446,6 +446,6 @@ Instructions:
   - `compose-preview/`: @Preview annotations and preview data providers
   - `material-design/`: Material 3 Compose components and theme configuration
   - `security-check/`: Security best practices and secure storage patterns
-  - `cursor-browser/`: **MANDATORY: Use ONLY Cursor's built-in browser** (cursor-ide-browser MCP) for web content verification, browser automation, docs lookup - This is the ONLY browser tool available
+   - `cursor-browser/`: Use when the user selects Cursor's built-in browser for web content verification, browser automation, or docs lookup
   - `gitkraken-mcp/`: **Git context** – git_status, git_log_or_diff, git_blame, PR/issue tools
   - `pieces-mcp/`: **Long-Term Memory** – ask_pieces_ltm to find older edits from other IDEs

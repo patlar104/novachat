@@ -1,9 +1,9 @@
 plugins {
-    id("com.android.application")
+    alias(libs.plugins.android.application)
     // Note: kotlin.android plugin is no longer needed in AGP 9.0.0 - Kotlin support is built-in
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("org.jetbrains.kotlin.plugin.serialization")
-    id("com.google.gms.google-services")
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.android.junit)
 }
 
 // Configure Kotlin compiler options for AGP 9.0+
@@ -57,38 +57,42 @@ android {
     }
 }
 
+junitPlatform {
+    instrumentationTests.behaviorForUnsupportedDevices =
+    de.mannodermaus.gradle.plugins.junit5.dsl.UnsupportedDeviceBehavior.Skip
+}
+
 dependencies {
     // Core Android dependencies
-    implementation("androidx.core:core-ktx:1.17.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
-    implementation("androidx.activity:activity-compose:1.12.3")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
     
     // Compose BOM for version management
-    implementation(platform("androidx.compose:compose-bom:2026.01.01"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.extended)
     
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.9.7")
+    implementation(libs.androidx.navigation.compose)
     
     // ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.10.0")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
     
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
+    implementation(platform(libs.firebase.bom))
     // Note: firebase-ai removed - using Firebase Functions proxy instead
     // Note: All KTX modules removed - KTX functionality now in main modules (BOM v34.0.0+)
-    implementation("com.google.firebase:firebase-functions")
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-dataconnect")
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.dataconnect)
     
     // AICore for on-device AI
     // NOTE: AICore is experimental and not yet publicly available on Google Maven (as of Jan 2026)
@@ -96,28 +100,21 @@ dependencies {
     // When AICore becomes available, uncomment this line:
     // implementation("androidx.ai.edge.aicore:aicore:1.0.0-alpha01")
     
-    // DataStore for preferences
-    implementation("androidx.datastore:datastore-preferences:1.2.0")
-    
-    // JSON serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
-    
-    // Testing - Unit Tests
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("io.mockk:mockk:1.14.9")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-    testImplementation("app.cash.turbine:turbine:1.2.1")
-    testImplementation("io.kotest:kotest-assertions-core:6.1.2")
-    testImplementation("androidx.test:core:1.6.1")
-    testImplementation("org.robolectric:robolectric:4.13")
+    // Modules
+    implementation(project(":core-common"))
+    implementation(project(":core-network"))
+    implementation(project(":feature-ai"))
     
     // Testing - Android Instrumented Tests
-    androidTestImplementation("androidx.test.ext:junit:1.3.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2026.01.01"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation(platform(libs.junit.bom))
+    androidTestImplementation(libs.junit.jupiter.api)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     
     // Testing - Debug
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

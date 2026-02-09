@@ -1,0 +1,21 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run feature-ai unit tests",
+			"type": "shell",
+			"command": "./gradlew",
+			"args": [
+				":feature-ai:test"
+			]
+		},
+		{
+			"label": "Run feature-ai unit tests",
+			"type": "shell",
+			"command": "./gradlew",
+			"args": [
+				":feature-ai:test"
+			]
+		}
+	]
+}

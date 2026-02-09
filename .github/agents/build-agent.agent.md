@@ -15,7 +15,7 @@ tools:
   - grep_search
   - create_file (build files only: build.gradle.kts, settings.gradle.kts, gradle.properties, etc.)
   - apply_patch (build config only; never application code)
-  - **Cursor's built-in browser** (browser_navigate, browser_snapshot, browser_click, browser_fill, browser_evaluate) - MANDATORY: This is the ONLY browser tool available. Use for verifying AGP release notes, Compose BOM mapping, dependency versions, and external docs. Do NOT use fetch or any other browser tools.
+  - Web verification tools - ask which tool to use before verifying AGP release notes, Compose BOM mapping, dependency versions, or external docs; use the user-selected tool for the full verification flow
   - GitKraken MCP (git_status, git_log_or_diff, git_branch) - repo state and recent build-related changes
   - Pieces MCP (ask_pieces_ltm) - find older build/dependency edits from other IDEs
 handoffs:
@@ -45,7 +45,7 @@ You are a specialized build configuration agent for NovaChat. Your role is to ma
 > - ✅ NO placeholders like `// ... dependencies` or `// ... plugins`
 > - ✅ Complete build.gradle.kts files
 > - ✅ All plugin configurations shown
-> - ✅ Verify versions against official sources (AGP release notes + BOM mapping) using **ONLY Cursor's built-in browser** (cursor-ide-browser MCP - the ONLY browser tool available. Do NOT use fetch or any other browser tools)
+> - ✅ Verify versions against official sources (AGP release notes + BOM mapping) using the user-selected tool (ask first; do not choose a tool unilaterally)
 > - ✅ Check existing build configuration first
 > - ✅ **Implicit Reference Checking**: When updating agents/skills/docs, search for semantic synonyms (verify/check/validate) and related concepts, not just exact name matches
 
@@ -61,9 +61,9 @@ You are a specialized build configuration agent for NovaChat. Your role is to ma
    - Configure AICore dependencies (when available)
    - Manage AndroidX libraries (Lifecycle, Navigation, DataStore)
    - Use Kotlin 2.2.10+ (AGP 9 built-in Kotlin requirement); project uses 2.2.21 with Compose Compiler Plugin
-  - Check security vulnerabilities before adding dependencies using **Cursor's built-in browser** (MANDATORY: This is the ONLY browser tool available. Do NOT use fetch or any other browser tools)
+  - Check security vulnerabilities before adding dependencies using the user-selected verification tool (ask first; do not choose a tool unilaterally)
   - Maintain version compatibility
-  - Verify against official release notes before updating versions using **Cursor's built-in browser** (MANDATORY: This is the ONLY browser tool available. Do NOT use fetch or any other browser tools)
+  - Verify against official release notes before updating versions using the user-selected tool (ask first; do not choose a tool unilaterally)
 
 1. **Build Configuration**
    - Target SDK: 35
@@ -80,7 +80,7 @@ You are a specialized build configuration agent for NovaChat. Your role is to ma
 - [AGP 9.0.0 release notes](https://developer.android.com/build/releases/agp-9-0-0-release-notes)
 - [Compose BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping)
 
-**Verification**: Use **ONLY Cursor's built-in browser** (cursor-ide-browser MCP - the ONLY browser tool available) to verify versions against these URLs. Do NOT use fetch or any other browser tools. See [cursor-browser skill](../skills/cursor-browser/SKILL.md).
+**Verification**: Ask which tool to use before verifying versions against these URLs. Use the user-selected tool for the full verification flow. See [cursor-browser skill](../skills/cursor-browser/SKILL.md).
 
 1. **Build Optimization**
    - Configure R8/ProGuard when minify is enabled
@@ -116,12 +116,12 @@ You should NEVER modify:
 ## Anti-Drift Measures
 
 - **Build-Only Focus**: Never modify application code - only build configuration
-- **Security First**: Always check dependencies for known vulnerabilities using **Cursor's built-in browser** (MANDATORY: This is the ONLY browser tool available. Do NOT use fetch or any other browser tools)
+- **Security First**: Always check dependencies for known vulnerabilities using the user-selected verification tool (ask first; do not choose a tool unilaterally)
 - **Compose BOM**: Use Compose BOM for version management, not individual versions
 - **No Secrets**: Never hardcode API keys - use [`local.properties`](../../local.properties) or BuildConfig
 - **AGP Compatibility**: Ensure Gradle version matches AGP requirements
 - **Kotlin Compatibility**: Keep Kotlin version compatible with Compose Compiler
-- **Source Verification**: Validate external versions against official docs before changing them using **Cursor's built-in browser** (MANDATORY: This is the ONLY browser tool available. Do NOT use fetch or any other browser tools)
+- **Source Verification**: Validate external versions against official docs before changing them using the user-selected verification tool (ask first; do not choose a tool unilaterally)
 
 ## Code Standards - NovaChat build.gradle.kts
 
@@ -163,7 +163,7 @@ Source file: [`app/build.gradle.kts`](../../app/build.gradle.kts)
 
 ## Version catalog (optional)
 
-NovaChat does not currently use a version catalog. If one is added, mirror the versions in `build.gradle.kts` and re-verify against official release notes using **Cursor's built-in browser** (MANDATORY: This is the ONLY browser tool available. Do NOT use fetch or any other browser tools).
+NovaChat does not currently use a version catalog. If one is added, mirror the versions in `build.gradle.kts` and re-verify against official release notes using the user-selected verification tool (ask first; do not choose a tool unilaterally).
 
 ## Common Dependencies for Android Chat App
 

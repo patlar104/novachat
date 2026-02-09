@@ -16,16 +16,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.novachat.app.di.appContainer
-import com.novachat.app.presentation.model.NavigationDestination
-import com.novachat.app.presentation.viewmodel.ChatViewModel
-import com.novachat.app.presentation.viewmodel.SettingsViewModel
-import com.novachat.app.presentation.viewmodel.ThemeViewModel
-import com.novachat.app.presentation.viewmodel.ViewModelFactory
-import com.novachat.app.ui.ChatScreen
-import com.novachat.app.ui.SettingsScreen
-import com.novachat.app.ui.theme.NovaChatTheme
-import com.novachat.app.ui.theme.resolveDarkTheme
+import com.novachat.feature.ai.di.aiContainer
+import com.novachat.feature.ai.domain.model.ThemePreferences
+import com.novachat.feature.ai.presentation.model.NavigationDestination
+import com.novachat.feature.ai.presentation.viewmodel.ChatViewModel
+import com.novachat.feature.ai.presentation.viewmodel.SettingsViewModel
+import com.novachat.feature.ai.presentation.viewmodel.ThemeViewModel
+import com.novachat.feature.ai.presentation.viewmodel.ViewModelFactory
+import com.novachat.feature.ai.ui.ChatScreen
+import com.novachat.feature.ai.ui.SettingsScreen
+import com.novachat.feature.ai.ui.theme.NovaChatTheme
+import com.novachat.feature.ai.ui.theme.resolveDarkTheme
 
 /**
  * Main activity for NovaChat application.
@@ -41,9 +42,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val themeViewModel: ThemeViewModel = viewModel(factory = ViewModelFactory(appContainer))
+            val themeViewModel: ThemeViewModel = viewModel(factory = ViewModelFactory(aiContainer))
             val themePrefs by themeViewModel.themePreferences.collectAsStateWithLifecycle(
-                com.novachat.app.domain.model.ThemePreferences.DEFAULT
+                ThemePreferences.DEFAULT
             )
             NovaChatTheme(
                 darkTheme = themePrefs.resolveDarkTheme(isSystemInDarkTheme()),
@@ -72,7 +73,7 @@ fun NovaChatApp() {
     
     // Create ViewModelFactory from app container
     val viewModelFactory = ViewModelFactory(
-        container = (navController.context as ComponentActivity).appContainer
+        container = (navController.context as ComponentActivity).aiContainer
     )
     
     NavHost(

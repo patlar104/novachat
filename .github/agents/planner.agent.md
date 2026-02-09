@@ -13,7 +13,7 @@ constraints:
 tools:
   - read_file (discovery only)
   - grep_search
-  - **Cursor's built-in browser** (browser_navigate, browser_snapshot, browser_click, browser_evaluate) - MANDATORY: This is the ONLY browser tool available. Use when verifying external docs, BOM mapping, or version claims. Do NOT use fetch or any other browser tools.
+  - Web verification tools - ask which tool to use before verifying external docs, BOM mapping, or version claims; use the user-selected tool for the full verification flow
   - GitKraken MCP (git_status, git_log_or_diff, git_branch) - repo state and recent work before planning
   - Pieces MCP (ask_pieces_ltm) - find older NovaChat work from other IDEs before planning
 handoffs:
@@ -67,8 +67,8 @@ You are a specialized planning agent for Android development. Your role is to an
    - Consider AppContainer for dependency injection
    - **Firebase Functions Proxy**: All AI requests MUST go through Firebase Functions (`aiProxy`) - never plan direct API calls
    - **Authentication**: Plan for Firebase Authentication (anonymous sign-in) when AI features are involved
-   - **Verify 2026 standards** (Kotlin 2.2.21, Compose BOM 2026.01.01; mapping: [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping)) using **Cursor's built-in browser** (MANDATORY: This is the ONLY browser tool available. Do NOT use fetch or any other browser tools)
-   - **Validate external version claims** against official sources using **Cursor's built-in browser** (MANDATORY: This is the ONLY browser tool available. Do NOT use fetch or any other browser tools) before planning
+  - **Verify 2026 standards** (Kotlin 2.2.21, Compose BOM 2026.01.01; mapping: [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping)) using the user-selected verification tool (ask first; do not choose a tool unilaterally)
+  - **Validate external version claims** against official sources using the user-selected verification tool (ask first; do not choose a tool unilaterally) before planning
 
 4. **Quality Assurance**
    - Plan test coverage (unit tests for ViewModels, Compose UI tests)

@@ -32,19 +32,14 @@ This document defines the comprehensive development protocol for NovaChat to ens
 
 When agents need to fetch web content, verify external docs, or automate browser flows:
 
-- **MANDATORY: Use ONLY Cursor's built-in browser** (cursor-ide-browser MCP) for:
-  - **CRITICAL**: This is the ONLY browser tool available. Do NOT use fetch, web_fetch, Playwright MCP, or any other browser tools.
-  - Verifying AGP release notes, Compose BOM mapping, dependency versions
-  - Multi-step navigation, form filling, or auth-gated content
-  - Pages with dynamic content or SPAs
-  - Any flow that requires clicks, form input, or complex navigation
-  - **ALL web content retrieval** - There is no alternative browser tool
+- **MANDATORY: Ask which tool to use** before any web retrieval or verification. Do not choose a tool unilaterally; use the user-selected tool for the entire flow.
+- If the user selects Cursor's built-in browser (cursor-ide-browser MCP), follow the skill reference and workflow.
 
 - **Reference**: [`.github/skills/cursor-browser/SKILL.md`](skills/cursor-browser/SKILL.md)
 
-- **Core tools**: `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_fill`, `browser_fill_form`, `browser_select_option`, `browser_evaluate`, `browser_take_screenshot`
+- **Cursor core tools**: `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_fill`, `browser_fill_form`, `browser_select_option`, `browser_evaluate`, `browser_take_screenshot`
 
-- **Workflow**: Navigate → Snapshot → Interact (using refs from snapshot) → Re-snapshot after DOM changes
+- **Cursor workflow**: Navigate → Snapshot → Interact (using refs from snapshot) → Re-snapshot after DOM changes
 
 ### Git Context & Workflow (GitKraken MCP)
 
