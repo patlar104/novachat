@@ -29,4 +29,13 @@
     <string name="empty_state_subtitle">Type a message below to chat with AI</string>
     <string name="emoji_error">❌</string>
     <string name="try_again">Try Again</string>
+
+    <!-- Theme customization -->
+    <string name="appearance">Appearance</string>
+    <string name="theme_mode">Theme</string>
+    <string name="theme_system">System default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="dynamic_color">Dynamic colors</string>
+    <string name="dynamic_color_summary">Use system accent colors (Android 12+)</string>
 </resources>

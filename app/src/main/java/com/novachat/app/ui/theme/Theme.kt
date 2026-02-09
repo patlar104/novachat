@@ -3,6 +3,7 @@ package com.novachat.app.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -15,28 +16,40 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.novachat.app.domain.model.ThemeMode
+import com.novachat.app.domain.model.ThemePreferences
 
+// Modern teal-based palette (fallback when dynamic color is off)
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Teal80,
+    secondary = TealGrey80,
+    tertiary = TealVariant80
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = Teal40,
+    secondary = TealGrey40,
+    tertiary = TealVariant40
 )
+
+// Material 3 rounded shape system
+private val NovaChatShapes = Shapes(
+    extraSmall = RoundedCornerShape(4.dp),
+    small = RoundedCornerShape(8.dp),
+    medium = RoundedCornerShape(12.dp),
+    large = RoundedCornerShape(16.dp),
+    extraLarge = RoundedCornerShape(28.dp)
+)
+
+/**
+ * Resolves whether dark theme should be used based on user preference.
+ */
+fun ThemePreferences.resolveDarkTheme(isSystemInDarkTheme: Boolean): Boolean = when (themeMode) {
+    ThemeMode.LIGHT -> false
+    ThemeMode.DARK -> true
+    ThemeMode.SYSTEM -> isSystemInDarkTheme
+}
 
 @Composable
 fun NovaChatTheme(
@@ -58,6 +71,7 @@ fun NovaChatTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = NovaChatShapes,
         content = content
     )
 }

@@ -11,9 +11,11 @@ import com.novachat.app.domain.repository.PreferencesRepository
 import com.novachat.app.domain.usecase.ClearConversationUseCase
 import com.novachat.app.domain.usecase.ObserveAiConfigurationUseCase
 import com.novachat.app.domain.usecase.ObserveMessagesUseCase
+import com.novachat.app.domain.usecase.ObserveThemePreferencesUseCase
 import com.novachat.app.domain.usecase.RetryMessageUseCase
 import com.novachat.app.domain.usecase.SendMessageUseCase
 import com.novachat.app.domain.usecase.UpdateAiConfigurationUseCase
+import com.novachat.app.domain.usecase.UpdateThemePreferencesUseCase
 
 /**
  * Dependency injection container for the application.
@@ -127,6 +129,22 @@ class AppContainer(private val context: Context) {
             aiRepository = aiRepository,
             preferencesRepository = preferencesRepository
         )
+    }
+
+    /**
+     * Observe theme preferences use case.
+     * Provides reactive stream of theme settings.
+     */
+    val observeThemePreferencesUseCase: ObserveThemePreferencesUseCase by lazy {
+        ObserveThemePreferencesUseCase(preferencesRepository = preferencesRepository)
+    }
+
+    /**
+     * Update theme preferences use case.
+     * Saves theme mode and dynamic color settings.
+     */
+    val updateThemePreferencesUseCase: UpdateThemePreferencesUseCase by lazy {
+        UpdateThemePreferencesUseCase(preferencesRepository = preferencesRepository)
     }
 }
 

@@ -1,6 +1,7 @@
 package com.novachat.app.domain.repository
 
 import com.novachat.app.domain.model.AiConfiguration
+import com.novachat.app.domain.model.ThemePreferences
 import com.novachat.app.domain.model.Message
 import kotlinx.coroutines.flow.Flow
 
@@ -224,4 +225,19 @@ interface PreferencesRepository {
      * @return Result.success if cleared successfully, Result.failure on error
      */
     suspend fun clearAll(): Result<Unit>
+
+    /**
+     * Observes theme preferences (dark mode, dynamic color).
+     *
+     * @return Flow emitting current theme preferences
+     */
+    fun observeThemePreferences(): Flow<ThemePreferences>
+
+    /**
+     * Updates theme preferences.
+     *
+     * @param preferences The new theme preferences to save
+     * @return Result.success if saved successfully, Result.failure on error
+     */
+    suspend fun updateThemePreferences(preferences: ThemePreferences): Result<Unit>
 }

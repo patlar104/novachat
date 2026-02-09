@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Delete
@@ -202,8 +201,8 @@ private fun ChatContent(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize().weight(1f),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(messages, key = { it.id.value }) { message ->
                     MessageBubble(message = message)
@@ -230,25 +229,29 @@ fun MessageBubble(message: Message) {
     val isUser = message.sender == MessageSender.USER
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
     ) {
         Surface(
-            shape = RoundedCornerShape(12.dp),
+            shape = MaterialTheme.shapes.medium,
             color = if (isUser) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
-                MaterialTheme.colorScheme.secondaryContainer
+                MaterialTheme.colorScheme.surfaceVariant
             },
-            modifier = Modifier.widthIn(max = 300.dp)
+            tonalElevation = 1.dp,
+            modifier = Modifier.widthIn(max = 320.dp)
         ) {
             Text(
                 text = message.content,
-                modifier = Modifier.padding(12.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                style = MaterialTheme.typography.bodyLarge,
                 color = if (isUser) {
                     MaterialTheme.colorScheme.onPrimaryContainer
                 } else {
-                    MaterialTheme.colorScheme.onSecondaryContainer
+                    MaterialTheme.colorScheme.onSurfaceVariant
                 }
             )
         }
@@ -262,9 +265,14 @@ fun MessageInputBar(
     onSendMessage: () -> Unit,
     isLoading: Boolean
 ) {
-    Surface(shadowElevation = 8.dp, tonalElevation = 2.dp) {
+    Surface(
+        tonalElevation = 3.dp,
+        color = MaterialTheme.colorScheme.surface
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
@@ -273,18 +281,17 @@ fun MessageInputBar(
                 modifier = Modifier.weight(1f).padding(end = 8.dp),
                 placeholder = { Text(stringResource(R.string.type_message)) },
                 enabled = !isLoading,
-                maxLines = 4
+                maxLines = 4,
+                shape = MaterialTheme.shapes.large
             )
 
-            IconButton(onClick = onSendMessage, enabled = messageText.isNotBlank() && !isLoading) {
+            FilledTonalIconButton(
+                onClick = onSendMessage,
+                enabled = messageText.isNotBlank() && !isLoading
+            ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Send,
-                    contentDescription = stringResource(R.string.send),
-                    tint = if (messageText.isNotBlank() && !isLoading) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                    }
+                    contentDescription = stringResource(R.string.send)
                 )
             }
         }
@@ -327,20 +334,25 @@ fun EmptyState(modifier: Modifier = Modifier) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(32.dp)
         ) {
-            Text(text = stringResource(R.string.emoji_wave), style = MaterialTheme.typography.displayLarge) // Fixed: Hardcoded string
-            Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = stringResource(R.string.empty_state_title), // Fixed: Hardcoded string
+                text = stringResource(R.string.emoji_wave),
+                style = MaterialTheme.typography.displayMedium
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = stringResource(R.string.empty_state_title),
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.empty_state_subtitle), // Fixed: Hardcoded string
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                text = stringResource(R.string.empty_state_subtitle),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

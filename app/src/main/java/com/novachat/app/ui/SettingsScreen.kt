@@ -1,6 +1,6 @@
 package com.novachat.app.ui
 
-import androidx.compose.foundation.clickable // Added import for RadioButton fix
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,10 +18,14 @@ import com.novachat.app.R
 import com.novachat.app.domain.model.AiConfiguration
 import com.novachat.app.domain.model.AiMode
 import com.novachat.app.domain.model.ApiKey
+import com.novachat.app.domain.model.ThemeMode
+import com.novachat.app.domain.model.ThemePreferences
 import com.novachat.app.presentation.model.SettingsUiEvent
 import com.novachat.app.presentation.model.SettingsUiState
 import com.novachat.app.presentation.model.UiEffect
 import com.novachat.app.presentation.viewmodel.SettingsViewModel
+import com.novachat.app.presentation.viewmodel.ThemeViewModel
+import com.novachat.app.ui.theme.NovaChatTheme
 import kotlinx.coroutines.delay
 
 /**
@@ -37,6 +41,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
+    themeViewModel: ThemeViewModel,
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -112,6 +117,9 @@ fun SettingsScreen(
             }
             
             is SettingsUiState.Success -> {
+                val themePrefs by themeViewModel.themePreferences.collectAsStateWithLifecycle(
+                    ThemePreferences.DEFAULT
+                )
                 SettingsScreenContent(
                     configuration = state.configuration,
                     draftApiKey = draftApiKey,
@@ -120,6 +128,9 @@ fun SettingsScreen(
                     onChangeAiMode = { viewModel.onEvent(SettingsUiEvent.ChangeAiMode(it)) },
                     showSaveSuccess = showSaveSuccess,
                     onDismissSaveSuccess = { viewModel.onEvent(SettingsUiEvent.DismissSaveSuccess) },
+                    themePrefs = themePrefs,
+                    onThemeModeChange = { themeViewModel.setThemeMode(it) },
+                    onDynamicColorChange = { themeViewModel.setDynamicColor(it) },
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -153,6 +164,68 @@ fun SettingsScreen(
 }
 
 @Composable
+private fun ThemeSection(
+    themePrefs: ThemePreferences,
+    onThemeModeChange: (ThemeMode) -> Unit,
+    onDynamicColorChange: (Boolean) -> Unit
+) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.appearance),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = stringResource(R.string.theme_mode),
+                style = MaterialTheme.typography.labelLarge
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf(
+                    ThemeMode.SYSTEM to R.string.theme_system,
+                    ThemeMode.LIGHT to R.string.theme_light,
+                    ThemeMode.DARK to R.string.theme_dark
+                ).forEach { (mode, labelRes) ->
+                    FilterChip(
+                        selected = themePrefs.themeMode == mode,
+                        onClick = { onThemeModeChange(mode) },
+                        label = { Text(stringResource(labelRes)) }
+                    )
+                }
+            }
+            HorizontalDivider()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.dynamic_color),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = stringResource(R.string.dynamic_color_summary),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+                Switch(
+                    checked = themePrefs.dynamicColor,
+                    onCheckedChange = onDynamicColorChange
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun SettingsScreenContent(
     configuration: AiConfiguration,
     draftApiKey: String,
@@ -161,8 +234,12 @@ fun SettingsScreenContent(
     onChangeAiMode: (AiMode) -> Unit,
     showSaveSuccess: Boolean,
     onDismissSaveSuccess: () -> Unit,
+    themePrefs: ThemePreferences,
+    onThemeModeChange: (ThemeMode) -> Unit,
+    onDynamicColorChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -170,6 +247,12 @@ fun SettingsScreenContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
+        ThemeSection(
+            themePrefs = themePrefs,
+            onThemeModeChange = onThemeModeChange,
+            onDynamicColorChange = onDynamicColorChange
+        )
+
         // AI Mode Selection
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -326,41 +409,56 @@ private val mockOfflineConfig = AiConfiguration(
 @Preview(showBackground = true, name = "Settings - Online Mode")
 @Composable
 fun SettingsScreenContentOnlinePreview() {
-    SettingsScreenContent(
-        configuration = mockOnlineConfig,
-        draftApiKey = "sk-test-api-key-1234567890",
-        onDraftApiKeyChange = {},
-        onSaveApiKey = {},
-        onChangeAiMode = {},
-        showSaveSuccess = false,
-        onDismissSaveSuccess = {}
-    )
+    NovaChatTheme {
+        SettingsScreenContent(
+            configuration = mockOnlineConfig,
+            draftApiKey = "sk-test-api-key-1234567890",
+            onDraftApiKeyChange = {},
+            onSaveApiKey = {},
+            onChangeAiMode = {},
+            showSaveSuccess = false,
+            onDismissSaveSuccess = {},
+            themePrefs = ThemePreferences.DEFAULT,
+            onThemeModeChange = {},
+            onDynamicColorChange = {}
+        )
+    }
 }
 
 @Preview(showBackground = true, name = "Settings - Online Mode Saved")
 @Composable
 fun SettingsScreenContentOnlineSavedPreview() {
-    SettingsScreenContent(
-        configuration = mockOnlineConfig,
-        draftApiKey = "sk-test-api-key-1234567890",
-        onDraftApiKeyChange = {},
-        onSaveApiKey = {},
-        onChangeAiMode = {},
-        showSaveSuccess = true,
-        onDismissSaveSuccess = {}
-    )
+    NovaChatTheme {
+        SettingsScreenContent(
+            configuration = mockOnlineConfig,
+            draftApiKey = "sk-test-api-key-1234567890",
+            onDraftApiKeyChange = {},
+            onSaveApiKey = {},
+            onChangeAiMode = {},
+            showSaveSuccess = true,
+            onDismissSaveSuccess = {},
+            themePrefs = ThemePreferences.DEFAULT,
+            onThemeModeChange = {},
+            onDynamicColorChange = {}
+        )
+    }
 }
 
 @Preview(showBackground = true, name = "Settings - Offline Mode")
 @Composable
 fun SettingsScreenContentOfflinePreview() {
-    SettingsScreenContent(
-        configuration = mockOfflineConfig,
-        draftApiKey = "",
-        onDraftApiKeyChange = {},
-        onSaveApiKey = {},
-        onChangeAiMode = {},
-        showSaveSuccess = false,
-        onDismissSaveSuccess = {}
-    )
+    NovaChatTheme {
+        SettingsScreenContent(
+            configuration = mockOfflineConfig,
+            draftApiKey = "",
+            onDraftApiKeyChange = {},
+            onSaveApiKey = {},
+            onChangeAiMode = {},
+            showSaveSuccess = false,
+            onDismissSaveSuccess = {},
+            themePrefs = ThemePreferences.DEFAULT,
+            onThemeModeChange = {},
+            onDynamicColorChange = {}
+        )
+    }
 }

@@ -35,6 +35,7 @@ class ViewModelFactory(
      * Supports:
      * - ChatViewModel
      * - SettingsViewModel
+     * - ThemeViewModel
      *
      * @param modelClass The class of the ViewModel to create
      * @param extras Creation extras including SavedStateHandle
@@ -65,6 +66,13 @@ class ViewModelFactory(
                     savedStateHandle = savedStateHandle,
                     observeAiConfigurationUseCase = container.observeAiConfigurationUseCase,
                     updateAiConfigurationUseCase = container.updateAiConfigurationUseCase
+                ) as T
+            }
+
+            modelClass.isAssignableFrom(ThemeViewModel::class.java) -> {
+                ThemeViewModel(
+                    observeThemePreferencesUseCase = container.observeThemePreferencesUseCase,
+                    updateThemePreferencesUseCase = container.updateThemePreferencesUseCase
                 ) as T
             }
             

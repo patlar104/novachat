@@ -3,6 +3,7 @@ package com.novachat.app.domain.usecase
 import com.novachat.app.domain.model.Message
 import com.novachat.app.domain.model.MessageSender
 import com.novachat.app.domain.model.MessageStatus
+import com.novachat.app.domain.model.ThemePreferences
 import com.novachat.app.domain.repository.AiRepository
 import com.novachat.app.domain.repository.MessageRepository
 import com.novachat.app.domain.repository.PreferencesRepository
@@ -390,4 +391,33 @@ class RetryMessageUseCase(
             )
         }
     }
+}
+
+/**
+ * Use case for observing theme preferences.
+ *
+ * Provides reactive access to theme settings (dark mode, dynamic color).
+ *
+ * @property preferencesRepository Repository for preferences
+ *
+ * @since 1.0.0
+ */
+class ObserveThemePreferencesUseCase(
+    private val preferencesRepository: PreferencesRepository
+) {
+    operator fun invoke() = preferencesRepository.observeThemePreferences()
+}
+
+/**
+ * Use case for updating theme preferences.
+ *
+ * @property preferencesRepository Repository for preferences
+ *
+ * @since 1.0.0
+ */
+class UpdateThemePreferencesUseCase(
+    private val preferencesRepository: PreferencesRepository
+) {
+    suspend operator fun invoke(preferences: ThemePreferences): Result<Unit> =
+        preferencesRepository.updateThemePreferences(preferences)
 }

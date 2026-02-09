@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -13,6 +14,8 @@ import com.novachat.app.data.model.AiConfigurationEntity
 import com.novachat.app.domain.model.AiConfiguration
 import com.novachat.app.domain.model.AiMode
 import com.novachat.app.domain.model.ApiKey
+import com.novachat.app.domain.model.ThemeMode
+import com.novachat.app.domain.model.ThemePreferences
 import com.novachat.app.domain.repository.PreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -60,6 +63,8 @@ class PreferencesRepositoryImpl(
         val KEY_TOP_K = intPreferencesKey("top_k")
         val KEY_TOP_P = floatPreferencesKey("top_p")
         val KEY_MAX_OUTPUT_TOKENS = intPreferencesKey("max_output_tokens")
+        val KEY_THEME_MODE = stringPreferencesKey("theme_mode")
+        val KEY_DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
     }
 
     /**
@@ -235,6 +240,41 @@ class PreferencesRepositoryImpl(
 
         } catch (e: IOException) {
             Result.failure(IOException("Failed to clear preferences", e))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override fun observeThemePreferences(): Flow<ThemePreferences> {
+        return context.dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(androidx.datastore.preferences.core.emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                val themeModeValue = preferences[KEY_THEME_MODE] ?: ThemeMode.SYSTEM.name
+                val themeMode = try {
+                    ThemeMode.valueOf(themeModeValue)
+                } catch (e: IllegalArgumentException) {
+                    ThemeMode.SYSTEM
+                }
+                val dynamicColor = preferences[KEY_DYNAMIC_COLOR] ?: true
+                ThemePreferences(themeMode = themeMode, dynamicColor = dynamicColor)
+            }
+    }
+
+    override suspend fun updateThemePreferences(preferences: ThemePreferences): Result<Unit> {
+        return try {
+            context.dataStore.edit { editPreferences ->
+                editPreferences[KEY_THEME_MODE] = preferences.themeMode.name
+                editPreferences[KEY_DYNAMIC_COLOR] = preferences.dynamicColor
+            }
+            Result.success(Unit)
+        } catch (e: IOException) {
+            Result.failure(IOException("Failed to save theme preferences", e))
         } catch (e: Exception) {
             Result.failure(e)
         }
