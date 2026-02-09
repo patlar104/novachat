@@ -113,3 +113,11 @@ api_keys.properties
 # Google Cloud SDK (local install, not part of project)
 google-cloud-sdk/
 google-cloud-cli*.tar.gz
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

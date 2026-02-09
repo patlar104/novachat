@@ -32,13 +32,13 @@ This document defines the comprehensive development protocol for NovaChat to ens
 
 When agents need to fetch web content, verify external docs, or automate browser flows:
 
-- **Use Playwright MCP** (not fetch) for:
+- **Use Cursor's built-in browser** (cursor-ide-browser MCP, not fetch) for:
   - Verifying AGP release notes, Compose BOM mapping, dependency versions
   - Multi-step navigation, form filling, or auth-gated content
   - Pages with dynamic content or SPAs
   - Any flow that requires clicks, form input, or complex navigation
 
-- **Reference**: [`.github/skills/playwright-mcp/SKILL.md`](skills/playwright-mcp/SKILL.md)
+- **Reference**: [`.github/skills/cursor-browser/SKILL.md`](skills/cursor-browser/SKILL.md)
 
 - **Core tools**: `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_fill`, `browser_fill_form`, `browser_select_option`, `browser_evaluate`, `browser_take_screenshot`
 
@@ -237,7 +237,16 @@ Agents focusing only on their narrow task without understanding:
 
 #### Before ANY modification ask (repo-wide)
 
-1. **"What files depend on mine across the repo?"**
+**MANDATORY**: Check for BOTH explicit and implicit references!
+
+1. **"What files depend on mine across the repo?"** (explicit imports/references)
+   
+   **AND**
+   
+   **"What files mention related concepts semantically?"** (implicit references)
+   - Search for synonyms: "verify" vs "check" vs "validate"
+   - Search for related tools: "browser" vs "web" vs "navigate"
+   - Search for concepts: "external docs" vs "official sources" vs "release notes"
 
    ```text
    Example: Changing ChatViewModel.kt
@@ -497,7 +506,13 @@ Example file:
 
 ### Before Changing Any File
 
-1. **Identify all dependent files (repo-wide)**:
+**CRITICAL**: This protocol applies to ALL file types:
+- **Code files** (Kotlin, Java, XML, etc.)
+- **Agent files** (`.github/agents/*.agent.md`)
+- **Skill files** (`.github/skills/*/SKILL.md`)
+- **Documentation files** (`.github/*.md`, `README.md`, etc.)
+
+1. **Identify all dependent files (repo-wide)** - BOTH explicit AND implicit:
 
    ```text
    Changing: ChatViewModel.kt
@@ -535,6 +550,7 @@ Example file:
 
 ### Ripple Effect Checklist
 
+**Code Dependencies:**
 - [ ] Are there any interfaces this file implements?
 - [ ] Are there any classes that extend this class?
 - [ ] Are there any files that import this file?
@@ -542,6 +558,96 @@ Example file:
 - [ ] Are there any configuration files that reference this?
 - [ ] Are there any DI providers or factories that reference this?
 - [ ] Are there any docs/examples that mention this behavior?
+
+**Documentation/Agent/Skill Cross-References (CRITICAL):**
+- [ ] Are there any **implicit references** to this file/feature in agent files (`.github/agents/*.agent.md`)?
+- [ ] Are there any **implicit references** in skill files (`.github/skills/*/SKILL.md`)?
+- [ ] Are there any **implicit references** in documentation (`.github/*.md`, `README.md`, etc.)?
+- [ ] When updating agents/skills/docs, did I check for **semantic references** (not just exact name matches)?
+- [ ] Did I search for **related concepts** (e.g., "verify", "check", "validate" when updating verification tools)?
+- [ ] Did I check for **cross-boundary references** (e.g., tool mentions, workflow references, protocol references)?
+
+**Implicit Reference Detection:**
+When updating any file, search for:
+- **Semantic synonyms**: "verify" vs "check" vs "validate" vs "ensure"
+- **Related concepts**: "fetch" vs "retrieve" vs "access" vs "get" vs "lookup"
+- **Tool references**: "browser" vs "playwright" vs "web" vs "navigate"
+- **Workflow mentions**: References to processes, protocols, or patterns
+- **Cross-file patterns**: Similar patterns in other files that might need updates
+
+**Example**: When updating "Playwright MCP" to "Cursor Browser":
+- ✅ Explicit: "Playwright MCP" → Updated
+- ✅ Explicit: "playwright-mcp" → Updated  
+- ❌ **MISSED**: "verify external docs" (implicit reference) → **MUST UPDATE**
+- ❌ **MISSED**: "check dependencies" (implicit reference) → **MUST UPDATE**
+- ❌ **MISSED**: "validate versions" (implicit reference) → **MUST UPDATE**
+
+### Implicit Reference Detection Protocol
+
+**CRITICAL**: When updating ANY file (code, agent, skill, or documentation), you MUST check for implicit references, not just explicit name matches.
+
+#### Step 1: Identify Semantic Concepts
+
+Before updating, identify the semantic concepts involved:
+- **Tool names**: "Playwright MCP" → Also search for "browser", "web", "navigate", "fetch"
+- **Actions**: "verify" → Also search for "check", "validate", "ensure", "confirm"
+- **Concepts**: "external docs" → Also search for "official sources", "release notes", "documentation"
+
+#### Step 2: Search for Implicit References
+
+Use semantic search across the entire `.github/` directory for:
+- **Synonyms and related terms** (not just exact matches)
+- **Conceptual references** (e.g., "check dependencies" when updating verification tools)
+- **Cross-file patterns** (similar patterns in other files)
+
+#### Step 3: Update All Found References
+
+Update BOTH:
+- **Explicit references**: Exact name matches (e.g., "Playwright MCP")
+- **Implicit references**: Semantic matches (e.g., "verify external docs", "check dependencies")
+
+#### Step 4: Verify No References Were Missed
+
+After updating, search again with:
+- Different synonyms
+- Related concepts
+- Cross-boundary terms
+
+**Example Workflow**:
+
+```text
+Updating: "Playwright MCP" → "Cursor Browser"
+
+Step 1 - Identify concepts:
+- Tool: browser automation
+- Action: verify/check/validate external sources
+- Purpose: web content retrieval
+
+Step 2 - Search for implicit references:
+- "verify" → Found in build-agent.agent.md (line 48)
+- "check" → Found in AGENTS.md (line 207)
+- "validate" → Found in planner.agent.md (line 69)
+- "external docs" → Found in reviewer-agent.agent.md (line 72)
+- "dependencies" → Found in security-check/SKILL.md (line 204)
+
+Step 3 - Update all found references:
+✅ Updated explicit: "Playwright MCP" → "Cursor Browser"
+✅ Updated implicit: "verify external docs" → "verify external docs using Cursor Browser"
+✅ Updated implicit: "check dependencies" → "check dependencies using Cursor Browser"
+
+Step 4 - Verify:
+- Search again for "verify", "check", "validate" → All updated
+- Search for "fetch" → All updated to mention Cursor Browser
+```
+
+#### Mandatory Checklist for Any Update
+
+- [ ] Searched for explicit name matches (exact strings)
+- [ ] Searched for semantic synonyms (verify/check/validate)
+- [ ] Searched for related concepts (browser/web/navigate)
+- [ ] Searched for cross-boundary references (agents/skills/docs)
+- [ ] Updated ALL found references (explicit + implicit)
+- [ ] Verified no references were missed (re-search with different terms)
 
 ---
 
@@ -1142,9 +1248,10 @@ Before any code output, verify:
 - [ ] Syntax: All brackets/parens balanced
 - [ ] Standards: Uses 2026 best practices
 - [ ] Architecture: Follows MVVM + Clean Architecture
-- [ ] Dependencies: Cross-file dependencies handled
+- [ ] Dependencies: Cross-file dependencies handled (code + documentation)
+- [ ] Implicit References: Checked for semantic references in agents/skills/docs
 - [ ] Testing: Test files updated if needed
-- [ ] Documentation: KDoc for public APIs
+- [ ] Documentation: KDoc for public APIs + cross-references updated
 - [ ] Security: No hardcoded secrets
 - [ ] Naming: Follows Kotlin conventions
 - [ ] Abstraction Check: No hardcoded strings/numbers that should be constants
@@ -1253,6 +1360,8 @@ This protocol is **mandatory** for all development work on NovaChat.
 - Using placeholders → Must rewrite with complete code
 - Skipping validation → Must validate before proceeding
 - Ignoring dependencies → Must analyze ripple effects
+- Missing implicit references → Must search for semantic synonyms and related concepts
+- Updating only explicit references → Must check for implicit references in agents/skills/docs
 - Skipping required handoffs/approvals → Must stop and notify owners
 
 ### Updates

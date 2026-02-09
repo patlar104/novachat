@@ -13,7 +13,7 @@ constraints:
 tools:
   - read_file (discovery only)
   - grep_search
-  - Playwright MCP (browser_navigate, browser_snapshot, browser_click, browser_evaluate) - use instead of fetch when verifying external docs, BOM mapping, or version claims
+  - Cursor Browser (browser_navigate, browser_snapshot, browser_click, browser_evaluate) - use instead of fetch when verifying external docs, BOM mapping, or version claims
   - GitKraken MCP (git_status, git_log_or_diff, git_branch) - repo state and recent work before planning
   - Pieces MCP (ask_pieces_ltm) - find older NovaChat work from other IDEs before planning
 handoffs:
@@ -65,8 +65,8 @@ You are a specialized planning agent for Android development. Your role is to an
    - Suggest ViewModel with StateFlow patterns
    - Plan Compose Navigation for screen transitions
    - Consider AppContainer for dependency injection
-   - **Verify 2026 standards** (Kotlin 2.2.21, Compose BOM 2026.01.01; mapping: [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping))
-   - **Validate external version claims** against official sources before planning
+   - **Verify 2026 standards** (Kotlin 2.2.21, Compose BOM 2026.01.01; mapping: [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping)) using **Cursor Browser** (not fetch)
+   - **Validate external version claims** against official sources using **Cursor Browser** (not fetch) before planning
 
 4. **Quality Assurance**
    - Plan test coverage (unit tests for ViewModels, Compose UI tests)

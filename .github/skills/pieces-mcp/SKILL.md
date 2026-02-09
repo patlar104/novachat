@@ -55,7 +55,7 @@ Use **Pieces MCP** (`ask_pieces_ltm`) to find older edits, changes, and context 
 ## Related MCP Skills
 
 - **GitKraken MCP** – git context (status, log, diff). See [gitkraken-mcp skill](../gitkraken-mcp/SKILL.md).
-- **Playwright MCP** – web content verification. See [playwright-mcp skill](../playwright-mcp/SKILL.md).
+- **Cursor Browser** – web content verification. See [cursor-browser skill](../cursor-browser/SKILL.md).
 
 ## Guardrails
 

@@ -10,9 +10,10 @@ This repository uses a specialized multi-agent system with GitHub Copilot to pre
 > - **Complete Implementations**: Write full, working code only
 > - **Self-Validation**: Check completeness, imports, syntax before output
 > - **Input Disambiguation**: Ask for clarification when requests are ambiguous
-> - **Cross-File Dependencies**: Analyze ripple effects before changes
+> - **Cross-File Dependencies**: Analyze ripple effects before changes (code + documentation + implicit references)
+> - **Implicit Reference Checking**: When updating files, search for semantic synonyms and related concepts, not just exact name matches
 > - **Atomic Processing**: One complete file at a time
-> - **Source Verification**: Validate external versions against official sources; do not assume docs are current or user-authored
+> - **Source Verification**: Validate external versions against official sources using **Cursor Browser** (not fetch); do not assume docs are current or user-authored
 > - **2026 Standards**: Kotlin 2.2.21, AGP 9.0.0, Compose BOM 2026.01.01 (Google Maven only; [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping))
 
 ## Diff-Style Summary Format
@@ -204,7 +205,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 
 - ONLY modifies build configuration files
 - Never modifies application code
-- Must check dependencies for security vulnerabilities
+- Must check dependencies for security vulnerabilities using **Cursor Browser** (not fetch)
 - No secrets in build files
 - **MUST provide complete build configurations**
 
@@ -213,7 +214,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 - **Complete build.gradle.kts files** (no `// ... dependencies` placeholders) in [`build.gradle.kts`](../build.gradle.kts) and [`app/build.gradle.kts`](../app/build.gradle.kts)
 - **All plugin configurations shown**
 - **Version catalog entries complete** (if used; see [`gradle/`](../gradle))
-- **Verify 2026 dependency versions** (Compose BOM 2026.01.01, Kotlin 2.2.21)
+- **Verify 2026 dependency versions** (Compose BOM 2026.01.01, Kotlin 2.2.21) using **Cursor Browser** against official sources
 
 **Handoffs**: To Backend (after adding dependencies), Testing (for test setup), or Reviewer
 
@@ -343,13 +344,13 @@ Provides:
 
 **Protocol**: All security examples are complete implementations
 
-### Playwright MCP Skill
+### Cursor Browser Skill
 
-Location: [`.github/skills/playwright-mcp/`](skills/playwright-mcp)
+Location: [`.github/skills/cursor-browser/`](skills/cursor-browser)
 
 Provides:
 
-- **Use Playwright MCP instead of fetch** for web content retrieval and verification
+- **Use Cursor Browser instead of fetch** for web content retrieval and verification
 - Browser automation (navigate, snapshot, click, fill, form submit)
 - Verifying external docs (AGP release notes, Compose BOM, OWASP, etc.)
 - Multi-step flows, form filling, dynamic content
@@ -615,7 +616,7 @@ Review the authentication feature for:
 │   │   └── SKILL.md
 │   ├── security-check/
 │   │   └── SKILL.md
-│   ├── playwright-mcp/
+│   ├── cursor-browser/
 │   │   └── SKILL.md
 │   ├── gitkraken-mcp/
 │   │   └── SKILL.md

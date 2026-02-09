@@ -214,7 +214,7 @@ All code submissions MUST pass these checks (from DEVELOPMENT_PROTOCOL.md):
 
 ### Web Content Verification
 
-- **Use Playwright MCP** (not fetch) when verifying external docs, BOM mapping, AGP release notes, or security references. See [playwright-mcp skill](skills/playwright-mcp/SKILL.md).
+- **Use Cursor Browser** (not fetch) when verifying external docs, BOM mapping, AGP release notes, or security references. See [cursor-browser skill](skills/cursor-browser/SKILL.md).
 
 ### Git Context
 
@@ -440,6 +440,6 @@ Instructions:
   - `compose-preview/`: @Preview annotations and preview data providers
   - `material-design/`: Material 3 Compose components and theme configuration
   - `security-check/`: Security best practices and secure storage patterns
-  - `playwright-mcp/`: **Use Playwright MCP instead of fetch** for web content verification, browser automation, docs lookup
+  - `cursor-browser/`: **Use Cursor Browser instead of fetch** for web content verification, browser automation, docs lookup
   - `gitkraken-mcp/`: **Git context** – git_status, git_log_or_diff, git_blame, PR/issue tools
   - `pieces-mcp/`: **Long-Term Memory** – ask_pieces_ltm to find older edits from other IDEs

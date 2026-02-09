@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#0F5F7A</color>
+    <!-- Clean white background for launcher icon to match generated design -->
+    <color name="ic_launcher_background">#FFFFFF</color>
 </resources>

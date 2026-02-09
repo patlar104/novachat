@@ -14,7 +14,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -98,24 +100,33 @@ fun ChatScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.chat_title)) },
+                title = { 
+                    Text(
+                        text = stringResource(R.string.chat_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold
+                    ) 
+                },
                 actions = {
                     IconButton(onClick = { onEvent(ChatUiEvent.ClearConversation) }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(R.string.clear_chat)
+                            contentDescription = stringResource(R.string.clear_chat),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                     IconButton(onClick = { onEvent(ChatUiEvent.NavigateToSettings) }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = stringResource(R.string.settings_title)
+                            contentDescription = stringResource(R.string.settings_title),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
         },
@@ -131,7 +142,11 @@ fun ChatScreenContent(
                     is ChatUiState.Success -> uiState.isProcessing
                     is ChatUiState.Loading -> true
                     else -> false
-                }
+                },
+                modifier = Modifier
+                    .imePadding()
+                    .navigationBarsPadding()
+                    .padding(bottom = 4.dp)
             )
         }
     ) { paddingValues ->
@@ -201,8 +216,8 @@ private fun ChatContent(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize().weight(1f),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(messages, key = { it.id.value }) { message ->
                     MessageBubble(message = message)
@@ -231,23 +246,25 @@ fun MessageBubble(message: Message) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp),
+            .padding(horizontal = 4.dp, vertical = 2.dp),
         horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
     ) {
         Surface(
-            shape = MaterialTheme.shapes.medium,
+            shape = MaterialTheme.shapes.large,
             color = if (isUser) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
                 MaterialTheme.colorScheme.surfaceVariant
             },
-            tonalElevation = 1.dp,
+            tonalElevation = if (isUser) 2.dp else 1.dp,
+            shadowElevation = if (isUser) 1.dp else 0.dp,
             modifier = Modifier.widthIn(max = 320.dp)
         ) {
             Text(
                 text = message.content,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
                 style = MaterialTheme.typography.bodyLarge,
+                lineHeight = MaterialTheme.typography.bodyLarge.lineHeight,
                 color = if (isUser) {
                     MaterialTheme.colorScheme.onPrimaryContainer
                 } else {
@@ -263,35 +280,49 @@ fun MessageInputBar(
     messageText: String,
     onMessageTextChange: (String) -> Unit,
     onSendMessage: () -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    modifier: Modifier = Modifier
 ) {
     Surface(
-        tonalElevation = 3.dp,
-        color = MaterialTheme.colorScheme.surface
+        tonalElevation = 4.dp,
+        shadowElevation = 2.dp,
+        color = MaterialTheme.colorScheme.surface,
+        modifier = modifier
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
                 value = messageText,
                 onValueChange = onMessageTextChange,
-                modifier = Modifier.weight(1f).padding(end = 8.dp),
-                placeholder = { Text(stringResource(R.string.type_message)) },
+                modifier = Modifier.weight(1f).padding(end = 12.dp),
+                placeholder = { 
+                    Text(
+                        text = stringResource(R.string.type_message),
+                        style = MaterialTheme.typography.bodyLarge
+                    ) 
+                },
                 enabled = !isLoading,
                 maxLines = 4,
-                shape = MaterialTheme.shapes.large
+                shape = MaterialTheme.shapes.large,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                )
             )
 
             FilledTonalIconButton(
                 onClick = onSendMessage,
-                enabled = messageText.isNotBlank() && !isLoading
+                enabled = messageText.isNotBlank() && !isLoading,
+                modifier = Modifier.size(48.dp)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Send,
-                    contentDescription = stringResource(R.string.send)
+                    contentDescription = stringResource(R.string.send),
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
@@ -335,24 +366,36 @@ fun EmptyState(modifier: Modifier = Modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(32.dp)
+            modifier = Modifier.padding(40.dp)
         ) {
-            Text(
-                text = stringResource(R.string.emoji_wave),
-                style = MaterialTheme.typography.displayMedium
-            )
-            Spacer(modifier = Modifier.height(24.dp))
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                modifier = Modifier.size(120.dp)
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.emoji_wave),
+                        style = MaterialTheme.typography.displayLarge
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = stringResource(R.string.empty_state_title),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = stringResource(R.string.empty_state_subtitle),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
     }
@@ -372,24 +415,37 @@ fun ErrorState(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(32.dp)
+            modifier = Modifier.padding(40.dp)
         ) {
-            Icon(
-                imageVector = Icons.Default.Warning,
-                contentDescription = null, // The message below explains the error, so no content description is needed for the icon.
-                tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(48.dp) // Large size to match the visual weight of displayLarge
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f),
+                modifier = Modifier.size(100.dp)
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = message,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.error
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center
             )
             if (isRecoverable) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = onDismiss) {
-                    Text(stringResource(R.string.try_again)) // Fixed: Hardcoded string
+                Spacer(modifier = Modifier.height(24.dp))
+                FilledTonalButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.try_again))
                 }
             }
         }
