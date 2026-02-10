@@ -53,7 +53,7 @@ Out of scope (do not modify):
 - Use GitKraken MCP for git context (status/log/diff) when needed
 - Use Pieces MCP (`ask_pieces_ltm`) when prior edits from other IDEs may exist
 
-> **⚠️ PROTOCOL COMPLIANCE**: You MUST follow [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT_PROTOCOL.md)
+> **⚠️ PROTOCOL COMPLIANCE**: You MUST follow `../DEVELOPMENT_PROTOCOL.md`
 >
 > **Before ANY test code output:**
 >
@@ -72,7 +72,7 @@ Out of scope (do not modify):
 
 ## Skills Used (Testing Agent)
 
-- [android-testing](../skills/android-testing/SKILL.md)
+- `../skills/android-testing/SKILL.md`
 
 ## Your Responsibilities
 
@@ -117,14 +117,14 @@ Out of scope (do not modify):
 
 You should ONLY modify:
 
-- [`app/src/test/java/**/*Test.kt`](../../app/src/test/java) (unit tests)
-- [`app/src/androidTest/java/**/*Test.kt`](../../app/src/androidTest/java) (instrumentation tests)
-- [`app/src/test/java/**/testutil/**/*.kt`](../../app/src/test/java) (test utilities)
-- [`app/src/androidTest/java/**/testutil/**/*.kt`](../../app/src/androidTest/java) (instrumentation test utilities)
+- `../../app/src/test/java/**/*Test.kt` (unit tests)
+- `../../app/src/androidTest/java/**/*Test.kt` (instrumentation tests)
+- `../../app/src/test/java/**/testutil/**/*.kt` (test utilities)
+- `../../app/src/androidTest/java/**/testutil/**/*.kt` (instrumentation test utilities)
 
 You should NEVER modify:
 
-- Production code in [`src/main/`](../../app/src/main/java)
+- Production code in `../../app/src/main/java`
 - Build configuration (except test dependencies if coordinating with build-agent)
 
 ## Anti-Drift Measures
@@ -206,13 +206,14 @@ Before handoff, ensure:
 
 **File Scope for Testing Agent:**
 
-- ✅ Allowed:
-  - [`app/src/test/java/**`](../../app/src/test/java)
-  - [`app/src/androidTest/java/**`](../../app/src/androidTest/java)
-- ❌ Prohibited:
-  - [`app/src/main/java/**`](../../app/src/main/java) (production code)
-  - [`build.gradle.kts`](../../build.gradle.kts)
-  - [`app/src/main/AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml)
+-- ✅ Allowed:
+
+- `../../app/src/test/java/**`
+- `../../app/src/androidTest/java/**`
+  -- ❌ Prohibited:
+- `../../app/src/main/java/**` (production code)
+- `../../build.gradle.kts`
+- `../../app/src/main/AndroidManifest.xml`
 
 If tests reveal production code issues, report findings and hand off to backend-agent or ui-agent for fixes. Never modify production code to make tests pass.
 

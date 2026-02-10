@@ -6,9 +6,9 @@ Welcome to NovaChat! This guide will help you get started even if you're new to 
 
 ### Required Software
 
-1. **Java Development Kit (JDK) 17**
+1. **Java Development Kit (JDK) 21**
    - Download from: https://adoptium.net/
-   - Choose: Temurin 17 (LTS)
+   - Choose: Temurin 21 (LTS)
    - Install and verify: `java -version`
 
 2. **Android Studio**
@@ -36,18 +36,21 @@ Welcome to NovaChat! This guide will help you get started even if you're new to 
 ### 2. Clone the Repository
 
 **Option A: Using Android Studio**
+
 1. Open Android Studio
 2. Click "Get from VCS"
 3. Enter: `https://github.com/patlar104/novachat.git`
 4. Choose a location and click "Clone"
 
 **Option B: Using Git Command Line**
+
 ```bash
 git clone https://github.com/patlar104/novachat.git
 cd novachat
 ```
 
 Then open the folder in Android Studio:
+
 - File → Open
 - Navigate to the cloned folder
 - Click OK
@@ -83,19 +86,22 @@ Then open the folder in Android Studio:
 ### 4. Wait for Gradle Sync
 
 When you first open the project (or after adding `google-services.json`):
+
 1. Android Studio will show "Gradle Sync" in the bottom
 2. This downloads all dependencies (may take 5-10 minutes)
 3. Watch the progress bar at the bottom
 4. Once done, you'll see "BUILD SUCCESSFUL"
 
 **If Sync Fails:**
+
 - Check your internet connection
 - Try: File → Invalidate Caches → Invalidate and Restart
-- Ensure JDK 17 is installed
+- Ensure JDK 21 is installed
 
 ### 5. Set Up an Android Device
 
 **Option A: Use a Real Device (Recommended)**
+
 1. Enable Developer Options on your phone:
    - Go to Settings → About Phone
    - Tap "Build Number" 7 times
@@ -105,6 +111,7 @@ When you first open the project (or after adding `google-services.json`):
 4. Tap "Allow" on the phone when prompted
 
 **Option B: Use an Emulator**
+
 1. In Android Studio: Tools → Device Manager
 2. Click "Create Device"
 3. Choose a device (e.g., Pixel 6)
@@ -138,6 +145,7 @@ When you first open the project (or after adding `google-services.json`):
 
 **Problem**: The app can't connect to Firebase.
 **Solution**:
+
 1. Ensure you have correctly completed **Step 3: Set Up Firebase**.
 2. Make sure `google-services.json` is in the `novachat/app/` directory.
 3. Check that you have added the SHA-1 fingerprint to your Firebase project settings.
@@ -147,6 +155,7 @@ When you first open the project (or after adding `google-services.json`):
 
 **Problem**: Dependencies couldn't download
 **Solution**:
+
 1. Check internet connection
 2. Wait a few minutes and retry
 3. File → Invalidate Caches → Restart
@@ -156,8 +165,9 @@ When you first open the project (or after adding `google-services.json`):
 
 **Problem**: Android SDK not installed
 **Solution**:
+
 1. Tools → SDK Manager
-2. Check "Android 16 (API 35)" and "Android 17 (API 36)"
+2. Check "Android 16 (API 35)" and "Android 16 (API 36)"
 3. Click "Apply" to install
 4. Restart Android Studio
 
@@ -165,6 +175,7 @@ When you first open the project (or after adding `google-services.json`):
 
 **Problem**: Phone not showing in device list
 **Solution**:
+
 1. Check USB cable is connected
 2. Try a different USB port
 3. Enable USB Debugging (see step 4 above)
@@ -175,6 +186,7 @@ When you first open the project (or after adding `google-services.json`):
 
 **Problem**: Code won't compile
 **Solution**:
+
 1. Build → Clean Project
 2. Build → Rebuild Project
 3. Check the "Build" tab for specific errors
@@ -183,15 +195,18 @@ When you first open the project (or after adding `google-services.json`):
 ## Learning Resources
 
 ### Android Basics
+
 - [Android Basics Course](https://developer.android.com/courses/android-basics-compose/course)
 - [Kotlin for Beginners](https://kotlinlang.org/docs/getting-started.html)
 
 ### This Project
+
 - [README.md](README.md) - Project overview
 - [DEVELOPMENT.md](DEVELOPMENT.md) - Development guide
 - [API.md](API.md) - API documentation
 
 ### Getting Help
+
 1. Check existing [GitHub Issues](https://github.com/patlar104/novachat/issues)
 2. Create a new issue with:
    - What you tried to do
@@ -211,6 +226,7 @@ Once you have the app running:
 ## Tips for Success
 
 ✅ **Do:**
+
 - Take your time with each step
 - Read error messages carefully
 - Search for errors online (Stack Overflow is your friend!)
@@ -218,9 +234,10 @@ Once you have the app running:
 - Ask for help when stuck
 
 ❌ **Don't:**
+
 - Skip steps in the guide
 - Panic when things don't work first try
-- Share your API key publicly
+- Share secrets or credentials publicly
 - Make many changes at once (change one thing at a time)
 
 ## Congratulations! 🎉
@@ -232,6 +249,7 @@ Remember: Every expert was once a beginner. Take it one step at a time, and don'
 ---
 
 **Need More Help?**
+
 - Read the [README.md](README.md)
 - Check [Common Issues](#common-beginner-issues)
 - Ask on [Stack Overflow](https://stackoverflow.com/questions/tagged/android)

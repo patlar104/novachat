@@ -8,7 +8,7 @@ NovaChat is a modern Android AI chatbot application that supports online (cloud-
   - Online mode using Firebase Functions proxy (Gemini 2.5 Flash via server)
   - Offline mode planned with Google AICore for on-device AI (Android 15+), currently unavailable
 - Modern chat interface built with Jetpack Compose
-- Easy settings management for API keys and AI mode selection
+- Settings management for AI mode and theme preferences
 - Material Design 3 with dynamic theming support
 - Targeting Android 16 (API 35) with backward compatibility to Android 9 (API 28)
 
@@ -28,7 +28,7 @@ NovaChat is a modern Android AI chatbot application that supports online (cloud-
 ## Requirements
 
 - Android Studio (latest stable, for AGP 9.0.0 support)
-- JDK 17
+- JDK 21
 - Android SDK 36 (compileSdk) and Android SDK 35 (targetSdk)
 - Minimum device: Android 9 (API 28)
 - Google Maven repository enabled (`google()`) for Compose BOM and AndroidX
@@ -114,6 +114,7 @@ app/
 ## Features Explanation
 
 ### Chat Screen
+
 - Send and receive messages in a clean, modern interface
 - Messages are displayed in chat bubbles
 - User messages appear on the right (blue)
@@ -122,19 +123,22 @@ app/
 - Clear chat history with a single tap
 
 ### Settings Screen
+
 - Toggle between Online and Offline AI modes
 - View app information
-- (API key configuration is optional - Firebase Functions handles authentication)
+- Manage theme mode and dynamic color preferences
 
 ### AI Modes
 
 #### Online Mode (Firebase Functions Proxy)
+
 - Uses Firebase Cloud Functions proxy to access Gemini 2.5 Flash model
 - Requires internet connection
 - No API key required - Firebase handles authentication server-side
 - Advanced capabilities and up-to-date knowledge
 
 #### Offline Mode (On-device)
+
 - **Note: Currently Unavailable** - Google AICore is not yet publicly available on Maven (as of January 2026)
 - When available, will use Google AICore for on-device processing
 - No internet required after model download
@@ -147,27 +151,33 @@ app/
 ### Build Issues
 
 #### "Android Gradle Plugin 9.0.0 requires Gradle 9.1.0"
+
 The project uses the latest Android Gradle Plugin (9.0.0) which requires Gradle 9.1.0. This is automatically configured in the gradle wrapper.
 
 #### "Plugin was not found" or repository errors
+
 This app requires access to Google's Maven repository. If you're building in a restricted network environment:
+
 1. Ensure your firewall allows access to `dl.google.com`
 2. Check your proxy settings if behind a corporate firewall
 3. Try using a VPN if the repository is geo-blocked
 
 #### "On-device AI is not available"
+
 - Offline mode is currently disabled because AICore is not yet available on Maven
 - Use Online mode instead
 
 ### "Authentication required" error
+
 - Check that Anonymous Authentication is enabled in Firebase Console
 - Verify Firebase project is properly configured
 - Check app logs for sign-in errors
 
 ### Build errors
-- Ensure you have JDK 17 installed
+
+- Ensure you have JDK 21 installed
 - Run `./gradlew clean` and rebuild
-- Check that Android SDK 35 is installed
+- Check that Android SDK 35 (target) and 36 (compile) are installed
 
 ## License
 
@@ -179,25 +189,15 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Acknowledgments
 
-- Google Generative AI SDK
-- Google AICore
+- Firebase Functions
+- Gemini 2.5 Flash model
+- Google AICore (planned)
 - Jetpack Compose team
 - Android community
 
 ---
 
 Built with ❤️ for novice developers learning Android AI integration
-# NovaChat
-
-An Android AI chatbot application built with Jetpack Compose, supporting both online (Google Gemini) and offline (on-device AICore) AI modes.
-
-## 🤖 About NovaChat
-
-NovaChat is a modern Android AI chatbot that demonstrates:
-- **Jetpack Compose** with Material Design 3
-- **Dual AI Integration**: Google Gemini API (online) and AICore (offline)
-- **MVVM + Clean Architecture** with proper separation of concerns
-- **Modern Android Development**: Kotlin 2.2.21, Coroutines, StateFlow, DataStore
 
 **Current Status**: This repository includes the app code and the multi-agent development system configuration.
 
@@ -210,36 +210,42 @@ See [.github/AGENTS.md](.github/AGENTS.md) for detailed documentation.
 ### Quick Start with Agents
 
 **Planning a Feature:**
+
 ```
 @copilot using planner.agent.md
 Plan implementation for user authentication with biometric support
 ```
 
 **Implementing Compose UI:**
+
 ```
 @copilot using ui-agent.agent.md
-Create a settings screen with Material 3 components for API key input
+Create a settings screen with Material 3 components for AI mode and theme preferences
 ```
 
 **Implementing ViewModels & Repositories:**
+
 ```
 @copilot using backend-agent.agent.md
-Implement ChatViewModel with Gemini AI integration and error handling
+Implement ChatViewModel with Firebase Functions proxy integration and error handling
 ```
 
 **Adding Tests:**
+
 ```
 @copilot using testing-agent.agent.md
 Add Compose UI tests for ChatScreen and unit tests for ChatViewModel
 ```
 
 **Configuring Dependencies:**
+
 ```
 @copilot using build-agent.agent.md
-Add dependencies for Google Generative AI SDK and update Compose BOM
+Add dependencies for DataStore Preferences and update the version catalog
 ```
 
 **Reviewing Code:**
+
 ```
 @copilot using reviewer-agent.agent.md
 Review the AI integration for security vulnerabilities and best practices
@@ -258,24 +264,24 @@ Review the AI integration for security vulnerabilities and best practices
 
 - 📱 **Android Testing** - Compose UI tests, ViewModel testing, coroutine testing
 - 🎨 **Material Design 3** - Compose components, theme configuration
-- 🔒 **Security** - API key storage, encryption, network security
+- 🔒 **Security** - secure storage patterns, network security, secret handling
 
 ## Project Structure
 
-This branch focuses on the multi-agent system configuration in `.github/`:
-- `copilot-instructions.md` - General NovaChat development guidelines
-- `agents/` - Specialized agent configurations (6 agents)
-- `skills/` - Reusable knowledge and patterns (4 skills)
-- `AGENTS.md` - Complete multi-agent system documentation
+This repository includes both the app implementation and the multi-agent system configuration in `.github/`:
 
-For the full application implementation, see the `copilot/create-ai-chatbot-app` branch.
+- `copilot-instructions.md` - General NovaChat development guidelines
+- `agents/` - Specialized agent configurations
+- `skills/` - Reusable knowledge and patterns
+- `AGENTS.md` - Complete multi-agent system documentation
 
 ## Development Guidelines
 
 See [.github/copilot-instructions.md](.github/copilot-instructions.md) for:
+
 - NovaChat project overview and architecture
 - Jetpack Compose best practices
-- MVVM + Clean Architecture patterns  
+- MVVM + Clean Architecture patterns
 - AI integration guidelines (Gemini + AICore)
 - StateFlow and coroutine patterns
 - Testing strategies

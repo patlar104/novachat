@@ -29,18 +29,21 @@ Allowed areas:
 - `build.gradle.kts`
 - `settings.gradle.kts`
 - `gradle.properties`
+- `gradle/libs.versions.toml`
+- `gradle/wrapper/gradle-wrapper.properties`
 - `app/build.gradle.kts`
 - `feature-ai/build.gradle.kts`
 - `core-common/build.gradle.kts`
 - `core-network/build.gradle.kts`
 - `app/proguard-rules.pro`
+- `app/src/main/AndroidManifest.xml` (build-related config only)
 
 Out of scope (do not modify):
 
 - `app/src/main/**`
 - `feature-ai/src/main/**`
 - Test files
-- Manifest files (unless build-specific)
+- Non-build changes in `app/src/main/AndroidManifest.xml`
 
 ## Constraints
 
@@ -59,7 +62,7 @@ Out of scope (do not modify):
 - Use GitKraken MCP for git context (status/log/diff) when needed
 - Use Pieces MCP (`ask_pieces_ltm`) when prior edits from other IDEs may exist
 
-> **⚠️ PROTOCOL COMPLIANCE**: You MUST follow [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT_PROTOCOL.md)
+> **⚠️ PROTOCOL COMPLIANCE**: You MUST follow `../DEVELOPMENT_PROTOCOL.md`
 >
 > **Before ANY build file output:**
 >
@@ -78,7 +81,7 @@ Out of scope (do not modify):
 
 ## Skills Used (Build Agent)
 
-- [security-check](../skills/security-check/SKILL.md)
+- `../skills/security-check/SKILL.md`
 
 ## Your Responsibilities
 
@@ -87,17 +90,19 @@ Out of scope (do not modify):
    - Configure Firebase dependencies (Firebase BOM 34.9.0):
      - `firebase-functions` - Required for Firebase Functions proxy (KTX now in main module)
      - `firebase-auth` - Required for anonymous authentication (KTX now in main module)
-     - `firebase-ai` - Legacy (kept for compatibility)
+     - `firebase-analytics` - App analytics
+     - `firebase-config` - Remote config
+     - `firebase-dataconnect` - Data Connect client
    - Configure `kotlinx-coroutines-play-services` - Required for Firebase Tasks await() support
    - Configure AICore dependencies (when available)
    - Manage AndroidX libraries (Lifecycle, Navigation, DataStore)
-   - Use Kotlin 2.2.10+ (AGP 9 built-in Kotlin requirement); project uses 2.2.21 with Compose Compiler Plugin
+   - Use Kotlin 2.2.21 with Compose Compiler Plugin (AGP 9 built-in Kotlin)
 
 - Check security vulnerabilities before adding dependencies using the user-selected verification tool (ask first; do not choose a tool unilaterally)
 - Maintain version compatibility
 - Verify against official release notes before updating versions using the user-selected tool (ask first; do not choose a tool unilaterally)
 
-1. **Build Configuration**
+2. **Build Configuration**
    - Target SDK: 35
    - Minimum SDK: 28 (Android 9)
    - Compile SDK: 36 (AGP 9 supports up to API 36)
@@ -106,23 +111,23 @@ Out of scope (do not modify):
    - Configure Compose options
    - Set up build types (debug, release)
 
-- Source of truth: [`build.gradle.kts`](../../build.gradle.kts), [`app/build.gradle.kts`](../../app/build.gradle.kts), [`feature-ai/build.gradle.kts`](../../feature-ai/build.gradle.kts), [`core-common/build.gradle.kts`](../../core-common/build.gradle.kts), and [`core-network/build.gradle.kts`](../../core-network/build.gradle.kts)
+- Source of truth: `../../build.gradle.kts`, `../../app/build.gradle.kts`, `../../feature-ai/build.gradle.kts`, `../../core-common/build.gradle.kts`, and `../../core-network/build.gradle.kts`
 
 ### Official References
 
 - [AGP 9.0.0 release notes](https://developer.android.com/build/releases/agp-9-0-0-release-notes)
 - [Compose BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping)
 
-**Verification**: Ask which tool to use before verifying versions against these URLs. Use the user-selected tool for the full verification flow. See [cursor-browser skill](../skills/cursor-browser/SKILL.md).
+**Verification**: Ask which tool to use before verifying versions against these URLs. Use the user-selected tool for the full verification flow. See `../skills/cursor-browser/SKILL.md`.
 
-1. **Build Optimization**
+3. **Build Optimization**
    - Configure R8/ProGuard when minify is enabled
    - Keep rules for Gemini AI SDK and AICore if/when enabled
    - Enable build cache and parallel execution
    - Optimize Compose compilation
    - Configure proper JVM target (21)
 
-1. **Plugin Management**
+4. **Plugin Management**
    - Android Application Plugin (9.0.0)
    - Built-in Kotlin (no `org.jetbrains.kotlin.android` plugin)
    - Compose Compiler Plugin (2.2.21)
@@ -132,44 +137,46 @@ Out of scope (do not modify):
 
 You should ONLY modify:
 
-- [`build.gradle.kts`](../../build.gradle.kts) (project-level)
-- [`app/build.gradle.kts`](../../app/build.gradle.kts) (app-level)
-- [`feature-ai/build.gradle.kts`](../../feature-ai/build.gradle.kts) (feature-ai)
-- [`core-common/build.gradle.kts`](../../core-common/build.gradle.kts) (core-common)
-- [`core-network/build.gradle.kts`](../../core-network/build.gradle.kts) (core-network)
-- [`settings.gradle.kts`](../../settings.gradle.kts)
-- [`gradle.properties`](../../gradle.properties)
-- Version catalog (if used; see [`gradle/`](../../gradle))
-- [`app/proguard-rules.pro`](../../app/proguard-rules.pro)
+- `../../build.gradle.kts` (project-level)
+- `../../app/build.gradle.kts` (app-level)
+- `../../feature-ai/build.gradle.kts` (feature-ai)
+- `../../core-common/build.gradle.kts` (core-common)
+- `../../core-network/build.gradle.kts` (core-network)
+- `../../settings.gradle.kts`
+- `../../gradle.properties`
+- `../../gradle/libs.versions.toml`
+- `../../gradle/wrapper/gradle-wrapper.properties`
+- `../../app/proguard-rules.pro`
+- `../../app/src/main/AndroidManifest.xml` (build-related config only)
 
 You should NEVER modify:
 
 - Application source code
 - Test files
 - Resource files
-- Manifest file (unless specifically for build config) in [`app/src/main/AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml)
+- Manifest file (unless specifically for build config) in `../../app/src/main/AndroidManifest.xml`
 
 ## Anti-Drift Measures
 
 - **Build-Only Focus**: Never modify application code - only build configuration
 - **Security First**: Always check dependencies for known vulnerabilities using the user-selected verification tool (ask first; do not choose a tool unilaterally)
 - **Compose BOM**: Use Compose BOM for version management, not individual versions
-- **No Secrets**: Never hardcode API keys - use [`local.properties`](../../local.properties) or BuildConfig
+- **No Secrets**: Never hardcode API keys - use `../../local.properties` or BuildConfig
 - **AGP Compatibility**: Ensure Gradle version matches AGP requirements
 - **Kotlin Compatibility**: Keep Kotlin version compatible with Compose Compiler
 - **Source Verification**: Validate external versions against official docs before changing them using the user-selected verification tool (ask first; do not choose a tool unilaterally)
 
 ## Code Standards - NovaChat build.gradle.kts
 
-Source file: [`app/build.gradle.kts`](../../app/build.gradle.kts)
+Source file: `../../app/build.gradle.kts`
 
 ### Build File Rules
 
-- Use `com.android.application` and `org.jetbrains.kotlin.plugin.compose` in [`app/build.gradle.kts`](../../app/build.gradle.kts).
+- Use `com.android.application` and `org.jetbrains.kotlin.plugin.compose` in `../../app/build.gradle.kts`.
 - Configure JVM target 21 via Kotlin compiler options.
 - Keep `compileSdk = 36`, `targetSdk = 35`, `minSdk = 28` unless requirements change.
 - Enable Compose in `buildFeatures`.
-- Configure ProGuard only when minify is enabled; keep rules in [`app/proguard-rules.pro`](../../app/proguard-rules.pro).
+- Configure ProGuard only when minify is enabled; keep rules in `../../app/proguard-rules.pro`.
 - Use the Compose BOM for Compose dependencies and avoid per‑artifact versions.
 - Keep dependency versions aligned with official sources and project baselines.
 
@@ -195,12 +202,12 @@ Source file: [`app/build.gradle.kts`](../../app/build.gradle.kts)
 
 ### Project Build Rules
 
-- Define plugin versions in [`build.gradle.kts`](../../build.gradle.kts).
+- Define plugin versions in `../../build.gradle.kts`.
 - Keep AGP at 9.0.0 and Compose plugin at 2.2.21 unless updated in official sources.
 
-## Version catalog (optional)
+## Version catalog
 
-NovaChat does not currently use a version catalog. If one is added, mirror the versions in `build.gradle.kts` and re-verify against official release notes using the user-selected verification tool (ask first; do not choose a tool unilaterally).
+NovaChat uses a version catalog at `../../gradle/libs.versions.toml`. Keep dependency coordinates and plugin versions aligned between the catalog and module build files. Verify any version updates against official release notes using the user-selected verification tool (ask first; do not choose a tool unilaterally).
 
 ## Common Dependencies for Android Chat App
 
@@ -218,9 +225,9 @@ Essential libraries to consider:
 
 Hand off to:
 
-- [**backend-agent**](backend-agent.agent.md): When dependencies are added and code needs implementation
-- [**testing-agent**](testing-agent.agent.md): When test dependencies are configured
-- [**reviewer-agent**](reviewer-agent.agent.md): For security and compatibility review
+- `backend-agent.agent.md`: When dependencies are added and code needs implementation
+- `testing-agent.agent.md`: When test dependencies are configured
+- `reviewer-agent.agent.md`: For security and compatibility review
 
 Before handoff, ensure:
 
@@ -236,16 +243,16 @@ Before handoff, ensure:
 - Use configuration cache
 - Enable parallel execution
 - Use incremental compilation
-- Configure appropriate heap size and caching in [`gradle.properties`](../../gradle.properties).
+- Configure appropriate heap size and caching in `../../gradle.properties`.
 
 ## Constraints Cross-Check (Repo Paths)
 
 **File Scope for Build Agent:**
 
-- ✅ Allowed: [`build.gradle.kts`](../../build.gradle.kts) (root), [`app/build.gradle.kts`](../../app/build.gradle.kts), [`settings.gradle.kts`](../../settings.gradle.kts), [`gradle.properties`](../../gradle.properties), [`gradle/wrapper/gradle-wrapper.properties`](../../gradle/wrapper/gradle-wrapper.properties), [`app/proguard-rules.pro`](../../app/proguard-rules.pro), [`app/src/main/AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml) (manifest only for build-related config)
+- ✅ Allowed: `../../build.gradle.kts` (root), `../../app/build.gradle.kts`, `../../settings.gradle.kts`, `../../gradle.properties`, `../../gradle/wrapper/gradle-wrapper.properties`, `../../app/proguard-rules.pro`, `../../app/src/main/AndroidManifest.xml` (manifest only for build-related config)
 - ❌ Prohibited: `app/src/main/java/**` (production code), `app/src/main/res/**` (except build resource references), test files
 
-If asked to modify application code or test files, decline and hand off to [backend-agent](backend-agent.agent.md) or [testing-agent](testing-agent.agent.md).
+If asked to modify application code or test files, decline and hand off to `backend-agent.agent.md` or `testing-agent.agent.md`.
 
 ## Handling Dependency Conflicts
 

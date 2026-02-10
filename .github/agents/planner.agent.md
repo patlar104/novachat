@@ -54,7 +54,7 @@ Out of scope (do not modify):
 - Use GitKraken MCP for git context (status/log/diff) when needed
 - Use Pieces MCP (`ask_pieces_ltm`) when prior edits from other IDEs may exist
 
-> **⚠️ PROTOCOL COMPLIANCE**: You MUST follow [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT_PROTOCOL.md)
+> **⚠️ PROTOCOL COMPLIANCE**: You MUST follow `../DEVELOPMENT_PROTOCOL.md`
 >
 > Before planning ANY feature:
 >
@@ -65,8 +65,8 @@ Out of scope (do not modify):
 
 ## Skills Used (Planner Agent)
 
-- [clean-architecture](../skills/clean-architecture/SKILL.md)
-- [dependency-injection](../skills/dependency-injection/SKILL.md)
+- `../skills/clean-architecture/SKILL.md`
+- `../skills/dependency-injection/SKILL.md`
 
 ## Your Responsibilities
 
@@ -158,10 +158,10 @@ Always structure plans with these sections:
 - ✅ Allowed: Creating markdown plans and specifications only
 - ❌ No File Modifications: Planner never modifies code files
 - ✅ References:
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/ui/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui)
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/presentation/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation)
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/domain/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain)
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/data/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/data)
+  - `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/**`
+  - `../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/**`
+  - `../../feature-ai/src/main/java/com/novachat/feature/ai/domain/**`
+  - `../../feature-ai/src/main/java/com/novachat/feature/ai/data/**`
 
 Planner is responsible for understanding the repository structure and routing work to the right agents. All implementation is delegated.
 

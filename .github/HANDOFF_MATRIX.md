@@ -40,15 +40,18 @@
 ### 1. PLANNER AGENT Handoffs
 
 #### 1.1 → UI Agent (Create UI Implementation)
+
 **When**: Specification complete, UI components needed
 **Trigger**: "Implement composables according to spec"
 **Information Passed**:
+
 - Specification file reference (specs/PHASE_X_SPEC.md)
 - UI components list (screens, composables needed)
 - Design requirements (Material 3, theme, accessibility)
 - ViewModel state contract (UiState/UiEvent definitions)
 
 **Example**:
+
 ```
 PLANNER → UI AGENT
 
@@ -75,9 +78,11 @@ Acceptance Criteria:
 ```
 
 #### 1.2 → Backend Agent (Implement Business Logic)
+
 **When**: Domain/data layer needed for feature
 **Trigger**: "Implement ViewModels and repositories"
 **Information Passed**:
+
 - Specification file reference
 - Domain model definitions needed
 - Repository interfaces required
@@ -85,6 +90,7 @@ Acceptance Criteria:
 - DI container updates needed
 
 **Example**:
+
 ```
 PLANNER → BACKEND AGENT
 
@@ -121,19 +127,22 @@ Acceptance Criteria:
 ```
 
 #### 1.3 → Build Agent (Configure Dependencies)
+
 **When**: New dependencies needed for feature
 **Trigger**: "Add/verify dependencies"
 **Information Passed**:
+
 - Specification file reference
 - List of required dependencies
 - Dependency versions (must be 2026 standards)
 - Build configuration changes needed
 
 **Example**:
+
 ```
 PLANNER → BUILD AGENT
 
-Task: Add Google Generative AI SDK dependency
+Task: Add Firebase Functions proxy dependencies
 
 Reference: specs/PHASE_010_GEMINI_INTEGRATION.md
 
@@ -153,8 +162,7 @@ Dependency Compatibility:
 - Check for security vulnerabilities
 
 ProGuard/R8 Rules Needed:
-- Keep Google AI classes from obfuscation
-- (Specifics in specification)
+- No special rules unless required by new dependency
 
 Acceptance Criteria:
 ✓ All specified versions added
@@ -164,9 +172,11 @@ Acceptance Criteria:
 ```
 
 #### 1.4 → Testing Agent (Create Test Strategy)
+
 **When**: Test coverage plan needed
 **Trigger**: "Create tests according to strategy"
 **Information Passed**:
+
 - Specification file reference
 - Test coverage requirements
 - Unit test focus areas
@@ -174,6 +184,7 @@ Acceptance Criteria:
 - Test data patterns
 
 **Example**:
+
 ```
 PLANNER → TESTING AGENT
 
@@ -214,15 +225,18 @@ Acceptance Criteria:
 ```
 
 #### 1.5 → Reviewer Agent (Final Review)
+
 **When**: Feature implementation complete
 **Trigger**: "Review all implementation"
 **Information Passed**:
+
 - Specification file reference
 - File list to review
 - Acceptance criteria
 - Known limitations
 
 **Example**:
+
 ```
 PLANNER → REVIEWER AGENT
 
@@ -263,14 +277,17 @@ Specification Compliance:
 ### 2. UI AGENT Handoffs
 
 #### 2.1 → Backend Agent (Missing ViewModel)
+
 **When**: Composable needs ViewModel that doesn't exist
 **Trigger**: "ViewModel not found, implementation needed"
 **Information Passed**:
+
 - Screen that needs ViewModel
 - UiState/UiEvent interfaces required
 - Expected behavior/state transitions
 
 **Example**:
+
 ```
 UI AGENT → BACKEND AGENT
 
@@ -296,15 +313,18 @@ Acceptance Criteria:
 ```
 
 #### 2.2 → Preview Agent (Preview Coverage)
+
 **When**: Composable implementation complete
 **Trigger**: "Ready for preview coverage"
 **Information Passed**:
+
 - Composable file path and function name
 - All possible UI states from UiState
 - Device variants to preview (phone, tablet)
 - Theme variants needed (light, dark)
 
 **Example**:
+
 ```
 UI AGENT → PREVIEW AGENT
 
@@ -341,15 +361,18 @@ Acceptance Criteria:
 ```
 
 #### 2.3 → Testing Agent (UI Test Cases)
+
 **When**: UI implementation ready for testing
 **Trigger**: "Composable ready for UI testing"
 **Information Passed**:
+
 - Screen name and file path
 - Key interactions to test
 - Expected state changes
 - Error scenarios
 
 **Example**:
+
 ```
 UI AGENT → TESTING AGENT
 
@@ -387,9 +410,11 @@ Acceptance Criteria:
 ```
 
 #### 2.4 → Reviewer Agent (UI Code Review)
+
 **When**: UI implementation complete and tested
 **Trigger**: "UI ready for architecture review"
 **Information Passed**:
+
 - All UI files created/modified
 - Test files created
 - Preview coverage
@@ -400,15 +425,18 @@ Acceptance Criteria:
 ### 3. BACKEND AGENT Handoffs
 
 #### 3.1 → UI Agent (Update UI Needed)
+
 **When**: ViewModel state changed, UI must update
 **Trigger**: "ViewModel state structure changed"
 **Information Passed**:
+
 - ViewModel file path
 - State changes (new branches, parameters)
 - Event changes (new event types)
 - Required UI updates
 
 **Example**:
+
 ```
 BACKEND AGENT → UI AGENT
 
@@ -440,15 +468,18 @@ Acceptance Criteria:
 ```
 
 #### 3.2 → Testing Agent (ViewModel Tests)
+
 **When**: ViewModel implementation complete
 **Trigger**: "ViewModel ready for unit testing"
 **Information Passed**:
+
 - ViewModel file path and class name
 - State structure (UiState/UiEvent)
 - Major event paths to test
 - Error scenarios
 
 **Example**:
+
 ```
 BACKEND AGENT → TESTING AGENT
 
@@ -490,15 +521,18 @@ Acceptance Criteria:
 ```
 
 #### 3.3 → Build Agent (Dependency Addition)
+
 **When**: New dependencies required for backend
 **Trigger**: "New dependencies needed"
 **Information Passed**:
+
 - Required library/package
 - Version constraints
 - Compatibility requirements
 - Build configuration changes
 
 **Example**:
+
 ```
 BACKEND AGENT → BUILD AGENT
 
@@ -511,7 +545,7 @@ Required Dependency:
 
 Build Configuration:
 - Add to build.gradle.kts dependencies
-- Verify version catalog (libs.versions.toml) if used
+- Verify version catalog (gradle/libs.versions.toml)
 
 ProGuard Rules:
 - No special rules needed for public API
@@ -529,9 +563,11 @@ Acceptance Criteria:
 ```
 
 #### 3.4 → Reviewer Agent (Backend Review)
+
 **When**: UseCase, Repository, ViewModel all complete
 **Trigger**: "Backend implementation ready for review"
 **Information Passed**:
+
 - Backend files to review
 - Architecture compliance checklist
 - Test coverage status
@@ -541,15 +577,18 @@ Acceptance Criteria:
 ### 4. PREVIEW AGENT Handoffs
 
 #### 4.1 → UI Agent (Composable Issues)
+
 **When**: Creating preview, Composable not working
 **Trigger**: "Composable doesn't compile or preview"
 **Information Passed**:
+
 - Error details
 - Composable location
 - What needs fixing
 
 **Example**:
-```
+
+````
 PREVIEW AGENT → UI AGENT
 
 Issue: ChatScreen doesn't preview correctly
@@ -583,12 +622,13 @@ fun ChatScreenInitialPreview() {
         uiState = ChatUiState.Initial
     )
 }
-```
+````
 
 Acceptance Criteria:
 ✓ Composable has state parameters with defaults
 ✓ No ViewModel usage in Composable
 ✓ PreviewData helpers available
+
 ```
 
 #### 4.2 → Backend Agent (State Definition Missing)
@@ -614,6 +654,7 @@ Acceptance Criteria:
 
 **Example**:
 ```
+
 TESTING AGENT → BACKEND AGENT
 
 Issue: SendMessageUseCase doesn't save messages correctly
@@ -621,23 +662,28 @@ Issue: SendMessageUseCase doesn't save messages correctly
 Test File: app/src/test/java/com/novachat/app/domain/usecase/SendMessageUseCaseTest.kt
 
 Failing Test:
+
 - sendMessage_success_savesUserMessage()
 
 Issue:
+
 - UseCase calls messageRepository.addMessage() with wrong parameters
 - Timestamp not set correctly
 - isFromUser flag incorrect
 
 Expected Behavior:
+
 - User message saved with isFromUser=true
 - AI message saved with isFromUser=false
 - Both messages appear in list afterward
 
 Root Cause (if known):
+
 - Possibly mapping issue in SendMessageUseCase
 - Or MessageRepository not storing correctly
 
 Files to Check:
+
 - SendMessageUseCase.kt
 - MessageRepository interface + impl
 
@@ -645,6 +691,7 @@ Acceptance Criteria:
 ✓ Test passes after fix
 ✓ Both messages save correctly
 ✓ No regression in other tests
+
 ```
 
 #### 5.2 → UI Agent (UI Component Bug)
@@ -657,6 +704,7 @@ Acceptance Criteria:
 
 **Example**:
 ```
+
 TESTING AGENT → UI AGENT
 
 Issue: ChatScreen not displaying error state
@@ -664,17 +712,21 @@ Issue: ChatScreen not displaying error state
 Test File: app/src/androidTest/java/com/novachat/app/ui/ChatScreenTest.kt
 
 Failing Test:
+
 - chatScreen_showsErrorBannerWhenSendFails()
 
 Issue:
+
 - When uiState is ChatUiState.Error, error banner not shown
 - or: Error text not displayed
 
 Expected UI Behavior:
+
 - ChatUiState.Error shows error banner with message
 - Perhaps with dismiss button
 
 File to Check:
+
 - ChatScreen.kt (when branch for Error state)
 
 Possible Fixes:
@@ -687,6 +739,7 @@ Acceptance Criteria:
 ✓ Error message text visible
 ✓ User can dismiss banner
 ✓ Test passes
+
 ```
 
 #### 5.3 → Build Agent (Test Setup Issue)
@@ -699,6 +752,7 @@ Acceptance Criteria:
 
 **Example**:
 ```
+
 TESTING AGENT → BUILD AGENT
 
 Issue: Compose UI tests fail to compile
@@ -706,22 +760,26 @@ Issue: Compose UI tests fail to compile
 Error: Cannot find: androidx.compose.ui.test.junit4.createComposeRule
 
 Problem:
+
 - Test dependency missing or wrong version
 - or: Plugin not configured
 
 Required:
+
 - androidx.compose.ui:ui-test-junit4 (in testImplementation)
 - androidx.compose.ui:ui-test-manifest (in androidTestImplementation)
 
 Current versions: Need to verify in build.gradle.kts
 
 Affected Tests:
-- All files in app/src/androidTest/java/com/novachat/app/ui/*
+
+- All files in app/src/androidTest/java/com/novachat/app/ui/\*
 
 Acceptance Criteria:
 ✓ Dependencies added with correct versions
 ✓ Tests compile without errors
 ✓ Tests run successfully
+
 ```
 
 #### 5.4 → Reviewer Agent (Coverage Review)
@@ -746,21 +804,23 @@ Acceptance Criteria:
 
 **Example**:
 ```
+
 BUILD AGENT → TESTING AGENT
 
-Dependency Added: Google Generative AI SDK 0.9.0
+Dependency Added: Firebase Functions SDK (via Firebase BOM)
 
 Impact on Tests:
-□ May need mock objects for GeminiAPI
-□ May need test API key handling
+□ Mock Firebase Functions callable (`aiProxy`)
+□ Mock Firebase Auth state (anonymous user)
 □ Network mocking framework might be helpful
 
 Verification Needed:
-□ GeminiDataSource tests created
-□ Mock API responses working
-□ Error cases handled
+□ AiRepositoryImpl tests created
+□ Mock callable responses working
+□ FirebaseFunctionsException error cases handled
 
 Consider Adding:
+
 - OkHttp MockWebServer for API mocking
 - Or direct mocking with MockK
 
@@ -768,6 +828,7 @@ Acceptance Criteria:
 ✓ Tests still pass with new dependency
 ✓ No new test failures
 ✓ DataSource integration tests work
+
 ```
 
 #### 6.2 → Backend Agent (Dependency Available)
@@ -780,23 +841,26 @@ Acceptance Criteria:
 
 **Example**:
 ```
+
 BUILD AGENT → BACKEND AGENT
 
-Dependency Available: DataStore Preferences 1.1.0
+Dependency Available: DataStore Preferences 1.2.0
 
 Ready to Implement:
 □ PreferencesRepository using DataStore
-□ Secure preference storage for API keys
 □ AI mode preference (Online/Offline)
+□ Theme mode and dynamic color preferences
 
 Examples Available in Skill:
+
 - Refer to dependency-injection/SKILL.md for complete examples
 - PreferencesRepository implementation pattern
 
 Acceptance Criteria:
 ✓ PreferencesRepository created
 ✓ Preferences persist across app restarts
-✓ Encryption used for sensitive data
+✓ Theme and AI mode settings saved and restored
+
 ```
 
 ---
@@ -813,11 +877,13 @@ Acceptance Criteria:
 
 **Example**:
 ```
+
 REVIEWER AGENT → UI AGENT
 
 Issue Category: Design System Non-Compliance
 
 Files Affected:
+
 - feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt (line 45-50)
 - feature-ai/src/main/java/com/novachat/feature/ai/ui/SettingsScreen.kt (line 30)
 
@@ -827,6 +893,7 @@ Issues Found:
 □ MINOR: Inconsistent padding (12.dp vs 16.dp)
 
 Details:
+
 1. Text color: "#3C3C3C" hardcoded
    → Should use: MaterialTheme.colorScheme.onSurfaceVariant
 
@@ -840,6 +907,7 @@ Acceptance Criteria:
 ✓ All colors from MaterialTheme
 ✓ All interactive elements have contentDescription
 ✓ Spacing consistent throughout
+
 ```
 
 #### 7.2 → Backend Agent (Backend Issues Found)
@@ -852,11 +920,13 @@ Acceptance Criteria:
 
 **Example**:
 ```
+
 REVIEWER AGENT → BACKEND AGENT
 
 Issue Category: Error Handling Missing
 
 Files Affected:
+
 - domain/usecase/SendMessageUseCase.kt (line 30-40)
 
 Issues Found:
@@ -865,6 +935,7 @@ Issues Found:
 □ MEDIUM: Dispatcher not injected (hardcoded)
 
 Details:
+
 1. Missing error handling:
    → Wrap in try-catch or use repository Result<T>
 
@@ -878,6 +949,7 @@ Acceptance Criteria:
 ✓ All error paths return Result.Failure
 ✓ Input validation before business logic
 ✓ Dependencies injected (no hardcoding)
+
 ```
 
 #### 7.3 → Testing Agent (Test Coverage Issues)
@@ -890,11 +962,13 @@ Acceptance Criteria:
 
 **Example**:
 ```
+
 REVIEWER AGENT → TESTING AGENT
 
 Issue Category: Missing Test Coverage
 
 Code Gap:
+
 - ChatViewModel.onEvent(ChatUiEvent.SendMessage(...))
   Only tests happy path, no error cases
 
@@ -905,11 +979,13 @@ Missing Tests:
 □ sendMessage_clearDraftOnSuccess
 
 Impact:
+
 - Error handling untested
 - Edge cases not verified
 - Potential bugs in production
 
 Suggested Test Cases:
+
 1. sendMessage with empty text
    → Should show snackbar, not call usecase
 
@@ -923,6 +999,7 @@ Acceptance Criteria:
 ✓ All event paths tested
 ✓ Error cases covered
 ✓ Edge cases verified
+
 ```
 
 ---
@@ -931,6 +1008,7 @@ Acceptance Criteria:
 
 ### ✅ DO: Clear Handoff Messages
 ```
+
 AGENT_A → AGENT_B
 
 Task: [Clear action title]
@@ -944,35 +1022,43 @@ Requirements:
 □ Specific requirement 3
 
 Files Affected:
+
 - [File path] ([What changes])
 
 Acceptance Criteria:
 ✓ Verifiable criteria 1
 ✓ Verifiable criteria 2
+
 ```
 
 ### ❌ DON'T: Vague Handoffs
 ```
+
 AGENT_A → AGENT_B
 
 "Fix the backend"
 (Unclear, no context, no acceptance criteria)
+
 ```
 
 ### ✅ DO: Include File References
 ```
+
 Implementation: Read presentation/viewmodel/ChatViewModel.kt (pattern)
 Test Pattern: Reference android-testing/SKILL.md section "ViewModel Unit Testing"
 Architecture: Follow clean-architecture/SKILL.md layer separation
+
 ```
 
 ### ✅ DO: Provide Acceptance Criteria
 ```
+
 Acceptance Criteria:
 ✓ ViewModel correctly transitions through Loading → Success/Error
 ✓ All error cases return Result.Failure
 ✓ SavedStateHandle survives configuration change
 ✓ No memory leaks (verified with profiler)
+
 ```
 
 ---
@@ -982,43 +1068,48 @@ Acceptance Criteria:
 ### Feature Implementation Chain (Typical Flow)
 
 ```
+
 PLANNER
 ├─ Creates: specs/PHASE_X_SPEC.md
 │
 ├→ BACKEND AGENT
-│  ├─ Creates: domain/usecase/*, data/repository/*, viewmodel/*
-│  ├→ TESTING AGENT (ViewModel tests)
-│  └→ UI AGENT (hand off with state contract)
+│ ├─ Creates: domain/usecase/_, data/repository/_, viewmodel/_
+│ ├→ TESTING AGENT (ViewModel tests)
+│ └→ UI AGENT (hand off with state contract)
 │
 ├→ UI AGENT
-│  ├─ Creates: ui/XScreen.kt, ui/components/*
-│  ├→ PREVIEW AGENT (preview coverage)
-│  └→ TESTING AGENT (UI tests)
+│ ├─ Creates: ui/XScreen.kt, ui/components/_
+│ ├→ PREVIEW AGENT (preview coverage)
+│ └→ TESTING AGENT (UI tests)
 │
 ├→ BUILD AGENT
-│  ├─ Adds: Required dependencies
-│  └→ TESTING AGENT (test setup verification)
+│ ├─ Adds: Required dependencies
+│ └→ TESTING AGENT (test setup verification)
 │
 └→ REVIEWER AGENT
-   └─ Reviews: All files, checks acceptance criteria
+└─ Reviews: All files, checks acceptance criteria
+
 ```
 
 ### Bug Fix Chain (Shorter Flow)
 
 ```
+
 USER: "SendMessage not working"
 
 REVIEWER AGENT: Identifies root cause
 │
 ├→ BACKEND AGENT: Fix SendMessageUseCase logic
-│  └→ TESTING AGENT: Verify fix with test
+│ └→ TESTING AGENT: Verify fix with test
 │
 └→ REVIEWER AGENT: Final verification
+
 ```
 
 ### Dependency Addition Chain
 
 ```
+
 USER: "Need encryption for preferences"
 
 PLANNER: Creates plan
@@ -1026,10 +1117,11 @@ PLANNER: Creates plan
 BUILD AGENT: Add androidx.security:security-crypto
 │
 ├→ BACKEND AGENT: Use in PreferencesRepository
-│  └→ TESTING AGENT: Add encryption tests
+│ └→ TESTING AGENT: Add encryption tests
 │
 └→ REVIEWER AGENT: Verify implementation
-```
+
+````
 
 ---
 
@@ -1076,7 +1168,7 @@ Use this format for clearest handoffs:
 **Blocked By**: [Any blockers preventing start]
 
 **Next Handoff**: [Which agent gets this after completion]
-```
+````
 
 ---
 

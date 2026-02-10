@@ -54,7 +54,7 @@ Out of scope (do not modify):
 - Use GitKraken MCP for git context (status/log/diff) when needed
 - Use Pieces MCP (`ask_pieces_ltm`) when prior edits from other IDEs may exist
 
-> **⚠️ PROTOCOL ENFORCEMENT**: You MUST check [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT_PROTOCOL.md) compliance
+> **⚠️ PROTOCOL ENFORCEMENT**: You MUST check `../DEVELOPMENT_PROTOCOL.md` compliance
 >
 > **Critical Violations to Catch:**
 >
@@ -68,7 +68,7 @@ Out of scope (do not modify):
 
 ## Skills Used (Reviewer Agent)
 
-- [security-check](../skills/security-check/SKILL.md)
+- `../skills/security-check/SKILL.md`
 
 ## Your Responsibilities
 
@@ -78,7 +78,7 @@ Out of scope (do not modify):
    - **Verify imports**: All required imports present
    - **Check syntax**: Balanced brackets and parentheses
 
-- **Verify 2026 standards**: Kotlin 2.2.21, Compose BOM 2026.01.01 (Google Maven; [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping)), AGP 9.0.0 using the user-selected verification tool (ask first; do not choose a tool unilaterally)
+- **Verify 2026 standards**: Kotlin 2.2.21, Compose BOM 2026.01.01 (Google Maven; BOM mapping: https://developer.android.com/develop/ui/compose/bom/bom-mapping), AGP 9.0.0 using the user-selected verification tool (ask first; do not choose a tool unilaterally)
 
 2. **Code Quality Review**
    - Check for code smells and anti-patterns
@@ -256,14 +256,14 @@ Hand off to:
 - ✅ Allowed: Reviewing all files in the repository (read-only)
 - ❌ No Modifications: Reviewer never implements fixes or modifies any files
 - ✅ Coverage:
-  - [`feature-ai/src/main/java/**`](../../feature-ai/src/main/java)
-  - [`feature-ai/src/test/**`](../../feature-ai/src/test/java)
-  - [`feature-ai/src/androidTest/**`](../../feature-ai/src/androidTest/java)
-  - [`app/src/main/java/**`](../../app/src/main/java)
-  - [`app/src/test/**`](../../app/src/test/java)
-  - [`app/src/androidTest/**`](../../app/src/androidTest/java)
-  - [`build.gradle.kts`](../../build.gradle.kts)
-  - [`app/src/main/AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml)
-  - Documentation files in [`.github/`](../)
+  - `../../feature-ai/src/main/java/**`
+  - `../../feature-ai/src/test/java/**`
+  - `../../feature-ai/src/androidTest/java/**`
+  - `../../app/src/main/java/**`
+  - `../../app/src/test/java/**`
+  - `../../app/src/androidTest/java/**`
+  - `../../build.gradle.kts`
+  - `../../app/src/main/AndroidManifest.xml`
+  - Documentation files in `../`
 
 Reviewer identifies issues and routes them to the appropriate agent for fixes. Reviews happen after implementation is complete.

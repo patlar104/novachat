@@ -1,6 +1,6 @@
 # NovaChat: Current Architecture (February 2026)
 
-> **Last Updated:** February 5, 2026  
+> **Last Updated:** February 10, 2026  
 > **Status:** Active Development  
 > **Architecture:** MVVM + Clean Architecture
 
@@ -11,7 +11,7 @@ Kotlin:        2.2.21 (STRICT - no 2.1.x versions)
 Android:       API 36 (Android 16)
 Compose BOM:   2026.01.01
 AGP:           9.0.0
-JVM Target:    Java 17
+JVM Target:    Java 21
 Min SDK:       28
 Target SDK:    35
 Compile SDK:   36
@@ -143,11 +143,12 @@ Manual container pattern in `di/AiContainer.kt`:
 
 ```kotlin
 class AiContainer(context: Context) {
-    // Repositories (eager initialization)
-    val aiRepository: AiRepository = AiRepositoryImpl(context)
-    val messageRepository: MessageRepository = MessageRepositoryImpl()
-    val preferencesRepository: PreferencesRepository =
+    // Repositories (lazy initialization)
+    val aiRepository: AiRepository by lazy { AiRepositoryImpl(context) }
+    val messageRepository: MessageRepository by lazy { MessageRepositoryImpl() }
+    val preferencesRepository: PreferencesRepository by lazy {
         PreferencesRepositoryImpl(context)
+    }
 
     // Use Cases (lazy initialization)
     val sendMessageUseCase: SendMessageUseCase by lazy {
@@ -180,18 +181,18 @@ val viewModel: ChatViewModel = viewModel(
 All async operations return `Result<T>`:
 
 ```kotlin
-// Repository layer
+// Repository layer (Firebase Functions proxy)
 override suspend fun sendMessage(
     message: String,
     useOnlineMode: Boolean
 ): Result<String> {
     return try {
         val response = if (useOnlineMode) {
-            sendToGemini(message)
+            generateOnlineResponse(message)
         } else {
-            sendToAiCore(message)
+            Result.failure(IllegalStateException("Offline mode not available"))
         }
-        Result.success(response)
+        response
     } catch (e: Exception) {
         Log.e(TAG, "Send message failed", e)
         Result.failure(e)
@@ -227,22 +228,21 @@ fun onEvent(event: ChatUiEvent.SendMessage) {
 
 ## AI Mode Status (Critical Constraint)
 
-| Mode | Status | Implementation |
-|------|--------|----------------|
-| **ONLINE (Firebase Functions Proxy)** | ✅ Available | Fully implemented via Firebase Functions `aiProxy` |
-| **OFFLINE (AICore)** | ❌ Not Available | Dependency commented out in build.gradle.kts |
+| Mode                                  | Status           | Implementation                                     |
+| ------------------------------------- | ---------------- | -------------------------------------------------- |
+| **ONLINE (Firebase Functions Proxy)** | ✅ Available     | Fully implemented via Firebase Functions `aiProxy` |
+| **OFFLINE (AICore)**                  | ❌ Not Available | Dependency commented out in build.gradle.kts       |
 
 **Why OFFLINE mode is unavailable:**
+
 - AICore library not yet published to Google Maven (as of Feb 2026)
 - Dependency line is commented out: `// implementation("androidx.ai:ai-core:1.0.0-alpha01")`
 - Attempting to use offline mode will fail validation
 
 **Validation Pattern:**
+
 ```kotlin
 suspend fun validateAndSend(message: String, config: AiConfiguration): Result<String> {
-    if (config.mode == AiMode.ONLINE && config.apiKey == null) {
-        return Result.failure(Exception("API key required for online mode"))
-    }
     if (config.mode == AiMode.OFFLINE) {
         return Result.failure(Exception("Offline mode (AICore) not yet available"))
     }
@@ -253,6 +253,7 @@ suspend fun validateAndSend(message: String, config: AiConfiguration): Result<St
 ## Current Features
 
 ### 1. Chat Interface
+
 - Message input with multiline support
 - Conversation display with message bubbles
 - User/AI message differentiation
@@ -261,19 +262,21 @@ suspend fun validateAndSend(message: String, config: AiConfiguration): Result<St
 - Draft message persistence (survives rotation)
 
 ### 2. Settings Screen
+
 - AI mode selection (Online/Offline - offline disabled)
-- API key management (encrypted storage)
 - Temperature control (0.0 - 2.0 slider)
 - Max tokens configuration
+- Theme mode and dynamic color preferences
 - Configuration persistence via DataStore
 
 ### 3. Data Persistence
+
 - **Messages:** In-memory only (Flow-based)
 - **Preferences:** DataStore with Preferences API
-- **API Keys:** DataStore (encrypted by Android file encryption)
 - **Draft Messages:** SavedStateHandle (survives rotation, not process death)
 
 ### 4. Navigation
+
 - Navigation Compose with sealed NavigationDestination
 - Chat screen (default)
 - Settings screen (modal navigation)
@@ -281,11 +284,13 @@ suspend fun validateAndSend(message: String, config: AiConfiguration): Result<St
 ## Testing Strategy
 
 ### Test Coverage
+
 - **Unit Tests:** ViewModels with mocked use cases
 - **Integration Tests:** Use cases with fake repositories
 - **UI Tests:** Compose UI tests with ComposeTestRule
 
 ### Test Patterns
+
 ```kotlin
 // ViewModel test
 @Test
@@ -316,7 +321,9 @@ fun chatScreen_displays_welcome_when_empty() {
 ## Key Development Conventions
 
 ### 1. Zero-Elision Policy
+
 **NEVER use placeholder comments:**
+
 ```kotlin
 ❌ BAD:
 fun sendMessage() {
@@ -335,9 +342,11 @@ fun sendMessage() {
 ```
 
 ### 2. SavedStateHandle Usage
+
 - **Purpose:** Draft messages only (temporary UI state)
 - **Limitation:** Survives rotation, NOT process death
 - **Pattern:**
+
 ```kotlin
 class ChatViewModel(
     private val savedStateHandle: SavedStateHandle,
@@ -353,8 +362,10 @@ class ChatViewModel(
 ```
 
 ### 3. DataStore Patterns
-- **Use for:** Persistent configuration, API keys, preferences
+
+- **Use for:** Persistent configuration and theme preferences
 - **Always handle IOException:**
+
 ```kotlin
 override fun observeAiConfiguration(): Flow<AiConfiguration> {
     return context.dataStore.data
@@ -371,6 +382,7 @@ override fun observeAiConfiguration(): Flow<AiConfiguration> {
 ```
 
 ### 4. Effect Channel Lifecycle
+
 ```kotlin
 // In ViewModel
 private val _uiEffect = Channel<UiEffect>(Channel.BUFFERED)
@@ -388,6 +400,7 @@ LaunchedEffect(Unit) {  // Use Unit key for one-time collection
 ```
 
 ### 5. Material Design 3 Theming
+
 - All colors from `MaterialTheme.colorScheme`
 - All typography from `MaterialTheme.typography`
 - All shapes from `MaterialTheme.shapes`
@@ -395,6 +408,7 @@ LaunchedEffect(Unit) {  // Use Unit key for one-time collection
 - Use dynamic color (Android 12+) when available
 
 ### 6. Async Patterns
+
 - Launch work in `viewModelScope` (auto-cancellation)
 - Use `.catch { }` on flows for error handling
 - Use `distinctUntilChanged()` on DataStore flows
@@ -403,21 +417,25 @@ LaunchedEffect(Unit) {  // Use Unit key for one-time collection
 ## Known Constraints & Limitations
 
 ### 1. Message Storage
+
 - **Current:** In-memory only (lost on app close)
 - **Reason:** Simplicity for prototype
 - **Future:** Room database for persistence
 
 ### 2. AI Mode Validation
+
 - **Current:** Only ONLINE mode works
-- **Validation:** Must check API key exists before sending
-- **Error:** User-friendly messages for missing API key or offline mode attempt
+- **Validation:** Block OFFLINE mode and show an informative error
+- **Error:** User-friendly messages for offline mode attempt
 
 ### 3. Retry Logic Assumptions
+
 - Assumes user cannot send while AI is processing (`isProcessing` flag)
 - Retry finds user message by looking backward in message list
 - If conversation cleared between failure and retry, retry fails
 
 ### 4. Draft Message Persistence
+
 - SavedStateHandle survives rotation only
 - Cleared after successful message send
 - NOT stored in DataStore (intentional - drafts are temporary)
@@ -425,17 +443,20 @@ LaunchedEffect(Unit) {  // Use Unit key for one-time collection
 ## Documentation References
 
 ### Core Documentation
+
 - **[DEVELOPMENT_PROTOCOL.md](.github/DEVELOPMENT_PROTOCOL.md)** - Development guidelines (MANDATORY)
 - **[AGENTS.md](.github/AGENTS.md)** - Multi-agent system documentation
 - **[copilot-instructions.md](.github/copilot-instructions.md)** - Copilot integration guide
 
 ### Skills (Reusable Patterns)
+
 - **[android-testing/](.github/skills/android-testing/)** - Complete testing patterns
 - **[compose-preview/](.github/skills/compose-preview/)** - Preview annotation patterns
 - **[material-design/](.github/skills/material-design/)** - Material 3 Compose patterns
 - **[security-check/](.github/skills/security-check/)** - Security best practices
 
 ### API Documentation
+
 - **[API.md](API.md)** - External API integration guide
 - **[README.md](README.md)** - Project overview and setup
 
@@ -468,25 +489,27 @@ LaunchedEffect(Unit) {  // Use Unit key for one-time collection
 
 NovaChat development uses specialized agents with clear boundaries:
 
-| Agent | Scope | Tools Used |
-|-------|-------|------------|
-| **UI Agent** | Composables, Material 3, layouts | `create_file`, `apply_patch` for .kt files in ui/ |
-| **Preview Agent** | @Preview annotations, preview data | `apply_patch` for preview functions |
+| Agent             | Scope                               | Tools Used                                                     |
+| ----------------- | ----------------------------------- | -------------------------------------------------------------- |
+| **UI Agent**      | Composables, Material 3, layouts    | `create_file`, `apply_patch` for .kt files in ui/              |
+| **Preview Agent** | @Preview annotations, preview data  | `apply_patch` for preview functions                            |
 | **Backend Agent** | ViewModels, use cases, repositories | `create_file`, `apply_patch` for presentation/, domain/, data/ |
-| **Testing Agent** | Unit, integration, UI tests | `create_file` for *Test.kt files |
-| **Build Agent** | Gradle, dependencies, manifest | `apply_patch` for build.gradle.kts, AndroidManifest.xml |
+| **Testing Agent** | Unit, integration, UI tests         | `create_file` for \*Test.kt files                              |
+| **Build Agent**   | Gradle, dependencies, manifest      | `apply_patch` for build.gradle.kts, AndroidManifest.xml        |
 
 **Critical Rule:** Agents NEVER create documentation summaries. They implement code only.
 
 ## Common Anti-Patterns (What NOT to Do)
 
 ### ❌ UI Layer
+
 - ✗ Instantiating ViewModels directly in Composables
 - ✗ Storing UI state in Composables (use ViewModel StateFlow)
 - ✗ Using `LaunchedEffect(uiState)` for effects (use `LaunchedEffect(Unit)`)
 - ✗ Calling repositories from Composables (use ViewModel + UseCase)
 
 ### ❌ Backend Layer
+
 - ✗ Not using `Result<T>` for error handling
 - ✗ Silent error handling without logging
 - ✗ Use cases calling other use cases (use repositories instead)
@@ -494,11 +517,13 @@ NovaChat development uses specialized agents with clear boundaries:
 - ✗ Changing AI mode without validation
 
 ### ❌ Testing
+
 - ✗ Testing sealed interface instantiation directly (test through ViewModel behavior)
 - ✗ Using real repositories in unit tests (use mocks/fakes)
 - ✗ Not handling coroutine cancellation in tests
 
 ### ❌ Multi-Agent
+
 - ✗ UI Agent modifying repositories
 - ✗ Backend Agent implementing Compose UI logic
 - ✗ Testing Agent modifying production code
@@ -506,13 +531,15 @@ NovaChat development uses specialized agents with clear boundaries:
 ## Security Practices
 
 ### Current Implementation
-- ✅ API keys stored in DataStore (encrypted by Android)
+
+- ✅ No API keys stored in the app (Firebase Functions proxy)
 - ✅ No hardcoded secrets in code
 - ✅ HTTPS only (no cleartext traffic)
 - ✅ Input validation on message send
 - ✅ ProGuard/R8 rules for release builds
 
 ### Security Checklist
+
 - [ ] No sensitive data in logs
 - [ ] All network requests use HTTPS
 - [ ] Sensitive data encrypted at rest
@@ -525,6 +552,7 @@ NovaChat development uses specialized agents with clear boundaries:
 Refer to [GitHub Issues](https://github.com/patlar104/novachat/issues) for current work items.
 
 All changes must follow:
+
 1. **Zero-Elision Policy:** No placeholder comments
 2. **Complete Implementations:** Full, compilable code only
 3. **Cross-File Analysis:** Check ripple effects before changes
@@ -533,5 +561,5 @@ All changes must follow:
 
 ---
 
-**This document reflects the actual codebase state as of February 5, 2026.**  
+**This document reflects the actual codebase state as of February 10, 2026.**  
 **All version numbers and architectural patterns are verified against production code.**

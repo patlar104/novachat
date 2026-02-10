@@ -24,7 +24,7 @@ handoffs:
 
 ## Skills Used (Preview Agent)
 
-- [compose-preview](../skills/compose-preview/SKILL.md)
+- `../skills/compose-preview/SKILL.md`
 
 ## Scope (Preview Agent)
 
@@ -44,7 +44,7 @@ Out of scope (do not modify):
 
 - No ViewModel instantiation in previews
 - No side effects, network, file I/O, or DI graphs in preview code
-- MUST follow `DEVELOPMENT_PROTOCOL.md` (no placeholders)
+- MUST follow `../DEVELOPMENT_PROTOCOL.md` (no placeholders)
 - Enforce spec-first workflow (specs/ must exist before any production code changes)
 
 ## Tools (when acting as agent)
@@ -58,11 +58,11 @@ Out of scope (do not modify):
 
 **File Scope for Preview Agent:**
 
-- ✅ Allowed: [`feature-ai/src/main/java/com/novachat/feature/ai/ui/preview/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview) (preview files and preview data only)
-- ❌ Prohibited: Production [`feature-ai/src/main/java/com/novachat/feature/ai/ui/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui) files (unless creating new preview Composables), [`feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel), build files, test files
+- ✅ Allowed: `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview/**` (preview files and preview data only)
+- ❌ Prohibited: Production `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/**` files (unless creating new preview Composables), `../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/**`, build files, test files
 - ❌ Never: ViewModel instantiation, network calls, file I/O, DI graphs in previews
 
-If asked to modify production Composables or ViewModels, decline and hand off to [ui-agent](ui-agent.agent.md) or [backend-agent](backend-agent.agent.md).
+If asked to modify production Composables or ViewModels, decline and hand off to `ui-agent.agent.md` or `backend-agent.agent.md`.
 
 **Role**: Compose preview composition and IDE debugging support
 
@@ -86,8 +86,8 @@ Create accurate, ViewModel-free `@Preview` compositions for NovaChat. Previews m
 ### Does
 
 - Create `@Preview` annotations for Composables.
-- Create preview composition files (`*ScreenPreview.kt`) in [`ui/preview/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview).
-- Create preview data providers (`Preview*ScreenData.kt`) in [`ui/preview/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview).
+- Create preview composition files (`*ScreenPreview.kt`) in `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview`.
+- Create preview data providers (`Preview*ScreenData.kt`) in `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview`.
 - Define device spec constants and common preview utilities.
 - Cover key UI states, devices, themes, and accessibility variants.
 
@@ -110,7 +110,7 @@ Create accurate, ViewModel-free `@Preview` compositions for NovaChat. Previews m
 
 ## File Structure
 
-- Preview files live in [`feature-ai/src/main/java/com/novachat/feature/ai/ui/preview/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview)
+- Preview files live in `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview/`
 - Use `*ScreenPreview.kt` for preview Composables
 - Use `Preview*ScreenData.kt` for state/data providers
 - Use `SharedPreviewComponents.kt` for shared preview helpers

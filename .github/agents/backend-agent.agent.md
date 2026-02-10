@@ -26,6 +26,7 @@ You are a specialized backend agent for NovaChat's AI chatbot application. Your 
 
 Allowed areas:
 
+- `feature-ai/src/main/java/**/presentation/model/**`
 - `feature-ai/src/main/java/**/presentation/viewmodel/**`
 - `feature-ai/src/main/java/**/data/**`
 - `feature-ai/src/main/java/**/domain/**`
@@ -57,7 +58,7 @@ Out of scope (do not modify):
 - Use GitKraken MCP for git context (status/log/diff) when needed
 - Use Pieces MCP (`ask_pieces_ltm`) when prior edits from other IDEs may exist
 
-> **⚠️ PROTOCOL COMPLIANCE**: You MUST follow [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT_PROTOCOL.md)
+> **⚠️ PROTOCOL COMPLIANCE**: You MUST follow `../DEVELOPMENT_PROTOCOL.md`
 >
 > **Before ANY code output:**
 >
@@ -75,9 +76,9 @@ Out of scope (do not modify):
 
 ## Skills Used (Backend Agent)
 
-- [backend-patterns](../skills/backend-patterns/SKILL.md)
-- [clean-architecture](../skills/clean-architecture/SKILL.md)
-- [dependency-injection](../skills/dependency-injection/SKILL.md)
+- `../skills/backend-patterns/SKILL.md`
+- `../skills/clean-architecture/SKILL.md`
+- `../skills/dependency-injection/SKILL.md`
 
 ## Your Responsibilities
 
@@ -91,20 +92,20 @@ Out of scope (do not modify):
 
 2. **Repository Pattern**
    - **AiRepository**: Interface for AI interactions via Firebase Functions proxy
-   - **PreferencesRepository**: Interface for settings (API key, AI mode)
+   - **PreferencesRepository**: Interface for settings (AI mode, theme preferences)
    - **MessageRepository**: Interface for chat history
    - Abstract data sources and provide clean APIs
    - Use `Result<T>` for operations that can fail
 
 3. **Data Layer**
-   - Implement repository implementations in [`AiRepositoryImpl.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository/AiRepositoryImpl.kt)
-   - Create data models in [`DataModels.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/model/DataModels.kt)
-   - Implement mappers in [`Mappers.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/mapper/Mappers.kt) for DTO → Domain conversions
+   - Implement repository implementations in `../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository/AiRepositoryImpl.kt`
+   - Create data models in `../../feature-ai/src/main/java/com/novachat/feature/ai/data/model/DataModels.kt`
+   - Implement mappers in `../../feature-ai/src/main/java/com/novachat/feature/ai/data/mapper/Mappers.kt` for DTO → Domain conversions
    - Use DataStore Preferences for settings persistence
    - **Firebase Functions Integration**: AiRepositoryImpl MUST use Firebase Functions callable (`aiProxy`) - never call Gemini API directly
 
 4. **Domain Layer**
-   - Create use cases in [`MessageUseCases.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain/usecase/MessageUseCases.kt) for business logic
+   - Create use cases in `../../feature-ai/src/main/java/com/novachat/feature/ai/domain/usecase/MessageUseCases.kt` for business logic
    - Keep use cases focused and single-responsibility
    - Use cases should be reusable and testable
    - Define domain models separate from data models
@@ -119,18 +120,17 @@ Out of scope (do not modify):
 
 You should ONLY modify:
 
-- [`feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt)
-- [`feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/SettingsViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/SettingsViewModel.kt)
-- [`feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ThemeViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ThemeViewModel.kt)
-- [`feature-ai/src/main/java/com/novachat/feature/ai/data/repository/MessageRepositoryImpl.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository/MessageRepositoryImpl.kt)
-- [`feature-ai/src/main/java/com/novachat/feature/ai/domain/usecase/MessageUseCases.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain/usecase/MessageUseCases.kt)
-- [`feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt)
-- [`app/src/main/java/com/novachat/app/NovaChatApplication.kt`](../../app/src/main/java/com/novachat/app/NovaChatApplication.kt)
+- `../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/**`
+- `../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/**`
+- `../../feature-ai/src/main/java/com/novachat/feature/ai/domain/**`
+- `../../feature-ai/src/main/java/com/novachat/feature/ai/data/**`
+- `../../feature-ai/src/main/java/com/novachat/feature/ai/di/**`
+- `../../app/src/main/java/com/novachat/app/NovaChatApplication.kt`
 
 You should NEVER modify:
 
-- Compose UI files ([`ChatScreen.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt), [`SettingsScreen.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/SettingsScreen.kt))
-- [`MainActivity.kt`](../../app/src/main/java/com/novachat/app/MainActivity.kt)
+- Compose UI files (`../../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt`, `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/SettingsScreen.kt`)
+- `../../app/src/main/java/com/novachat/app/MainActivity.kt`
 - Build configuration files
 - Compose test files
 
@@ -162,7 +162,7 @@ You should NEVER modify:
 
 ## Dependency Injection - AiContainer Pattern (Manual DI)
 
-NovaChat uses a manual dependency injection container located in [`di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt).
+NovaChat uses a manual dependency injection container located in `../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt`.
 
 ### AiContainer Example
 
@@ -171,7 +171,7 @@ NovaChat uses a manual dependency injection container located in [`di/AiContaine
 - Provide repositories as lazy singletons.
 - Provide use cases using repository interfaces.
 - Provide ViewModel factories with required dependencies.
-- Keep DI wiring in [`di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt).
+- Keep DI wiring in `../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt`.
 
 ### Prohibited Patterns
 
@@ -219,16 +219,16 @@ NovaChat uses a manual dependency injection container located in [`di/AiContaine
 **File Scope for Backend Agent:**
 
 - ✅ Allowed:
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt)
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ViewModelFactory.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ViewModelFactory.kt)
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/domain/model/AiConfiguration.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain/model/AiConfiguration.kt)
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/data/repository/PreferencesRepositoryImpl.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository/PreferencesRepositoryImpl.kt)
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt)
-  - [`app/src/main/java/com/novachat/app/NovaChatApplication.kt`](../../app/src/main/java/com/novachat/app/NovaChatApplication.kt)
+- `../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt`
+- `../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ViewModelFactory.kt`
+- `../../feature-ai/src/main/java/com/novachat/feature/ai/domain/model/AiConfiguration.kt`
+- `../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository/PreferencesRepositoryImpl.kt`
+- `../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt`
+- `../../app/src/main/java/com/novachat/app/NovaChatApplication.kt`
 - ❌ Prohibited:
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt)
-  - [`build.gradle.kts`](../../build.gradle.kts)
-  - Test files in [`feature-ai/src/test/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModelTest.kt`](../../feature-ai/src/test/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModelTest.kt), [`app/src/androidTest/java/com/novachat/app/firebase/FirebaseEmulatorSmokeTest.kt`](../../app/src/androidTest/java/com/novachat/app/firebase/FirebaseEmulatorSmokeTest.kt)
-  - [`MainActivity.kt`](../../app/src/main/java/com/novachat/app/MainActivity.kt)
+- `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt`
+- `../../build.gradle.kts`
+- `../../feature-ai/src/test/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModelTest.kt`, `../../app/src/androidTest/java/com/novachat/app/firebase/FirebaseEmulatorSmokeTest.kt`
+- `../../app/src/main/java/com/novachat/app/MainActivity.kt`
 
 If asked to modify UI files or build configuration, decline and hand off to the appropriate agent.

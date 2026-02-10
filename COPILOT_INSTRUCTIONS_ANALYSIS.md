@@ -1,4 +1,5 @@
 # NovaChat Copilot Instructions Analysis Report
+
 **Date**: February 4, 2026  
 **Scope**: Comprehensive codebase review against copilot instructions  
 **Format**: JSON + Detailed Findings
@@ -9,7 +10,8 @@
 
 The codebase demonstrates **generally strong adherence** to the copilot instructions with **2026 best practices** implemented consistently. However, several **critical gaps and subtle pain points** exist that could cause AI agent drift or implementation errors if not addressed.
 
-**Overall Assessment**: 
+**Overall Assessment**:
+
 - ✅ Architecture solid (MVVM + Clean Architecture)
 - ⚠️ A few implementation-instruction mismatches discovered
 - 🔍 Edge cases and gotchas not documented
@@ -24,6 +26,7 @@ The codebase demonstrates **generally strong adherence** to the copilot instruct
 **Issue**: SavedStateHandle usage is shown in instructions but subtle gotchas exist in implementation.
 
 **Current Implementation** (ChatViewModel.kt):
+
 ```kotlin
 val draftMessage: StateFlow<String> = savedStateHandle.getStateFlow(
     key = KEY_DRAFT_MESSAGE,
@@ -36,6 +39,7 @@ fun updateDraftMessage(text: String) {
 ```
 
 **Gotchas Discovered**:
+
 1. **No synchronization between draft and actual message sending**
    - Draft persists via SavedStateHandle after successful send
    - Need to manually clear: `updateDraftMessage("")`
@@ -52,6 +56,7 @@ fun updateDraftMessage(text: String) {
    - Could confuse with permanent message storage
 
 **Recommendation**: Document in instructions:
+
 - When to clear drafts
 - Distinction between SavedStateHandle (configuration changes) vs. persistent storage
 - Example of draft management in new screens
@@ -65,6 +70,7 @@ fun updateDraftMessage(text: String) {
 **Issue**: DataStore error handling masks potential data corruption in PreferencesRepositoryImpl.kt
 
 **Current Code**:
+
 ```kotlin
 override fun observeAiConfiguration(): Flow<AiConfiguration> {
     return context.dataStore.data
@@ -89,8 +95,9 @@ override fun observeAiConfiguration(): Flow<AiConfiguration> {
 ```
 
 **Critical Gotchas**:
+
 1. **IOException during first read returns empty preferences**
-   - No API key set? Returns null, defaults to ONLINE mode
+   - Missing preferences defaults to ONLINE mode
    - User thinks they configured offline but it's online
    - Next send attempt to AI fails silently
 
@@ -102,7 +109,8 @@ override fun observeAiConfiguration(): Flow<AiConfiguration> {
 3. **No logging** of errors for debugging
    - Silent failures make troubleshooting impossible
 
-**Recommendation**: 
+**Recommendation**:
+
 - Update to use `.onFailure { }` pattern instead of catch
 - Log all errors with context
 - Emit explicit error state instead of defaults
@@ -117,6 +125,7 @@ override fun observeAiConfiguration(): Flow<AiConfiguration> {
 **Issue**: AiRepositoryImpl.kt has incomplete offline mode implementation that causes confusing failures.
 
 **Current Code** (AiRepositoryImpl.kt, lines 168-213):
+
 ```kotlin
 private suspend fun generateOfflineResponse(
     message: String,
@@ -140,6 +149,7 @@ override suspend fun isModeAvailable(mode: AiMode): Boolean {
 ```
 
 **Major Gotchas**:
+
 1. **OFFLINE mode always fails with "UnsupportedOperationException"**
    - User can select offline mode in settings (no validation)
    - Settings ViewModel shows it as available: `isOfflineModeAvailable = aiRepository.isModeAvailable(AiMode.OFFLINE)` returns FALSE
@@ -157,10 +167,12 @@ override suspend fun isModeAvailable(mode: AiMode): Boolean {
        return Result.failure(...)  // But SettingsScreen doesn't call this!
    }
    ```
+
    - UpdateAiConfigurationUseCase validates, but SettingsViewModel doesn't use it for mode changes!
    - onEvent(ChangeAiMode) directly updates without validation
 
 **Recommendation**:
+
 - Add validation to SettingsViewModel.handleChangeAiMode()
 - Show "not available on this device" for OFFLINE mode
 - Document that AICore dependency is missing (commented out in build.gradle.kts)
@@ -174,6 +186,7 @@ override suspend fun isModeAvailable(mode: AiMode): Boolean {
 **Issue**: RetryMessageUseCase has fragile logic for finding the original user message.
 
 **Current Code** (MessageUseCases.kt, lines ~340-360):
+
 ```kotlin
 // Find the user message that preceded this AI message
 val messages = messageRepository.observeMessages().first()
@@ -189,6 +202,7 @@ if (userMessage == null || userMessage.sender != MessageSender.USER) {
 ```
 
 **Gotchas**:
+
 1. **Assumes user message directly precedes AI message**
    - If conversation has structure: User → AI → User → AI (failed)
    - messageIndex-1 gives the LAST USER message, but what if 2 users sent in a row?
@@ -206,6 +220,7 @@ if (userMessage == null || userMessage.sender != MessageSender.USER) {
    - Not documented that this is safe
 
 **Recommendation**:
+
 - Document the assumption that users can't send during processing
 - Add better error messages
 - Consider storing reference to user message ID in AI message
@@ -219,6 +234,7 @@ if (userMessage == null || userMessage.sender != MessageSender.USER) {
 **Issue**: Instructions mention `.observeLifecycle()` but implementation doesn't use it.
 
 **Current Pattern** (ChatScreen.kt, lines ~35-60):
+
 ```kotlin
 LaunchedEffect(Unit) {
     viewModel.uiEffect.collect { effect ->
@@ -228,6 +244,7 @@ LaunchedEffect(Unit) {
 ```
 
 **Analysis**:
+
 - ✅ Using `LaunchedEffect(Unit)` is correct
 - ✅ ViewModels use `viewModelScope` which is lifecycle-aware
 - ⚠️ But `LaunchedEffect` with `Unit` key means it never re-collects if recomposed
@@ -237,6 +254,7 @@ LaunchedEffect(Unit) {
   - Effects might be missed!
 
 **Edge Case Found**:
+
 ```kotlin
 val uiState by viewModel.uiState.collectAsStateWithLifecycle()  // ✅ Correct
 // BUT:
@@ -248,6 +266,7 @@ LaunchedEffect(Unit) {  // ⚠️ Runs once, never again on navigate back!
 ```
 
 **Recommendation**:
+
 - Use `LaunchedEffect(key1 = Unit)` or track screen entry
 - Or use `.repeatOnLifecycle(Lifecycle.State.STARTED)`
 - Document the difference between State collection and Effect collection
@@ -261,6 +280,7 @@ LaunchedEffect(Unit) {  // ⚠️ Runs once, never again on navigate back!
 **Issue**: Effect channel might not handle cancellation properly during app shutdown.
 
 **Current Pattern** (ChatViewModel.kt):
+
 ```kotlin
 private val _uiEffect = Channel<UiEffect>(Channel.BUFFERED)
 
@@ -272,6 +292,7 @@ private fun emitEffect(effect: UiEffect) {
 ```
 
 **Gotchas**:
+
 1. **Channel.BUFFERED might overflow**
    - Under heavy effects (many errors, rapid navigation)
    - Channel has buffer size (default 64)
@@ -280,9 +301,11 @@ private fun emitEffect(effect: UiEffect) {
    - But it's inside viewModelScope, so gets auto-cancelled
 
 2. **No error handling for send failures**
+
    ```kotlin
    _uiEffect.send(effect)  // What if this fails silently?
    ```
+
    - Could throw, but wrapped in `Launch { ... }`
    - Exception lost, effect never reaches UI
    - No logging, no user feedback
@@ -293,6 +316,7 @@ private fun emitEffect(effect: UiEffect) {
    - But SavedStateHandle isn't used for effects (correct)
 
 **Recommendation**:
+
 - Add error handling wrapping `.send()`
 - Document Channel buffer size expectations
 - Maybe use `.trySend()` instead of `.send()` for non-critical effects
@@ -306,6 +330,7 @@ private fun emitEffect(effect: UiEffect) {
 **Issue**: Error handling patterns differ across layers, causing confusion.
 
 **Repository Layer** (AiRepositoryImpl.kt):
+
 ```kotlin
 suspend fun generateResponse(...): Result<String> {
     try {
@@ -319,6 +344,7 @@ suspend fun generateResponse(...): Result<String> {
 ```
 
 **Use Case Layer** (SendMessageUseCase.kt):
+
 ```kotlin
 suspend operator fun invoke(...): Result<Message> {
     val responseResult = aiRepository.generateResponse(...)
@@ -331,6 +357,7 @@ suspend operator fun invoke(...): Result<Message> {
 ```
 
 **ViewModel Layer** (ChatViewModel.kt):
+
 ```kotlin
 result.fold(
     onSuccess = { message ->
@@ -348,6 +375,7 @@ result.fold(
 ```
 
 **Inconsistencies**:
+
 1. **Some repositories log and emit service status (AiRepository)**
    - Others silently return Result (MessageRepository)
    - No consistency
@@ -361,6 +389,7 @@ result.fold(
    - When should you use which?
 
 **Recommendation**:
+
 - Document error handling pattern: which layer logs, which wraps, which emits
 - Create error types (AppError, NetworkError, ValidationError)
 - Show example of proper error propagation chain
@@ -376,6 +405,7 @@ result.fold(
 **Gap**: Instructions show individual patterns but not the sequence for creating an entire screen.
 
 **What's Missing**:
+
 ```
 MISSING: Step-by-step checklist for new screen:
 
@@ -394,7 +424,8 @@ Which files in which order?
 When to refactor old code?
 ```
 
-**Why It Matters**: 
+**Why It Matters**:
+
 - Agent might create ViewModel before defining state
 - Agent might forget to update AiContainer.kt
 - Agent might miss navigation setup
@@ -410,6 +441,7 @@ When to refactor old code?
 **Gap**: Instructions show passing `AiConfiguration` but not what needs checking.
 
 **Current Gap**:
+
 ```kotlin
 // Instructions show:
 val configuration = try {
@@ -419,12 +451,13 @@ val configuration = try {
 }
 
 // But not:
-// - Check if API key is valid before using online mode
+// - Check that offline mode is unavailable and inform the user
 // - Check if internet is available
 // - What if mode switches while message is being sent?
 ```
 
 **What's Missing**:
+
 - Validation checklist for configuration
 - When to validate (before send? before save?)
 - How to handle mode switch during message processing
@@ -437,16 +470,12 @@ val configuration = try {
 fun validateConfiguration(config: AiConfiguration): Result<Unit> {
     return when (config.mode) {
         AiMode.ONLINE -> {
-            if (config.apiKey == null)
-                Result.failure(ValidationError("API key required"))
-            else if (!hasNetworkConnection())
+            if (!hasNetworkConnection())
                 Result.failure(NetworkError("No internet"))
             else Result.success(Unit)
         }
         AiMode.OFFLINE -> {
-            if (!isAiCoreAvailable())
-                Result.failure(DeviceError("AICore not available"))
-            else Result.success(Unit)
+            Result.failure(DeviceError("Offline mode not available"))
         }
     }
 }
@@ -461,6 +490,7 @@ fun validateConfiguration(config: AiConfiguration): Result<Unit> {
 **Gap**: Instructions show `observeAiConfiguration()` but not lifecycle safety.
 
 **Current Problem**:
+
 ```kotlin
 // Shows this pattern in instructions:
 preferencesRepository.observeAiConfiguration()
@@ -473,7 +503,8 @@ preferencesRepository.observeAiConfiguration()
 ```
 
 **Missing Documentation**:
-- When to use `.collect { }`  vs. `.stateIn()` vs. `.first()`
+
+- When to use `.collect { }` vs. `.stateIn()` vs. `.first()`
 - How to properly handle DataStore errors
 - Lifecycle considerations for Preferences flows
 - Recovery strategies for corrupted data
@@ -502,6 +533,7 @@ viewModelScope.launch {
 **Gap**: Retry is mentioned in state but implementation pattern not shown.
 
 **Missing**:
+
 ```kotlin
 // Instructions show the state:
 data class RetryMessage(val messageId: MessageId) : ChatUiEvent
@@ -525,6 +557,7 @@ data class RetryMessage(val messageId: MessageId) : ChatUiEvent
 **Gap**: Instructions show correct effect usage but not common mistakes.
 
 **Should Document**:
+
 ```kotlin
 // ❌ WRONG - Effects in StateFlow
 data class Success(... effectMessage: String?)  // NO!
@@ -562,6 +595,7 @@ val uiEffect = Channel<UiEffect>(Channel.BUFFERED).receiveAsFlow()
 **Gap**: SavedStateHandle usage shown but edge cases not covered.
 
 **Missing**:
+
 ```kotlin
 // What about:
 // 1. Large draft messages (memory concerns)?
@@ -598,6 +632,7 @@ val draftMessage: StateFlow<String> = savedStateHandle.getStateFlow(
 **The Problem**:
 
 In UiState.kt, line ~101:
+
 ```kotlin
 data class Success(
     val aiMode: com.novachat.feature.ai.domain.model.AiMode,
@@ -612,6 +647,7 @@ data class Success(
 ```
 
 In SettingsViewModel.kt, line ~73:
+
 ```kotlin
 _uiState.update {
     SettingsUiState.Success(configuration = configuration)  // ❌ WRONG!
@@ -619,12 +655,14 @@ _uiState.update {
 ```
 
 **The Error**:
+
 - `Success` constructor expects individual parameters: `aiMode`, `hasApiKey`, etc.
 - But code passes `configuration = configuration`
 - This should NOT compile!
 
-**Resolution**: 
+**Resolution**:
 Looking more carefully, this appears to be a template error. The actual code probably should be:
+
 ```kotlin
 _uiState.update {
     SettingsUiState.Success(
@@ -638,11 +676,13 @@ _uiState.update {
 ```
 
 **Impact**: 🔴 HIGH
+
 - If this code is actual (not a display issue), it won't compile
 - Agents copying this pattern would create broken ViewModels
 - Shows a mismatch between state definition and state creation
 
 **Recommendation**:
+
 - Verify actual SettingsViewModel.kt implementation
 - If it's truly different from UiState.kt definition, update one
 - Use consistent pattern: either match state properties or create helper constructor
@@ -723,7 +763,7 @@ class AiContainer(private val context: Context) {
 
 ```kotlin
 // Pattern shown:
-class SendMessageUseCase { 
+class SendMessageUseCase {
     suspend operator fun invoke(messageText: String): Result<Message> {
         val userMessageResult = messageRepository.addMessage(userMessage)
         if (userMessageResult.isFailure) {
@@ -746,6 +786,7 @@ class SendMessageUseCase {
 **Current State**: Instructions show Composable patterns well
 
 **Missing Guidance**:
+
 1. **SavedStateHandle + Forms**
    - How to properly integrate `viewModel.draftApiKey` with TextField edits
    - When to debounce updates
@@ -777,9 +818,10 @@ class SendMessageUseCase {
 **Current State**: ViewModels and Repositories shown
 
 **Missing Guidance**:
+
 1. **Dependency Injection Update Checklist**
    - When creating new repository, what changes elsewhere?
-    - Need to update AiContainer.kt?
+   - Need to update AiContainer.kt?
    - Is new repository a singleton or scoped?
 
 2. **Use Case Composition**
@@ -808,6 +850,7 @@ class SendMessageUseCase {
 **Current State**: No test files shown in codebase review
 
 **Missing Guidance**:
+
 1. **ViewModel + SavedStateHandle Testing**
    - How to test savedStateHandle updates?
    - How to test draft persistence?
@@ -844,15 +887,17 @@ class SendMessageUseCase {
 **Current State**: build.gradle.kts shown, dependencies documented
 
 **Missing Guidance**:
+
 1. **Compose BOM implications**
    - What does BOM mean for version management?
    - How to update Compose version safely?
    - When to use platform() vs. direct versions?
 
 2. **Kotlin/AGP/Gradle Version Relations**
+
 - Why Kotlin 2.2.21 with AGP 9.0.0?
-   - Can we use older/newer Kotlin?
-   - Breaking changes between versions?
+  - Can we use older/newer Kotlin?
+  - Breaking changes between versions?
 
 3. **New Dependency Addition**
    - Checklist for adding new dependency?
@@ -879,6 +924,7 @@ class SendMessageUseCase {
 **Examples**:
 
 1. **Data Model Responsibility**
+
    ```
    Question: If adding new preference, who creates the model?
    - Backend Agent (data layer)?
@@ -887,6 +933,7 @@ class SendMessageUseCase {
    ```
 
 2. **Error Type Responsibility**
+
    ```
    Question: If custom error needed, who defines it?
    - Backend Agent (domain/model)?
@@ -912,6 +959,7 @@ class SendMessageUseCase {
 **Issue**: AGENTS.md shows handoffs but doesn't detail what to hand off.
 
 **Missing**:
+
 ```
 When UI Agent finishes ChatScreen, what does it hand off to Backend Agent?
 - Just the Composable file?
@@ -934,11 +982,12 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 ### 6.1 Kotlin & Android Versions ✅
 
 **Verified**: All 2026 standard versions used:
+
 - ✅ Kotlin 2.2.21 (correct)
 - ✅ AGP 9.0.0 (correct)
 - ✅ Compose BOM 2026.01.01 (Google Maven; mapping: [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping))
-- ✅ JVM Target Java 17 (correct)
-- ✅ Target SDK 35, Min SDK 28 (correct)
+- ✅ JVM Target Java 21 (correct)
+- ✅ Target SDK 35, Compile SDK 36, Min SDK 28 (correct)
 
 **Status**: ✅ Fully compliant
 
@@ -947,6 +996,7 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 ### 6.2 Architecture Patterns ✅
 
 **Verified**: MVVM + Clean Architecture properly implemented:
+
 - ✅ Domain layer (models, use cases, repository interfaces)
 - ✅ Data layer (repository implementations, mappers)
 - ✅ Presentation layer (ViewModels, state/event/effect)
@@ -959,6 +1009,7 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 ### 6.3 State Management ✅
 
 **Verified**: StateFlow + Channel pattern correctly used:
+
 - ✅ StateFlow for persistent state
 - ✅ Channel for one-time effects
 - ✅ SavedStateHandle for draft persistence
@@ -973,6 +1024,7 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 **Verified**: DEVELOPMENT_PROTOCOL.md patterns mostly followed
 
 **Compliance Status**:
+
 - ✅ Complete implementations (no placeholders)
 - ✅ All imports included
 - ✅ Proper KDoc comments
@@ -1008,7 +1060,7 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 
 4. **Create New Screen Step-by-Step Checklist**
    - Sequence of files to create
-    - When to update AiContainer
+   - When to update AiContainer
    - When to add navigation
 
 5. **Add Testing Patterns Section**
@@ -1075,21 +1127,21 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 
 ## 8. SUMMARY TABLE
 
-| Category | Status | Severity | Action |
-|----------|--------|----------|--------|
-| Architecture | ✅ Good | - | No change |
-| State Management | ✅ Good | - | Add anti-patterns guide |
-| Error Handling | ⚠️ Inconsistent | HIGH | Document patterns, fix DataStore |
-| SavedStateHandle | ⚠️ Works but Unclear | MEDIUM | Add edge cases guide |
-| Offline Mode | ❌ Incomplete | HIGH | Document AICore gap, add validation |
-| Testing | ❌ No Patterns | HIGH | Add full testing guide |
-| Agent Boundaries | ⚠️ Ambiguous | MEDIUM | Add decision trees |
-| DI (AiContainer) | ✅ Good | - | No change |
-| Mappers | ✅ Good | - | No change |
-| Use Cases | ✅ Good | - | Add error propagation guide |
-| ViewModels | ⚠️ One Bug Found | HIGH | Fix SettingsViewModel or document |
-| UI (Compose) | ✅ Good | - | Add Accessibility guide |
-| Documentation | ⚠️ Gaps Found | HIGH | Add 7+ missing sections |
+| Category         | Status               | Severity | Action                              |
+| ---------------- | -------------------- | -------- | ----------------------------------- |
+| Architecture     | ✅ Good              | -        | No change                           |
+| State Management | ✅ Good              | -        | Add anti-patterns guide             |
+| Error Handling   | ⚠️ Inconsistent      | HIGH     | Document patterns, fix DataStore    |
+| SavedStateHandle | ⚠️ Works but Unclear | MEDIUM   | Add edge cases guide                |
+| Offline Mode     | ❌ Incomplete        | HIGH     | Document AICore gap, add validation |
+| Testing          | ❌ No Patterns       | HIGH     | Add full testing guide              |
+| Agent Boundaries | ⚠️ Ambiguous         | MEDIUM   | Add decision trees                  |
+| DI (AiContainer) | ✅ Good              | -        | No change                           |
+| Mappers          | ✅ Good              | -        | No change                           |
+| Use Cases        | ✅ Good              | -        | Add error propagation guide         |
+| ViewModels       | ⚠️ One Bug Found     | HIGH     | Fix SettingsViewModel or document   |
+| UI (Compose)     | ✅ Good              | -        | Add Accessibility guide             |
+| Documentation    | ⚠️ Gaps Found        | HIGH     | Add 7+ missing sections             |
 
 ---
 
@@ -1098,6 +1150,7 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 ### For Copilot Instructions (copilot-instructions.md)
 
 **Add these sections**:
+
 1. ✅ New Screen Creation Checklist (step-by-step)
 2. ✅ AI Configuration Validation Guide (with checklist)
 3. ✅ DataStore Flow Collection Safety (with examples)
@@ -1110,6 +1163,7 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 ### For AGENTS.md
 
 **Clarify these**:
+
 1. ✅ Agent scope boundaries (decision matrix)
 2. ✅ Handoff protocol (what to include)
 3. ✅ Gray area responsibility (unclear cases)
@@ -1118,6 +1172,7 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 ### For Code
 
 **Fix these**:
+
 1. 🔴 SettingsViewModel state creation (if bug is real)
 2. 🔴 DataStore error handling (silent failures)
 3. 🟡 Add offline mode validation (prevent confusion)
@@ -1126,6 +1181,7 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 ### For Testing
 
 **Add guidance for**:
+
 1. ViewModels with SavedStateHandle
 2. Effects collection testing
 3. DataStore in tests

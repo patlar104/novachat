@@ -97,7 +97,6 @@ NEVER summarize code with comments like:
 ALWAYS write complete code:
 No partial snippets, no omitted blocks, no elided sections.
 
-
 ### Enforcement
 
 - **Before outputting code**: Self-check for completeness
@@ -183,15 +182,15 @@ Prevent agents from modifying files outside their responsibility, which causes c
 
 ### Violation Detection Stop and Hand Off If Needed
 
-| Situation | Required Action | Handoff Target |
-| --- | --- | --- |
-| **UI Agent editing ViewModel / domain / data** | STOP work immediately | [Backend Agent](agents/backend-agent.agent.md) |
-| **UI Agent editing build/config** | STOP work immediately | [Build Agent](agents/build-agent.agent.md) |
-| **Backend Agent editing UI / Compose / themes** | STOP work immediately | [UI Agent](agents/ui-agent.agent.md) |
-| **Backend Agent editing build/config** | STOP work immediately | [Build Agent](agents/build-agent.agent.md) |
-| **Testing Agent editing production code** | STOP work immediately | [UI Agent](agents/ui-agent.agent.md) or [Backend Agent](agents/backend-agent.agent.md) |
-| **Build Agent editing Java/Kotlin app logic** | STOP work immediately | [UI Agent](agents/ui-agent.agent.md) or [Backend Agent](agents/backend-agent.agent.md) |
-| **Any agent editing outside its zone** | STOP work immediately | Primary owner per matrix above |
+| Situation                                       | Required Action       | Handoff Target                                                                         |
+| ----------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------- |
+| **UI Agent editing ViewModel / domain / data**  | STOP work immediately | [Backend Agent](agents/backend-agent.agent.md)                                         |
+| **UI Agent editing build/config**               | STOP work immediately | [Build Agent](agents/build-agent.agent.md)                                             |
+| **Backend Agent editing UI / Compose / themes** | STOP work immediately | [UI Agent](agents/ui-agent.agent.md)                                                   |
+| **Backend Agent editing build/config**          | STOP work immediately | [Build Agent](agents/build-agent.agent.md)                                             |
+| **Testing Agent editing production code**       | STOP work immediately | [UI Agent](agents/ui-agent.agent.md) or [Backend Agent](agents/backend-agent.agent.md) |
+| **Build Agent editing Java/Kotlin app logic**   | STOP work immediately | [UI Agent](agents/ui-agent.agent.md) or [Backend Agent](agents/backend-agent.agent.md) |
+| **Any agent editing outside its zone**          | STOP work immediately | Primary owner per matrix above                                                         |
 
 **How agents must use this table:**
 
@@ -203,16 +202,16 @@ Prevent agents from modifying files outside their responsibility, which causes c
 
 These files affect multiple agents and require approval before modification:
 
-| File | Primary Owner | Must Communicate With | Approval Required |
-| --- | --- | --- | --- |
-| [`presentation/model/UiState.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt) | [UI Agent](agents/ui-agent.agent.md) | [Backend Agent](agents/backend-agent.agent.md) (fills state/events/effects) | UI + Backend |
-| [`presentation/viewmodel/*.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel) | [Backend Agent](agents/backend-agent.agent.md) | [UI Agent](agents/ui-agent.agent.md) (uses state), [Testing Agent](agents/testing-agent.agent.md) | Backend + UI + Testing |
-| [`di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt) | [Backend Agent](agents/backend-agent.agent.md) | **ALL agents** (affects everyone) | Backend + All |
-| [`build.gradle.kts`](../../build.gradle.kts) | [Build Agent](agents/build-agent.agent.md) | **ALL agents** (dependencies affect everyone) | Build + All |
-| [`feature-ai/build.gradle.kts`](../../feature-ai/build.gradle.kts) | [Build Agent](agents/build-agent.agent.md) | **ALL agents** (dependencies affect everyone) | Build + All |
-| [`core-common/build.gradle.kts`](../../core-common/build.gradle.kts) | [Build Agent](agents/build-agent.agent.md) | **ALL agents** (dependencies affect everyone) | Build + All |
-| [`core-network/build.gradle.kts`](../../core-network/build.gradle.kts) | [Build Agent](agents/build-agent.agent.md) | **ALL agents** (dependencies affect everyone) | Build + All |
-| [`AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml) | [Build Agent](agents/build-agent.agent.md) | **ALL agents** (permissions affect everyone) | Build + All |
+| File                                                                                                                    | Primary Owner                                  | Must Communicate With                                                                             | Approval Required      |
+| ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------- |
+| [`presentation/model/UiState.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt) | [UI Agent](agents/ui-agent.agent.md)           | [Backend Agent](agents/backend-agent.agent.md) (fills state/events/effects)                       | UI + Backend           |
+| [`presentation/viewmodel/*.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel)          | [Backend Agent](agents/backend-agent.agent.md) | [UI Agent](agents/ui-agent.agent.md) (uses state), [Testing Agent](agents/testing-agent.agent.md) | Backend + UI + Testing |
+| [`di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt)                         | [Backend Agent](agents/backend-agent.agent.md) | **ALL agents** (affects everyone)                                                                 | Backend + All          |
+| [`build.gradle.kts`](../../build.gradle.kts)                                                                            | [Build Agent](agents/build-agent.agent.md)     | **ALL agents** (dependencies affect everyone)                                                     | Build + All            |
+| [`feature-ai/build.gradle.kts`](../../feature-ai/build.gradle.kts)                                                      | [Build Agent](agents/build-agent.agent.md)     | **ALL agents** (dependencies affect everyone)                                                     | Build + All            |
+| [`core-common/build.gradle.kts`](../../core-common/build.gradle.kts)                                                    | [Build Agent](agents/build-agent.agent.md)     | **ALL agents** (dependencies affect everyone)                                                     | Build + All            |
+| [`core-network/build.gradle.kts`](../../core-network/build.gradle.kts)                                                  | [Build Agent](agents/build-agent.agent.md)     | **ALL agents** (dependencies affect everyone)                                                     | Build + All            |
+| [`AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml)                                                         | [Build Agent](agents/build-agent.agent.md)     | **ALL agents** (permissions affect everyone)                                                      | Build + All            |
 
 **How agents must use this table:**
 
@@ -240,9 +239,9 @@ Agents focusing only on their narrow task without understanding:
 **MANDATORY**: Check for BOTH explicit and implicit references!
 
 1. **"What files depend on mine across the repo?"** (explicit imports/references)
-   
+
    **AND**
-   
+
    **"What files mention related concepts semantically?"** (implicit references)
    - Search for synonyms: "verify" vs "check" vs "validate"
    - Search for related tools: "browser" vs "web" vs "navigate"
@@ -477,17 +476,13 @@ Generate code **one complete file at a time**.
 
 1. **Start with file header**:
 
-
-
 2. **Write the complete file** from top to bottom
 
 3. **If file exceeds reasonable size** (>500 lines):
-
    - Stop after a logical section
    - Say: "This file is large. The implementation continues. Should I proceed with the next section?"
    - Wait for user confirmation
    - Continue from exactly where you stopped
-
 
 Example file:
 
@@ -507,6 +502,7 @@ Example file:
 ### Before Changing Any File
 
 **CRITICAL**: This protocol applies to ALL file types:
+
 - **Code files** (Kotlin, Java, XML, etc.)
 - **Agent files** (`.github/agents/*.agent.md`)
 - **Skill files** (`.github/skills/*/SKILL.md`)
@@ -526,7 +522,6 @@ Example file:
    ```
 
 2. **Determine ripple effects**:
-
    - What breaks if I change this?
    - What needs to be updated together?
    - Are there any interface contracts?
@@ -543,7 +538,6 @@ Example file:
    ```
 
 4. **Execute updates in dependency order**:
-
    - Core/base files first
    - Dependent files second
    - Test files last
@@ -551,6 +545,7 @@ Example file:
 ### Ripple Effect Checklist
 
 **Code Dependencies:**
+
 - [ ] Are there any interfaces this file implements?
 - [ ] Are there any classes that extend this class?
 - [ ] Are there any files that import this file?
@@ -560,6 +555,7 @@ Example file:
 - [ ] Are there any docs/examples that mention this behavior?
 
 **Documentation/Agent/Skill Cross-References (CRITICAL):**
+
 - [ ] Are there any **implicit references** to this file/feature in agent files (`.github/agents/*.agent.md`)?
 - [ ] Are there any **implicit references** in skill files (`.github/skills/*/SKILL.md`)?
 - [ ] Are there any **implicit references** in documentation (`.github/*.md`, `README.md`, etc.)?
@@ -569,6 +565,7 @@ Example file:
 
 **Implicit Reference Detection:**
 When updating any file, search for:
+
 - **Semantic synonyms**: "verify" vs "check" vs "validate" vs "ensure"
 - **Related concepts**: "fetch" vs "retrieve" vs "access" vs "get" vs "lookup"
 - **Tool references**: "browser" vs "web" vs "navigate" vs "automation"
@@ -576,8 +573,9 @@ When updating any file, search for:
 - **Cross-file patterns**: Similar patterns in other files that might need updates
 
 **Example**: When updating a tool name (e.g., "OldTool" → "NewTool"):
+
 - ✅ Explicit: "OldTool" → Updated
-- ✅ Explicit: "old-tool" → Updated  
+- ✅ Explicit: "old-tool" → Updated
 - ❌ **MISSED**: "verify external docs" (implicit reference) → **MUST UPDATE**
 - ❌ **MISSED**: "check dependencies" (implicit reference) → **MUST UPDATE**
 - ❌ **MISSED**: "validate versions" (implicit reference) → **MUST UPDATE**
@@ -589,6 +587,7 @@ When updating any file, search for:
 #### Step 1: Identify Semantic Concepts
 
 Before updating, identify the semantic concepts involved:
+
 - **Tool names**: "OldTool" → Also search for related terms like "browser", "web", "navigate", "fetch", "automation"
 - **Actions**: "verify" → Also search for "check", "validate", "ensure", "confirm"
 - **Concepts**: "external docs" → Also search for "official sources", "release notes", "documentation"
@@ -596,6 +595,7 @@ Before updating, identify the semantic concepts involved:
 #### Step 2: Search for Implicit References
 
 Use semantic search across the entire `.github/` directory for:
+
 - **Synonyms and related terms** (not just exact matches)
 - **Conceptual references** (e.g., "check dependencies" when updating verification tools)
 - **Cross-file patterns** (similar patterns in other files)
@@ -603,12 +603,14 @@ Use semantic search across the entire `.github/` directory for:
 #### Step 3: Update All Found References
 
 Update BOTH:
+
 - **Explicit references**: Exact name matches (e.g., "OldTool", "old-tool")
 - **Implicit references**: Semantic matches (e.g., "verify external docs", "check dependencies")
 
 #### Step 4: Verify No References Were Missed
 
 After updating, search again with:
+
 - Different synonyms
 - Related concepts
 - Cross-boundary terms
@@ -815,8 +817,8 @@ Trigger this protocol when a user request is ambiguous, repetitive, or conflicts
 
 ```text
 STOP and say:
-"I want to make sure I understand correctly. It sounds like you want to [X], 
-but previously we implemented [Y]. 
+"I want to make sure I understand correctly. It sounds like you want to [X],
+but previously we implemented [Y].
 
 Could you clarify:
 1. Do you want to replace Y with X?
@@ -844,7 +846,7 @@ ALWAYS check current files first:
 
 "Let me check the current state of [File]..."
 "I checked: [File A], [File B]"
-"I see that [Feature] is already implemented in [File]. 
+"I see that [Feature] is already implemented in [File].
 Do you want to modify this existing implementation?"
 ```
 
@@ -859,9 +861,9 @@ Agent checks: [`ui/SettingsScreen.kt`](../../feature-ai/src/main/java/com/novach
 
 Response:
 "I checked and found that SettingsScreen.kt already exists with the following features:
-- API key input
-- AI mode selection (Online/Offline)
-- Save button
+- AI mode selection (Online/Offline; offline disabled)
+- Theme mode selection (Light/Dark/System)
+- Dynamic color toggle
 
 Do you want to:
 1. Add new features to the existing SettingsScreen?
@@ -875,7 +877,7 @@ Do you want to:
 User: "Update the chat feature"
 
 Response:
-"I want to make sure I implement exactly what you need. 
+"I want to make sure I implement exactly what you need.
 'Update the chat feature' could mean several things:
 
 1. Update the ChatScreen UI? ([`ui/ChatScreen.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt))
@@ -895,11 +897,11 @@ User: "Use LiveData for state management"
 Agent checks: Project currently uses StateFlow in [`presentation/viewmodel/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel)
 
 Response:
-"I notice that the project currently uses StateFlow for state management 
+"I notice that the project currently uses StateFlow for state management
 (as seen in [`ChatViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt) and
-[`SettingsViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/SettingsViewModel.kt)). 
+[`SettingsViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/SettingsViewModel.kt)).
 
-LiveData and StateFlow are different approaches. Switching would require 
+LiveData and StateFlow are different approaches. Switching would require
 updating multiple files and changing the architecture.
 
 Did you mean to:
@@ -916,7 +918,7 @@ User: "Add Retrofit and OkHttp"
 Agent checks: [`feature-ai/build.gradle.kts`](../../feature-ai/build.gradle.kts), [`app/build.gradle.kts`](../../app/build.gradle.kts), and [`build.gradle.kts`](../../build.gradle.kts)
 
 Response:
-"I checked the current build files and didn’t see Retrofit/OkHttp listed. 
+"I checked the current build files and didn’t see Retrofit/OkHttp listed.
 Do you want:
 1. Add dependencies only?
 2. Add dependencies + minimal usage example?
@@ -952,7 +954,7 @@ Do you want:
 - **Compiler**: Integrated with Kotlin 2.2.21
 - **Material 3**: Exclusive (no Material 2)
 - **Navigation**: Compose Navigation 2.9.0+
- - **Where defined**: [`feature-ai/build.gradle.kts`](../../feature-ai/build.gradle.kts), [`app/build.gradle.kts`](../../app/build.gradle.kts), and [`settings.gradle.kts`](../../settings.gradle.kts)
+- **Where defined**: [`feature-ai/build.gradle.kts`](../../feature-ai/build.gradle.kts), [`app/build.gradle.kts`](../../app/build.gradle.kts), and [`settings.gradle.kts`](../../settings.gradle.kts)
 
 #### Dependencies
 
@@ -991,6 +993,7 @@ di/               → Dependency Injection
 ```
 
 Repo paths:
+
 - [`presentation/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation)
 - [`ui/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui)
 - [`domain/`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain)
@@ -1012,7 +1015,6 @@ Repo paths:
 ### Standard Workflow
 
 1. **Understand Request**
-
    - Read current files
    - Check for existing implementation
    - Identify dependencies
@@ -1042,18 +1044,16 @@ Repo paths:
    File 3: ChatViewModelTest.kt
    [Complete implementation]
    ```
-   
+
    If any file is out of scope for the current agent, stop and hand off before proceeding.
 
 4. **Self-Validate**
-
    - Completeness ✓
    - Imports ✓
    - Syntax ✓
    - Logic ✓
 
 5. **Output**
-
    - Provide complete code
    - Explain changes
    - List affected files
@@ -1162,7 +1162,7 @@ WRONG - "What do you want?"
 
 WRONG - "I don't understand"
    (Not helpful - be specific about what's unclear)
-   
+
 WRONG - "I'll just pick one approach"
    (Assumes intent instead of clarifying)
 ```
@@ -1186,6 +1186,7 @@ Should I continue with Section 3?"
 ```
 
 Rules:
+
 - Always finish a logical block before stopping (no half-written functions).
 - Clearly label where the next section starts.
 - Do not skip imports or class headers in Section 1.
@@ -1208,14 +1209,15 @@ Ready for File 2?"
 ```
 
 Rules:
+
 - State the dependency order up front.
 - Confirm all files are in scope before starting.
 - If any file is out of scope, stop and hand off.
 - Example dependency chain (NovaChat):
-   - [`presentation/model/UiState.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt)
-   - [`presentation/viewmodel/ChatViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt)
-   - [`ui/ChatScreen.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt)
-   - [`feature-ai/src/test/java/.../ChatViewModelTest.kt`](../../feature-ai/src/test/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModelTest.kt)
+  - [`presentation/model/UiState.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt)
+  - [`presentation/viewmodel/ChatViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt)
+  - [`ui/ChatScreen.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt)
+  - [`feature-ai/src/test/java/.../ChatViewModelTest.kt`](../../feature-ai/src/test/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModelTest.kt)
 
 ### Refactoring
 
@@ -1235,6 +1237,7 @@ Proceeding with File 1: [FileName]
 ```
 
 Rules:
+
 - List all symbol renames and file moves before editing.
 - Update references in tests and DI wiring.
 - Avoid partial refactors; complete all references before stopping.
@@ -1260,6 +1263,7 @@ Before any code output, verify:
 - [ ] Abstraction Check: No hardcoded strings/numbers that should be constants
 
 Notes:
+
 - Prefer shared constants in the owning layer (`presentation/`, `domain/`, `data/`) rather than re‑declaring literals.
 - If API behavior changes, update tests and any referenced docs.
 

@@ -3,6 +3,7 @@
 ## Chat Screen
 
 The main chat interface features:
+
 - Clean, modern Material Design 3 interface
 - User messages appear on the right in blue bubbles
 - AI responses appear on the left in gray bubbles
@@ -11,15 +12,18 @@ The main chat interface features:
 - Error banners for any issues
 
 ### Empty State
+
 When you first open the app, you'll see a welcoming empty state with:
+
 - Friendly emoji greeting
 - Instructions to start chatting
 - Clean, minimal design
 
 ### Active Conversation
+
 During a conversation:
+
 - Messages are displayed in chronological order
-- Each message has a timestamp
 - Clear visual distinction between user and AI messages
 - Responsive input field at the bottom
 - Send button that activates when you type
@@ -27,36 +31,40 @@ During a conversation:
 ## Settings Screen
 
 The settings interface includes:
+
 - **AI Mode Selection**: Toggle between Online (Gemini) and Offline (On-device) modes
-- **API Key Configuration**: Secure input field for your Google AI API key
-- **Help Text**: Links and instructions for getting started
 - **App Information**: Version details and about section
+- **Theme Mode**: Light, Dark, or System default
+- **Dynamic Color**: Toggle for Android 12+ dynamic theming
 
 ### Online Mode Settings
+
 - Radio button selection for Online mode
-- (API key field is optional/legacy - Firebase Functions handles authentication)
-- Save button to persist your settings
-- Confirmation message when saved
+- Changes persist immediately via DataStore
 
 ### Offline Mode Settings
+
 - Radio button selection for Offline mode
 - Information about AICore requirements
-- Note about device compatibility
+- Note about device compatibility and current unavailability
 
 ## UI Features
 
 ### Material Design 3
+
 - Dynamic color theming (adapts to Android 12+ system theme)
 - Consistent spacing and typography
 - Smooth animations and transitions
 - Accessible touch targets
 
 ### Responsive Design
+
 - Adapts to different screen sizes
 - Keyboard-aware layout (input field moves with keyboard)
 - Portrait and landscape support
 
 ### Dark Mode Support
+
 - Automatically follows system theme
 - Optimized colors for both light and dark themes
 - Comfortable viewing in any lighting condition
@@ -83,6 +91,7 @@ Then launch the app from your device's app drawer.
 ## Future Screenshots
 
 Once you build the app, consider adding actual screenshots here showing:
+
 - Empty state
 - Active chat conversation
 - Settings screen with filled values
@@ -90,10 +99,11 @@ Once you build the app, consider adding actual screenshots here showing:
 - Different themes (light/dark)
 
 You can take screenshots using:
+
 - Android Studio: Logcat window → Camera icon
 - Device: Power + Volume Down buttons
 - ADB: `adb exec-out screencap -p > screenshot.png`
 
 ---
 
-*Note: This is a placeholder file. Actual screenshots will be added once the app is built and run on a device or emulator.*
+_Note: This is a placeholder file. Actual screenshots will be added once the app is built and run on a device or emulator._

@@ -43,23 +43,27 @@ app/src/main/java/com/novachat/app/
 #### 1. Data Layer
 
 **Message (domain/model/Message.kt)**
+
 - Represents individual chat messages
 - Contains message content, sender info, timestamp, and status
 - Used across layers via mappers
 
 **AiRepository (domain/repository/Repositories.kt)**
-- Defines AI model interactions via `generateResponse()`
-- Implemented in data layer (`AiRepositoryImpl`)
+
+- Defines AI model interactions via the Firebase Functions proxy (`aiProxy`)
+- Implemented in data layer (`AiRepositoryImpl`) using `FirebaseFunctions.getHttpsCallable()`
 - Returns `Result<String>` for proper error handling
 
 **PreferencesRepository (domain/repository/Repositories.kt)**
+
 - Manages user preferences using DataStore
 - Implemented in data layer (`PreferencesRepositoryImpl`)
-- Persists AI configuration and API keys
+- Persists AI configuration and theme preferences
 
 #### 2. ViewModel Layer
 
 **ChatViewModel (presentation/viewmodel/ChatViewModel.kt)**
+
 - Manages chat state and business logic
 - Exposes StateFlows for UI observation
 - Handles message sending and error states
@@ -68,37 +72,27 @@ app/src/main/java/com/novachat/app/
 #### 3. UI Layer
 
 **ChatScreen (ui/ChatScreen.kt)**
+
 - Main chat interface using Jetpack Compose
 - Shows message list with auto-scrolling
 - Input field for typing messages
 - Error banners and loading states
 
 **SettingsScreen (ui/SettingsScreen.kt)**
-- Configure AI mode (online/offline)
-- Enter and save API key
+
+- Configure AI mode (online only; offline mode is unavailable)
+- Configure theme mode and dynamic color
 - View app information
 
 ## Adding New Features
 
 ### Adding a New AI Provider
 
-1. Add the new AI SDK dependency in `feature-ai/build.gradle.kts`
-2. Implement a new path in `AiRepositoryImpl.kt`:
-```kotlin
-suspend fun sendMessageToNewProvider(message: String): Result<String> {
-    return withContext(Dispatchers.IO) {
-        try {
-            // Your implementation
-            Result.success(response)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-}
-```
-3. Add a new `AiMode` entry in `domain/model/AiConfiguration.kt`
-4. Update `AiRepositoryImpl.generateResponse()` to route the new mode
-5. Update `SettingsScreen.kt` to add UI for the new option
+1. Add the new provider in the Firebase Functions backend (`functions/src/index.ts`).
+2. Update the request/response contract used by `aiProxy` if needed.
+3. Add a new `AiMode` entry in `domain/model/AiConfiguration.kt`.
+4. Update `AiRepositoryImpl` to route the new mode through the proxy.
+5. Update `SettingsScreen.kt` to add UI for the new option.
 
 ### Adding Message Persistence
 
@@ -111,10 +105,10 @@ Currently, messages are stored in-memory. To add persistence:
 
 ### Adding User Authentication
 
-1. Add Firebase Authentication dependency
-2. Create an `AuthRepository` in the data layer
-3. Add login/signup screens
-4. Store user ID with each message
+1. Extend Firebase Authentication beyond anonymous sign-in.
+2. Create an `AuthRepository` in the data layer.
+3. Add login/signup screens.
+4. Store user ID with each message.
 
 ## Testing
 
@@ -150,6 +144,7 @@ fun testChatScreenDisplaysMessages() {
 This project follows the [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html).
 
 Key points:
+
 - Use 4 spaces for indentation
 - Use meaningful variable names
 - Add KDoc comments for public APIs
@@ -159,11 +154,13 @@ Key points:
 ## Building for Release
 
 1. Create a keystore for signing:
+
 ```bash
 keytool -genkey -v -keystore novachat.keystore -alias novachat -keyalg RSA -keysize 2048 -validity 10000
 ```
 
 2. Add signing config to `app/build.gradle.kts`:
+
 ```kotlin
 android {
     signingConfigs {
@@ -183,6 +180,7 @@ android {
 ```
 
 3. Build the release APK:
+
 ```bash
 ./gradlew assembleRelease
 ```
@@ -192,21 +190,26 @@ android {
 ### Logcat Filtering
 
 In Android Studio Logcat, filter by:
+
 - Tag: `ChatViewModel`, `AiRepository`
 - Package name: `com.novachat.app`
 
 ### Common Issues
 
-**"API key not set"**
-- Check that the API key is saved in Settings
+**"Firebase Functions permission denied"**
+
+- Verify anonymous auth succeeded (see `NovaChatApplication` initialization).
+- Confirm the `aiProxy` function is deployed and accessible.
 - Verify DataStore is not being cleared
 
 **"Network error"**
+
 - Check internet connectivity
-- Verify API key is valid
+- Verify Firebase Functions is reachable
 - Check Logcat for detailed error messages
 
 **Compose recomposition issues**
+
 - Use `remember` for state that should persist across recompositions
 - Use `LaunchedEffect` for side effects
 - Check if StateFlows are being collected properly
@@ -214,7 +217,8 @@ In Android Studio Logcat, filter by:
 ## Resources
 
 - [Jetpack Compose Documentation](https://developer.android.com/jetpack/compose)
-- [Google Generative AI SDK](https://github.com/google/generative-ai-android)
+- [Firebase Functions](https://firebase.google.com/docs/functions/callable)
+- [Firebase Authentication](https://firebase.google.com/docs/auth/android/start)
 - [Kotlin Coroutines Guide](https://kotlinlang.org/docs/coroutines-guide.html)
 - [Material Design 3](https://m3.material.io/)
 

@@ -119,7 +119,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 - **Light and dark theme previews**
 - **Mock data only** (no API calls)
 - **All imports explicitly included**
-- **Preview data helpers** (Preview*ScreenData) for state coverage
+- **Preview data helpers** (Preview\*ScreenData) for state coverage
 
 **Handoffs**: From UI (for new Composables) and Backend (for state changes), to Testing (for automated tests)
 
@@ -197,7 +197,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 
 - Gradle build files (Kotlin DSL) in [`build.gradle.kts`](../build.gradle.kts), [`app/build.gradle.kts`](../app/build.gradle.kts), [`feature-ai/build.gradle.kts`](../feature-ai/build.gradle.kts), [`core-common/build.gradle.kts`](../core-common/build.gradle.kts), and [`core-network/build.gradle.kts`](../core-network/build.gradle.kts)
 - Dependency management (Compose BOM, AI SDKs) in [`feature-ai/build.gradle.kts`](../feature-ai/build.gradle.kts) and [`app/build.gradle.kts`](../app/build.gradle.kts)
-- Version catalogs (if used; see [`gradle/`](../gradle))
+- Version catalog in [`gradle/libs.versions.toml`](../gradle/libs.versions.toml)
 - ProGuard/R8 rules in [`app/proguard-rules.pro`](../app/proguard-rules.pro)
 - Build variants
 
@@ -213,7 +213,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 
 - **Complete build.gradle.kts files** (no `// ... dependencies` placeholders) in [`build.gradle.kts`](../build.gradle.kts), [`app/build.gradle.kts`](../app/build.gradle.kts), [`feature-ai/build.gradle.kts`](../feature-ai/build.gradle.kts), [`core-common/build.gradle.kts`](../core-common/build.gradle.kts), and [`core-network/build.gradle.kts`](../core-network/build.gradle.kts)
 - **All plugin configurations shown**
-- **Version catalog entries complete** (if used; see [`gradle/`](../gradle))
+- **Version catalog entries complete** in [`gradle/libs.versions.toml`](../gradle/libs.versions.toml)
 - **Verify 2026 dependency versions** (Compose BOM 2026.01.01, Kotlin 2.2.21) against official sources using the user-selected tool (ask first; do not choose a tool unilaterally)
 
 **Handoffs**: To Backend (after adding dependencies), Testing (for test setup), or Reviewer
@@ -284,6 +284,7 @@ Validated against the current repository layout:
   - [`settings.gradle.kts`](../settings.gradle.kts)
   - [`gradle.properties`](../gradle.properties)
   - [`gradle/wrapper/gradle-wrapper.properties`](../gradle/wrapper/gradle-wrapper.properties)
+  - [`gradle/libs.versions.toml`](../gradle/libs.versions.toml)
   - [`app/proguard-rules.pro`](../app/proguard-rules.pro)
   - [`app/src/main/AndroidManifest.xml`](../app/src/main/AndroidManifest.xml)
 
@@ -327,7 +328,7 @@ Provides:
 
 - Best practices for `@Preview` annotations
 - Multi-preview annotations for device and theme variations
-- Creation of mock data providers (e.g., Preview*Data)
+- Creation of mock data providers (e.g., Preview\*Data)
 - Techniques for isolating previews from ViewModels
 
 **Protocol**: All preview examples are complete and functional
@@ -396,7 +397,7 @@ Provides:
 
    ```markdown
    @copilot using planner.agent.md
-   
+
    Create a plan for implementing [feature description]
    ```
 
@@ -408,7 +409,7 @@ Provides:
 
    ```markdown
    @copilot using ui-agent.agent.md
-   
+
    Implement the login screen layout according to the plan
    ```
 
@@ -422,7 +423,7 @@ Provides:
 
    ```markdown
    @copilot using reviewer-agent.agent.md
-   
+
    Review the login feature implementation
    ```
 
@@ -433,22 +434,22 @@ graph TD
     A[User Request] --> B[Planner Agent]
     B --> C[Create Implementation Plan]
     C --> D{Task Type?}
-    
+
     D -->|UI Task| E[UI Agent]
     D -->|Logic Task| F[Backend Agent]
     D -->|Dependencies| G[Build Agent]
-    
+
     E --> H[Preview Agent]
     H --> I[Testing Agent]
     F --> I
     G --> I
-    
+
     I --> J[Reviewer Agent]
     J --> K{Issues Found?}
-    
+
     K -->|Yes| L[Route to Appropriate Agent]
     K -->|No| M[Complete]
-    
+
     L --> J
 ```
 

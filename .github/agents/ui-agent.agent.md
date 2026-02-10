@@ -58,7 +58,7 @@ Out of scope (do not modify):
 - Use GitKraken MCP for git context (status/log/diff) when needed
 - Use Pieces MCP (`ask_pieces_ltm`) when prior edits from other IDEs may exist
 
-> **⚠️ PROTOCOL COMPLIANCE**: You MUST follow [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT_PROTOCOL.md)
+> **⚠️ PROTOCOL COMPLIANCE**: You MUST follow `../DEVELOPMENT_PROTOCOL.md`
 >
 > **Before ANY code output:**
 >
@@ -70,8 +70,8 @@ Out of scope (do not modify):
 
 ## Skills Used (UI Agent)
 
-- [material-design](../skills/material-design/SKILL.md)
-- [compose-preview](../skills/compose-preview/SKILL.md)
+- `../skills/material-design/SKILL.md`
+- `../skills/compose-preview/SKILL.md`
 
 ## Your Responsibilities
 
@@ -93,9 +93,9 @@ Out of scope (do not modify):
 
 3. **Theme & Styling**
 
-- Define new colors in [`ui/theme/Color.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/Color.kt) (light and dark themes)
-- Keep Material 3 theme up to date in [`ui/theme/Theme.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/Theme.kt)
-- Define typography scale in [`ui/theme/Type.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/Type.kt) when adding styles
+- Define new colors in `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/Color.kt` (light and dark themes)
+- Keep Material 3 theme up to date in `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/Theme.kt`
+- Define typography scale in `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/Type.kt` when adding styles
 - Use theme attributes instead of hardcoded colors
 - Support dynamic theming when enabled
 
@@ -109,16 +109,16 @@ Out of scope (do not modify):
 
 You should ONLY modify:
 
-- [`feature-ai/src/main/java/**/ui/**/*.kt`](../../feature-ai/src/main/java) (Composable screens and components)
-- [`feature-ai/src/main/java/**/ui/theme/*.kt`](../../feature-ai/src/main/java) (Color, Theme, Type)
-- [`app/src/main/java/**/*Activity.kt`](../../app/src/main/java/com/novachat/app/MainActivity.kt) (MainActivity for Compose setup)
-- [`feature-ai/src/main/res/values/strings.xml`](../../feature-ai/src/main/res/values/strings.xml) (string resources)
+- `../../feature-ai/src/main/java/**/ui/**/*.kt` (Composable screens and components)
+- `../../feature-ai/src/main/java/**/ui/theme/*.kt` (Color, Theme, Type)
+- `../../app/src/main/java/com/novachat/app/MainActivity.kt` (MainActivity for Compose setup)
+- `../../feature-ai/src/main/res/values/strings.xml` (string resources)
 
 You should NEVER modify:
 
-- ViewModels ([`feature-ai/src/main/java/**/viewmodel/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel))
-- Repositories ([`feature-ai/src/main/java/**/data/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/data))
-- Domain layer ([`feature-ai/src/main/java/**/domain/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain))
+- ViewModels (`../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel`)
+- Repositories (`../../feature-ai/src/main/java/com/novachat/feature/ai/data`)
+- Domain layer (`../../feature-ai/src/main/java/com/novachat/feature/ai/domain`)
 - Gradle build files
 - Test files (unless adding Compose test helpers)
 
@@ -226,15 +226,15 @@ Before outputting Composable code, verify:
 **File Scope for UI Agent:**
 
 - ✅ Allowed:
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/ui/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui)
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme)
-  - [`app/src/main/java/com/novachat/app/MainActivity.kt`](../../app/src/main/java/com/novachat/app/MainActivity.kt)
-  - [`feature-ai/src/main/res/values/strings.xml`](../../feature-ai/src/main/res/values/strings.xml)
+  - `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/**`
+  - `../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/**`
+  - `../../app/src/main/java/com/novachat/app/MainActivity.kt`
+  - `../../feature-ai/src/main/res/values/strings.xml`
 - ❌ Prohibited:
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel)
-  - [`feature-ai/src/main/java/com/novachat/feature/ai/data/**`](../../feature-ai/src/main/java/com/novachat/feature/ai/data)
-  - [`build.gradle.kts`](../../build.gradle.kts)
-  - Test files in [`feature-ai/src/test/java`](../../feature-ai/src/test/java), [`feature-ai/src/androidTest/java`](../../feature-ai/src/androidTest/java), [`app/src/test/java`](../../app/src/test/java), and [`app/src/androidTest/java`](../../app/src/androidTest/java)
+  - `../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/**`
+  - `../../feature-ai/src/main/java/com/novachat/feature/ai/data/**`
+  - `../../build.gradle.kts`
+  - `../../feature-ai/src/test/java`, `../../feature-ai/src/androidTest/java`, `../../app/src/test/java`, `../../app/src/androidTest/java`
 
 If asked to modify files outside this scope, decline and hand off to the appropriate agent.
 
