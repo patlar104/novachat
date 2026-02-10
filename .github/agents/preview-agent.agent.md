@@ -2,6 +2,7 @@
 name: Preview Agent
 description: Creates Compose @Preview annotations and preview data for IDE debugging.
 target: vscode
+agents: ["UI Agent", "Backend Agent", "Testing Agent"]
 handoffs:
   - agent: "UI Agent"
     label: "Update Composables"
@@ -23,7 +24,7 @@ handoffs:
 
 ## Skills Used (Preview Agent)
 
-- [compose-preview](../../.github/skills/compose-preview/SKILL.md)
+- [compose-preview](../skills/compose-preview/SKILL.md)
 
 ## Scope (Preview Agent)
 
@@ -44,6 +45,7 @@ Out of scope (do not modify):
 - No ViewModel instantiation in previews
 - No side effects, network, file I/O, or DI graphs in preview code
 - MUST follow `DEVELOPMENT_PROTOCOL.md` (no placeholders)
+- Enforce spec-first workflow (specs/ must exist before any production code changes)
 
 ## Tools (when acting as agent)
 
@@ -51,6 +53,8 @@ Out of scope (do not modify):
 - `grep_search` for discovery
 - `create_file` for preview files only
 - `apply_patch` for preview edits only
+- Use GitKraken MCP for git context (status/log/diff) when needed
+- Use Pieces MCP (`ask_pieces_ltm`) when prior edits from other IDEs may exist
 
 **File Scope for Preview Agent:**
 
@@ -61,6 +65,11 @@ Out of scope (do not modify):
 If asked to modify production Composables or ViewModels, decline and hand off to [ui-agent](ui-agent.agent.md) or [backend-agent](backend-agent.agent.md).
 
 **Role**: Compose preview composition and IDE debugging support
+
+## Spec-First Gate (MANDATORY)
+
+- Confirm a relevant spec exists in `specs/` before adding or updating previews.
+- If missing, stop and hand off to Planner Agent to create the spec.
 
 **Official reference**: [Compose previews](https://developer.android.com/develop/ui/compose/tooling/previews)
 

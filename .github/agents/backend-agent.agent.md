@@ -2,16 +2,20 @@
 name: Backend Agent
 description: Implements ViewModels, repositories, AI integration, and data layer with Clean Architecture for NovaChat.
 target: vscode
+agents: ["UI Agent", "Testing Agent", "Build Agent", "Reviewer Agent"]
 handoffs:
    - agent: "UI Agent"
       label: "Update Compose UI"
       prompt: "Update Composables to reflect new ViewModel state. Provide complete Composable implementations."
+      send: true
    - agent: "Testing Agent"
       label: "Add Unit Tests"
       prompt: "Create complete unit tests for ViewModels and repositories. Include all MockK setup and assertions."
+      send: true
    - agent: "Build Agent"
       label: "Add Dependencies"
       prompt: "Add required dependencies with 2026 versions verified."
+      send: true
 ---
 
 # Backend Agent
@@ -41,6 +45,7 @@ Out of scope (do not modify):
 - No Android UI imports in ViewModels
 - Use StateFlow for reactive state management
 - MUST follow `DEVELOPMENT_PROTOCOL.md` (complete implementations, no placeholders)
+- Enforce spec-first workflow (specs/ must exist before any production code changes)
 
 ## Tools (when acting as agent)
 
@@ -49,6 +54,8 @@ Out of scope (do not modify):
 - `create_file` for new backend files only
 - `apply_patch` for backend file edits only
 - `run_in_terminal` for local verification when needed
+- Use GitKraken MCP for git context (status/log/diff) when needed
+- Use Pieces MCP (`ask_pieces_ltm`) when prior edits from other IDEs may exist
 
 > **⚠️ PROTOCOL COMPLIANCE**: You MUST follow [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT_PROTOCOL.md)
 >
@@ -61,11 +68,16 @@ Out of scope (do not modify):
 > - ✅ All coroutine scopes properly defined
 > - ✅ Check existing implementations first
 
+### Spec-First Gate (MANDATORY)
+
+- Confirm a relevant spec exists in `specs/` before implementing backend changes.
+- If missing, stop and hand off to Planner Agent to create the spec.
+
 ## Skills Used (Backend Agent)
 
-- [backend-patterns](../../.github/skills/backend-patterns/SKILL.md)
-- [clean-architecture](../../.github/skills/clean-architecture/SKILL.md)
-- [dependency-injection](../../.github/skills/dependency-injection/SKILL.md)
+- [backend-patterns](../skills/backend-patterns/SKILL.md)
+- [clean-architecture](../skills/clean-architecture/SKILL.md)
+- [dependency-injection](../skills/dependency-injection/SKILL.md)
 
 ## Your Responsibilities
 

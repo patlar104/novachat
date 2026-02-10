@@ -138,7 +138,7 @@ Located in `.github/workflows/`
 
 ## Git Hooks
 
-Located in `.githooks/`
+Located in `.github/hooks/`
 
 ### Available Hooks
 
@@ -162,10 +162,10 @@ Located in `.githooks/`
 Run the setup script:
 
 ```bash
-./.githooks/setup-hooks.sh
+./.github/hooks/setup-hooks.sh
 ```
 
-This configures Git to use the `.githooks` directory automatically.
+This configures Git to use the `.github/hooks` directory automatically.
 
 ### Bypassing Hooks
 
@@ -176,7 +176,7 @@ git commit --no-verify
 git push --no-verify
 ```
 
-See `.githooks/README.md` for detailed documentation.
+See `.github/hooks/README.md` for detailed documentation.
 
 ---
 
@@ -283,7 +283,7 @@ Already configured in `.github/dependabot.yml`. Dependabot will:
 Each developer should run:
 
 ```bash
-./.githooks/setup-hooks.sh
+./.github/hooks/setup-hooks.sh
 ```
 
 This ensures local validation before pushing.
@@ -319,7 +319,7 @@ Workflows are stored in `.github/workflows/`. To update:
 
 ### For Developers
 
-1. ✅ Run `.githooks/setup-hooks.sh` after cloning
+1. ✅ Run `.github/hooks/setup-hooks.sh` after cloning
 2. ✅ Let hooks run (don't use `--no-verify` unless necessary)
 3. ✅ Fix issues locally before pushing
 4. ✅ Use conventional commit messages
@@ -350,9 +350,9 @@ Edit the `on:` section in workflow files:
 ```yaml
 on:
   push:
-    branches: [ main, develop ]  # Add/remove branches
+    branches: [main, develop] # Add/remove branches
   schedule:
-    - cron: '0 0 * * 1'  # Change schedule
+    - cron: "0 0 * * 1" # Change schedule
 ```
 
 ### Adding New Workflow Jobs
@@ -370,7 +370,7 @@ jobs:
 
 ### Modifying Hook Behavior
 
-Edit scripts in `.githooks/`:
+Edit scripts in `.github/hooks/`:
 
 - Comment out checks you don't need
 - Add new validation steps

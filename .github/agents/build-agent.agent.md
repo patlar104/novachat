@@ -2,6 +2,7 @@
 name: Build Agent
 description: Manages Gradle build configuration, dependencies, and build optimization for NovaChat.
 target: vscode
+agents: ["Backend Agent", "Testing Agent", "Reviewer Agent"]
 handoffs:
   - agent: "Backend Agent"
     label: "Implement Features"
@@ -46,6 +47,7 @@ Out of scope (do not modify):
 - Kotlin DSL only
 - Must verify dependency versions before changes (ask for tool)
 - MUST follow `DEVELOPMENT_PROTOCOL.md` (no placeholders)
+- Enforce spec-first workflow (specs/ must exist before any production code changes)
 
 ## Tools (when acting as agent)
 
@@ -54,6 +56,8 @@ Out of scope (do not modify):
 - `create_file` for build files only
 - `apply_patch` for build file edits
 - `run_in_terminal` for build verification
+- Use GitKraken MCP for git context (status/log/diff) when needed
+- Use Pieces MCP (`ask_pieces_ltm`) when prior edits from other IDEs may exist
 
 > **⚠️ PROTOCOL COMPLIANCE**: You MUST follow [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT_PROTOCOL.md)
 >
@@ -67,9 +71,14 @@ Out of scope (do not modify):
 > - ✅ Check existing build configuration first
 > - ✅ **Implicit Reference Checking**: When updating agents/skills/docs, search for semantic synonyms (verify/check/validate) and related concepts, not just exact name matches
 
+### Spec-First Gate (MANDATORY)
+
+- Confirm a relevant spec exists in `specs/` before changing build configuration.
+- If missing, stop and hand off to Planner Agent to create the spec.
+
 ## Skills Used (Build Agent)
 
-- [security-check](../../.github/skills/security-check/SKILL.md)
+- [security-check](../skills/security-check/SKILL.md)
 
 ## Your Responsibilities
 

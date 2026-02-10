@@ -5,9 +5,11 @@ This directory contains custom Git hooks to automate code quality checks and enf
 ## Available Hooks
 
 ### pre-commit
+
 **Purpose**: Format code before committing
 
 **What it does**:
+
 - Finds all staged Kotlin files (`.kt`)
 - Runs `ktlint` format on them
 - Re-stages formatted files automatically
@@ -18,9 +20,11 @@ This directory contains custom Git hooks to automate code quality checks and enf
 ---
 
 ### pre-push
+
 **Purpose**: Run tests before pushing
 
 **What it does**:
+
 - Runs all unit tests (`testDebugUnitTest`)
 - Prevents push if tests fail
 - Shows test results summary
@@ -30,19 +34,23 @@ This directory contains custom Git hooks to automate code quality checks and enf
 ---
 
 ### commit-msg
+
 **Purpose**: Enforce conventional commit messages
 
 **What it does**:
+
 - Validates commit message format
 - Enforces [Conventional Commits](https://www.conventionalcommits.org/) standard
 - Ensures consistency in commit history
 
 **Required format**:
+
 ```
 <type>(<scope>): <subject>
 ```
 
 **Valid types**:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -56,6 +64,7 @@ This directory contains custom Git hooks to automate code quality checks and enf
 - `revert`: Reverting changes
 
 **Examples**:
+
 ```
 feat(chat): add message sending functionality
 fix(ui): resolve button alignment issue
@@ -75,12 +84,13 @@ test(repository): add unit tests for AI repository
 Run the setup script from the repository root:
 
 ```bash
-./.githooks/setup-hooks.sh
+./.github/hooks/setup-hooks.sh
 ```
 
 This will:
+
 1. Make all hook scripts executable
-2. Configure Git to use the `.githooks` directory
+2. Configure Git to use the `.github/hooks` directory
 3. Create symlinks in `.git/hooks/` (optional)
 
 ### Manual Installation
@@ -88,16 +98,16 @@ This will:
 Configure Git to use this directory for hooks:
 
 ```bash
-git config core.hooksPath .githooks
+git config core.hooksPath .github/hooks
 ```
 
 Or create symlinks manually:
 
 ```bash
-chmod +x .githooks/*
-ln -s ../../.githooks/pre-commit .git/hooks/pre-commit
-ln -s ../../.githooks/pre-push .git/hooks/pre-push
-ln -s ../../.githooks/commit-msg .git/hooks/commit-msg
+chmod +x .github/hooks/*
+ln -s ../../.github/hooks/pre-commit .git/hooks/pre-commit
+ln -s ../../.github/hooks/pre-push .git/hooks/pre-push
+ln -s ../../.github/hooks/commit-msg .git/hooks/commit-msg
 ```
 
 ---
@@ -142,13 +152,15 @@ rm .git/hooks/commit-msg
 ### Hook not running
 
 Check if hooks are executable:
+
 ```bash
-ls -la .githooks/
+ls -la .github/hooks/
 ```
 
 Make them executable:
+
 ```bash
-chmod +x .githooks/*
+chmod +x .github/hooks/*
 ```
 
 ### ktlint not found
@@ -160,6 +172,7 @@ To add ktlint, see the [ktlint Gradle plugin](https://github.com/JLLeitschuh/ktl
 ### Tests taking too long
 
 The pre-push hook runs unit tests. To speed up:
+
 1. Use `--no-verify` to skip (not recommended)
 2. Configure Gradle daemon for faster builds
 3. Run tests in parallel with Gradle
@@ -169,6 +182,7 @@ The pre-push hook runs unit tests. To speed up:
 ## CI/CD Integration
 
 These hooks complement the GitHub Actions workflows in `.github/workflows/`:
+
 - **android-ci.yml**: Full CI pipeline (build, test, lint)
 - **security.yml**: Security scanning
 - **code-quality.yml**: Code quality checks
@@ -181,7 +195,8 @@ Local hooks provide fast feedback before pushing, while CI provides comprehensiv
 ## Contributing
 
 To modify hooks:
-1. Edit the hook script in `.githooks/`
+
+1. Edit the hook script in `.github/hooks/`
 2. Test locally
 3. Commit changes
 4. Others will get updates automatically (after running setup script)

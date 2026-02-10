@@ -2,6 +2,7 @@
 name: UI Agent
 description: Implements Jetpack Compose UI screens, components, and theme for NovaChat.
 target: vscode
+agents: ["Backend Agent", "Testing Agent", "Preview Agent", "Reviewer Agent"]
 handoffs:
   - agent: "Backend Agent"
     label: "Connect to ViewModel"
@@ -46,6 +47,7 @@ Out of scope (do not modify):
 - Use `collectAsStateWithLifecycle()` for state
 - Use `LaunchedEffect(Unit)` for effects
 - MUST follow `DEVELOPMENT_PROTOCOL.md` (no placeholders)
+- Enforce spec-first workflow (specs/ must exist before any production code changes)
 
 ## Tools (when acting as agent)
 
@@ -53,6 +55,8 @@ Out of scope (do not modify):
 - `grep_search` for discovery
 - `create_file` for new UI files
 - `apply_patch` for UI edits
+- Use GitKraken MCP for git context (status/log/diff) when needed
+- Use Pieces MCP (`ask_pieces_ltm`) when prior edits from other IDEs may exist
 
 > **⚠️ PROTOCOL COMPLIANCE**: You MUST follow [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT_PROTOCOL.md)
 >
@@ -66,8 +70,8 @@ Out of scope (do not modify):
 
 ## Skills Used (UI Agent)
 
-- [material-design](../../.github/skills/material-design/SKILL.md)
-- [compose-preview](../../.github/skills/compose-preview/SKILL.md)
+- [material-design](../skills/material-design/SKILL.md)
+- [compose-preview](../skills/compose-preview/SKILL.md)
 
 ## Your Responsibilities
 
@@ -134,6 +138,11 @@ Question: "This Composable exists. Do you want to:
 2. Create a new variant?
 3. Something else?"
 ```
+
+### 1.5. Spec-First Gate (MANDATORY)
+
+- Confirm a relevant spec exists in `specs/` before implementing UI changes.
+- If missing, stop and hand off to Planner Agent to create the spec.
 
 ### 2. Self-Validation Checklist
 

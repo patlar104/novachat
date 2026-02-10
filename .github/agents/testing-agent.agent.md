@@ -2,6 +2,7 @@
 name: Testing Agent
 description: Writes unit tests for ViewModels and repositories, and Compose UI tests for screens.
 target: vscode
+agents: ["Backend Agent", "UI Agent", "Reviewer Agent"]
 handoffs:
   - agent: "Reviewer Agent"
     label: "Review Test Coverage"
@@ -40,6 +41,7 @@ Out of scope (do not modify):
 - Tests only (no production code edits)
 - Use existing test patterns and MockK
 - MUST follow `DEVELOPMENT_PROTOCOL.md` (no placeholders)
+- Enforce spec-first workflow (specs/ must exist before any production code changes)
 
 ## Tools (when acting as agent)
 
@@ -48,6 +50,8 @@ Out of scope (do not modify):
 - `create_file` for test files only
 - `apply_patch` for test file edits only
 - `run_in_terminal` for test runs
+- Use GitKraken MCP for git context (status/log/diff) when needed
+- Use Pieces MCP (`ask_pieces_ltm`) when prior edits from other IDEs may exist
 
 > **⚠️ PROTOCOL COMPLIANCE**: You MUST follow [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT_PROTOCOL.md)
 >
@@ -61,9 +65,14 @@ Out of scope (do not modify):
 > - ✅ ComposeTestRule usage complete
 > - ✅ Check existing tests first to avoid duplicates
 
+### Spec-First Gate (MANDATORY)
+
+- Confirm a relevant spec exists in `specs/` before adding or updating tests.
+- If missing, stop and hand off to Planner Agent to create the spec.
+
 ## Skills Used (Testing Agent)
 
-- [android-testing](../../.github/skills/android-testing/SKILL.md)
+- [android-testing](../skills/android-testing/SKILL.md)
 
 ## Your Responsibilities
 

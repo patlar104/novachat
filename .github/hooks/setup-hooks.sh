@@ -5,7 +5,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-HOOKS_DIR="$REPO_ROOT/.githooks"
+HOOKS_DIR="$REPO_ROOT/.github/hooks"
 GIT_HOOKS_DIR="$(git rev-parse --git-path hooks)"
 
 echo "🔧 Setting up Git hooks for NovaChat..."
@@ -15,9 +15,9 @@ echo "Custom hooks directory: $HOOKS_DIR"
 echo "Git hooks directory: $GIT_HOOKS_DIR"
 echo ""
 
-# Check if .githooks directory exists
+# Check if .github/hooks directory exists
 if [ ! -d "$HOOKS_DIR" ]; then
-    echo "❌ Error: .githooks directory not found at $HOOKS_DIR"
+    echo "❌ Error: .github/hooks directory not found at $HOOKS_DIR"
     exit 1
 fi
 
@@ -28,10 +28,10 @@ mkdir -p "$GIT_HOOKS_DIR"
 echo "📝 Making hook scripts executable..."
 chmod +x "$HOOKS_DIR"/*
 
-# Configure Git to use .githooks directory
+# Configure Git to use .github/hooks directory
 echo ""
-echo "📌 Configuring Git to use .githooks directory..."
-git config core.hooksPath ".githooks"
+echo "📌 Configuring Git to use .github/hooks directory..."
+git config core.hooksPath ".github/hooks"
 echo "  ✅ Git configured to use custom hooks directory"
 
 # Create symlinks to Git hooks directory (only if inside repo)
