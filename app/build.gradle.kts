@@ -92,6 +92,7 @@ dependencies {
     // Note: firebase-ai removed - using Firebase Functions proxy instead
     // Note: All KTX modules removed - KTX functionality now in main modules (BOM v34.0.0+)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.functions)
     implementation(libs.firebase.dataconnect)
     
     // AICore for on-device AI
@@ -104,7 +105,9 @@ dependencies {
     implementation(project(":core-common"))
     implementation(project(":core-network"))
     implementation(project(":feature-ai"))
-    
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.config)
+
     // Testing - Android Instrumented Tests
     androidTestImplementation(platform(libs.junit.bom))
     androidTestImplementation(libs.junit.jupiter.api)

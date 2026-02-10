@@ -88,8 +88,11 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.kotest.assertions.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.play.services.base)
+    androidTestImplementation(libs.play.services.auth)
 
     // Testing - Debug
     debugImplementation(libs.androidx.compose.ui.tooling)

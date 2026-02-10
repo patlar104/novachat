@@ -23,6 +23,10 @@ okhttp = "4.12.0"
 retrofit = "2.11.0"
 retrofit-serialization = "2.11.0"
 android-junit = "2.0.1"
+firebase-analytics = "23.0.0"
+firebase-config = "23.0.1"
+play-services-base = "18.4.0"
+play-services-auth = "21.2.0"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
@@ -72,6 +76,10 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit-serialization" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebase-analytics" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config", version.ref = "firebase-config" }
+play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "play-services-base" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
