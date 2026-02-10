@@ -15,7 +15,7 @@ NovaChat is a modern Android AI chatbot built with **Jetpack Compose + MVVM + Cl
 - **Versions**: Kotlin 2.2.21, AGP 9.0.0, Gradle 9.1.0, Compose BOM 2026.01.01
 - **SDK**: Target 35, Compile 36, Min 28 (Android 9+)
 - **Architecture**: MVVM + Clean Architecture (presentation/domain/data layers)
-- **DI**: Manual `AppContainer` (no Hilt/Koin) - lazy singletons pattern
+- **DI**: Manual `AiContainer` (no Hilt/Koin) - lazy singletons pattern
 - **State**: Sealed interfaces + StateFlow (persistent) + Channel (one-time effects)
 - **AI Mode**: ONLINE only (Gemini 1.5 Flash) - AICore commented out in [build.gradle.kts](../app/build.gradle.kts)
 - **Compose BOM source**: Google Maven only; mapping at [BOM mapping](https://developer.android.com/develop/ui/compose/bom/bom-mapping)
@@ -48,7 +48,7 @@ This project uses specialized agents with clear boundaries. See [AGENTS.md](AGEN
 
 ### 1. State & Event-Driven UI (Sealed Interfaces)
 
-NovaChat uses sealed interfaces for type-safe state management. See [presentation/model/UiState.kt](../app/src/main/java/com/novachat/app/presentation/model/UiState.kt) for complete implementation.
+NovaChat uses sealed interfaces for type-safe state management. See [presentation/model/UiState.kt](../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt) for complete implementation.
 
 Instructions:
 
@@ -63,22 +63,22 @@ Instructions:
 
 Instructions:
 
-- Keep ViewModels and UI contracts in [`presentation/`](../app/src/main/java/com/novachat/app/presentation/).
-- Keep business logic in [`domain/`](../app/src/main/java/com/novachat/app/domain/) with no Android imports.
-- Keep data implementations in [`data/`](../app/src/main/java/com/novachat/app/data/) and use mappers for model conversion.
-- Keep Compose screens in [`ui/`](../app/src/main/java/com/novachat/app/ui/) and themes in [`ui/theme/`](../app/src/main/java/com/novachat/app/ui/theme/).
-- Keep DI wiring in [`di/AppContainer.kt`](../app/src/main/java/com/novachat/app/di/AppContainer.kt).
+- Keep ViewModels and UI contracts in [`presentation/`](../feature-ai/src/main/java/com/novachat/feature/ai/presentation/).
+- Keep business logic in [`domain/`](../feature-ai/src/main/java/com/novachat/feature/ai/domain/) with no Android imports.
+- Keep data implementations in [`data/`](../feature-ai/src/main/java/com/novachat/feature/ai/data/) and use mappers for model conversion.
+- Keep Compose screens in [`ui/`](../feature-ai/src/main/java/com/novachat/feature/ai/ui/) and themes in [`ui/theme/`](../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/).
+- Keep DI wiring in [`di/AiContainer.kt`](../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt).
 
 **Critical**: ViewModels never import from `ui/` package (testable without Android UI).
 
 ### 3. Manual Dependency Injection
 
-See [di/AppContainer.kt](../app/src/main/java/com/novachat/app/di/AppContainer.kt) - lightweight pattern without Hilt/Koin.
+See [di/AiContainer.kt](../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt) - lightweight pattern without Hilt/Koin.
 
 Instructions:
 
-- Initialize repositories and use cases in `AppContainer`, using lazy singletons where appropriate.
-- Create ViewModels via `ViewModelFactory` using `LocalContext.current.appContainer` in Composables.
+- Initialize repositories and use cases in `AiContainer`, using lazy singletons where appropriate.
+- Create ViewModels via `ViewModelFactory` using `LocalContext.current.aiContainer` in Composables.
 
 ### 4. Error Handling with `Result<T>`
 
@@ -108,19 +108,19 @@ Instructions:
 
 Instructions:
 
-- Presentation layer: [`presentation/`](../app/src/main/java/com/novachat/app/presentation/) for `viewmodel/` and `model/`.
-- Domain layer: [`domain/`](../app/src/main/java/com/novachat/app/domain/) for `usecase/`, `model/`, and `repository/` interfaces.
-- Data layer: [`data/`](../app/src/main/java/com/novachat/app/data/) for `repository/`, `mapper/`, and `model/`.
-- UI layer: [`ui/`](../app/src/main/java/com/novachat/app/ui/) for screens, `preview/`, and `theme/`.
-- DI: [`di/AppContainer.kt`](../app/src/main/java/com/novachat/app/di/AppContainer.kt).
+- Presentation layer: [`presentation/`](../feature-ai/src/main/java/com/novachat/feature/ai/presentation/) for `viewmodel/` and `model/`.
+- Domain layer: [`domain/`](../feature-ai/src/main/java/com/novachat/feature/ai/domain/) for `usecase/`, `model/`, and `repository/` interfaces.
+- Data layer: [`data/`](../feature-ai/src/main/java/com/novachat/feature/ai/data/) for `repository/`, `mapper/`, and `model/`.
+- UI layer: [`ui/`](../feature-ai/src/main/java/com/novachat/feature/ai/ui/) for screens, `preview/`, and `theme/`.
+- DI: [`di/AiContainer.kt`](../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt).
 - App entry: [`MainActivity.kt`](../app/src/main/java/com/novachat/app/MainActivity.kt) and [`NovaChatApplication.kt`](../app/src/main/java/com/novachat/app/NovaChatApplication.kt).
 
 **Key References**:
 
-- [ChatViewModel.kt](../app/src/main/java/com/novachat/app/presentation/viewmodel/ChatViewModel.kt) - Complete ViewModel pattern
-- [UiState.kt](../app/src/main/java/com/novachat/app/presentation/model/UiState.kt) - State/Event/Effect definitions
-- [AppContainer.kt](../app/src/main/java/com/novachat/app/di/AppContainer.kt) - DI wiring pattern
-- [ChatScreen.kt](../app/src/main/java/com/novachat/app/ui/ChatScreen.kt) - Compose UI patterns
+- [ChatViewModel.kt](../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt) - Complete ViewModel pattern
+- [UiState.kt](../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt) - State/Event/Effect definitions
+- [AiContainer.kt](../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt) - DI wiring pattern
+- [ChatScreen.kt](../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt) - Compose UI patterns
 
 ---
 
@@ -146,7 +146,7 @@ Instructions:
 
 1. **ChatViewModel** - Copy pattern for: event handling, state updates, effect emission
 2. **ChatScreen** - Copy pattern for: state collection, effect handling, Compose layout
-3. **AppContainer** - Copy pattern for: use case wiring, lazy-loaded singletons
+3. **AiContainer** - Copy pattern for: use case wiring, lazy-loaded singletons
 4. **UiState.kt** - Copy pattern for: sealed interfaces, helper methods, exhaustive handling
 
 ### Common Imports to Include
@@ -185,7 +185,7 @@ When adding a new screen, follow this sequence to avoid common mistakes:
    - Implement single `onEvent(event: UiEvent)` entry point
    - Return `StateFlow<UiState>` and `receiveAsFlow()` for effects
 
-6. **Update DI Container** (`di/AppContainer.kt`)
+6. **Update DI Container** (`di/AiContainer.kt`)
    - Add repository instance (if new)
    - Add use case lazy property
    - Add ViewModel factory handling
@@ -441,7 +441,7 @@ Instructions:
 - **Skills**: Reusable patterns in `.github/skills/`
   - `backend-patterns/`: ViewModel, UseCase, Repository, error handling patterns
   - `clean-architecture/`: MVVM + Clean Architecture layer separation and data flow
-  - `dependency-injection/`: Manual DI pattern with AppContainer and lazy singletons
+   - `dependency-injection/`: Manual DI pattern with AiContainer and lazy singletons
   - `android-testing/`: Unit tests, Compose UI tests, MockK patterns
   - `compose-preview/`: @Preview annotations and preview data providers
   - `material-design/`: Material 3 Compose components and theme configuration

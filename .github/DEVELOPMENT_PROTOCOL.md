@@ -116,32 +116,33 @@ Prevent agents from modifying files outside their responsibility, which causes c
 
 #### UI Agent - Modify Access
 
-- [`ui/**/*.kt`](../../app/src/main/java/com/novachat/app/ui) - Composable functions, screens, layout
-- [`ui/theme/*.kt`](../../app/src/main/java/com/novachat/app/ui/theme) - Colors, Typography, Theme configuration
-- [`presentation/model/*UiState.kt`](../../app/src/main/java/com/novachat/app/presentation/model) - UI state definitions
-- [`presentation/model/*UiEvent.kt`](../../app/src/main/java/com/novachat/app/presentation/model) - UI event definitions
+- [`ui/**/*.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui) - Composable functions, screens, layout
+- [`ui/theme/*.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme) - Colors, Typography, Theme configuration
+- [`presentation/model/UiState.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt) - UiState/UiEvent/UiEffect definitions
 - [`MainActivity.kt`](../../app/src/main/java/com/novachat/app/MainActivity.kt) - **NavHost block only**, not other logic
 
 #### Backend Agent - Modify Access
 
-- [`presentation/viewmodel/*.kt`](../../app/src/main/java/com/novachat/app/presentation/viewmodel) - ViewModels and state management
-- [`domain/usecase/*.kt`](../../app/src/main/java/com/novachat/app/domain/usecase) - Business logic and use cases
-- [`domain/model/*.kt`](../../app/src/main/java/com/novachat/app/domain/model) - Domain models (Android-agnostic)
-- [`data/repository/*.kt`](../../app/src/main/java/com/novachat/app/data/repository) - Repository implementations
-- [`data/model/*.kt`](../../app/src/main/java/com/novachat/app/data/model) - Data models and mappers
-- [`data/mapper/*.kt`](../../app/src/main/java/com/novachat/app/data/mapper) - Domain ↔ Data conversion
-- [`di/AppContainer.kt`](../../app/src/main/java/com/novachat/app/di/AppContainer.kt) - Dependency injection wiring
+- [`presentation/viewmodel/*.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel) - ViewModels and state management
+- [`domain/usecase/*.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain/usecase) - Business logic and use cases
+- [`domain/model/*.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain/model) - Domain models (Android-agnostic)
+- [`data/repository/*.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository) - Repository implementations
+- [`data/model/*.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/model) - Data models and mappers
+- [`data/mapper/*.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/mapper) - Domain ↔ Data conversion
+- [`di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt) - Dependency injection wiring
 
 #### Testing Agent - Modify Access
 
-- [`**/test/**/*Test.kt`](../../app/src/test/java) - Unit tests only
-- [`**/androidTest/**/*Test.kt`](../../app/src/androidTest/java) - UI tests only
-- [`**/test/**/Test*.kt`](../../app/src/test/java) - Test utilities and fixtures
+- [`**/test/**/*Test.kt`](../../feature-ai/src/test/java) - Unit tests only
+- [`**/androidTest/**/*Test.kt`](../../feature-ai/src/androidTest/java) - UI tests only
+- [`**/test/**/Test*.kt`](../../feature-ai/src/test/java) - Test utilities and fixtures
+- [`**/test/**/*Test.kt`](../../app/src/test/java) - App module tests only
+- [`**/androidTest/**/*Test.kt`](../../app/src/androidTest/java) - App module UI tests
 
 #### Preview Agent - Modify Access
 
-- Add `@Preview` annotations to existing Composables (in [`ui/`](../../app/src/main/java/com/novachat/app/ui))
-- Create `**/Preview.kt` files for preview helpers only (in [`ui/preview/`](../../app/src/main/java/com/novachat/app/ui/preview))
+- Add `@Preview` annotations to existing Composables (in [`ui/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui))
+- Create `**/Preview.kt` files for preview helpers only (in [`ui/preview/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview))
 - **Modify Contents**: No - UI Agent owns Composable bodies
 
 #### Build Agent - Modify Access
@@ -156,28 +157,28 @@ Prevent agents from modifying files outside their responsibility, which causes c
 
 #### UI Agent MUST READ
 
-- ViewModel to understand state contract ([`presentation/viewmodel/`](../../app/src/main/java/com/novachat/app/presentation/viewmodel))
-- UiState/UiEvent definitions for all branches ([`presentation/model/`](../../app/src/main/java/com/novachat/app/presentation/model))
-- Existing Composable patterns for consistency ([`ui/`](../../app/src/main/java/com/novachat/app/ui))
+- ViewModel to understand state contract ([`presentation/viewmodel/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel))
+- UiState/UiEvent definitions for all branches ([`presentation/model/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model))
+- Existing Composable patterns for consistency ([`ui/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui))
 
 #### Backend Agent MUST READ
 
-- UI state definitions to match state values ([`presentation/model/`](../../app/src/main/java/com/novachat/app/presentation/model))
-- Existing ViewModel event patterns ([`presentation/viewmodel/`](../../app/src/main/java/com/novachat/app/presentation/viewmodel))
-- Repository interface contracts ([`domain/repository/`](../../app/src/main/java/com/novachat/app/domain/repository))
-- DI container to understand wiring ([`di/AppContainer.kt`](../../app/src/main/java/com/novachat/app/di/AppContainer.kt))
+- UI state definitions to match state values ([`presentation/model/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model))
+- Existing ViewModel event patterns ([`presentation/viewmodel/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel))
+- Repository interface contracts ([`domain/repository/`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain/repository))
+- DI container to understand wiring ([`di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt))
 
 #### Testing Agent MUST READ
 
-- Production code to understand actual behavior ([`app/src/main/java/`](../../app/src/main/java))
-- Test patterns and helper functions ([`app/src/test/java/`](../../app/src/test/java))
-- Mock/stub implementations (scan tests in [`app/src/test/java/`](../../app/src/test/java))
+- Production code to understand actual behavior ([`feature-ai/src/main/java/`](../../feature-ai/src/main/java), [`app/src/main/java/`](../../app/src/main/java))
+- Test patterns and helper functions ([`feature-ai/src/test/java/`](../../feature-ai/src/test/java), [`app/src/test/java/`](../../app/src/test/java))
+- Mock/stub implementations (scan tests in [`feature-ai/src/test/java/`](../../feature-ai/src/test/java), [`app/src/test/java/`](../../app/src/test/java))
 
 #### Build Agent MUST READ
 
 - build.gradle.kts to understand current state ([`build.gradle.kts`](../../build.gradle.kts))
 - AndroidManifest.xml structure ([`AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml))
-- Existing dependency versions ([`app/build.gradle.kts`](../../app/build.gradle.kts))
+- Existing dependency versions ([`app/build.gradle.kts`](../../app/build.gradle.kts), [`feature-ai/build.gradle.kts`](../../feature-ai/build.gradle.kts), [`core-common/build.gradle.kts`](../../core-common/build.gradle.kts), [`core-network/build.gradle.kts`](../../core-network/build.gradle.kts))
 - Impact on all layers (UI, Backend, Testing)
 
 ### Violation Detection Stop and Hand Off If Needed
@@ -204,11 +205,13 @@ These files affect multiple agents and require approval before modification:
 
 | File | Primary Owner | Must Communicate With | Approval Required |
 | --- | --- | --- | --- |
-| [`presentation/model/*UiState.kt`](../../app/src/main/java/com/novachat/app/presentation/model) | [UI Agent](agents/ui-agent.agent.md) | [Backend Agent](agents/backend-agent.agent.md) (fills state) | UI + Backend |
-| [`presentation/model/*UiEvent.kt`](../../app/src/main/java/com/novachat/app/presentation/model) | [UI Agent](agents/ui-agent.agent.md) | [Backend Agent](agents/backend-agent.agent.md) (handles events) | UI + Backend |
-| [`presentation/viewmodel/*.kt`](../../app/src/main/java/com/novachat/app/presentation/viewmodel) | [Backend Agent](agents/backend-agent.agent.md) | [UI Agent](agents/ui-agent.agent.md) (uses state), [Testing Agent](agents/testing-agent.agent.md) | Backend + UI + Testing |
-| [`di/AppContainer.kt`](../../app/src/main/java/com/novachat/app/di/AppContainer.kt) | [Backend Agent](agents/backend-agent.agent.md) | **ALL agents** (affects everyone) | Backend + All |
-| [`build.gradle.kts`](../../app/build.gradle.kts) | [Build Agent](agents/build-agent.agent.md) | **ALL agents** (dependencies affect everyone) | Build + All |
+| [`presentation/model/UiState.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt) | [UI Agent](agents/ui-agent.agent.md) | [Backend Agent](agents/backend-agent.agent.md) (fills state/events/effects) | UI + Backend |
+| [`presentation/viewmodel/*.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel) | [Backend Agent](agents/backend-agent.agent.md) | [UI Agent](agents/ui-agent.agent.md) (uses state), [Testing Agent](agents/testing-agent.agent.md) | Backend + UI + Testing |
+| [`di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt) | [Backend Agent](agents/backend-agent.agent.md) | **ALL agents** (affects everyone) | Backend + All |
+| [`build.gradle.kts`](../../build.gradle.kts) | [Build Agent](agents/build-agent.agent.md) | **ALL agents** (dependencies affect everyone) | Build + All |
+| [`feature-ai/build.gradle.kts`](../../feature-ai/build.gradle.kts) | [Build Agent](agents/build-agent.agent.md) | **ALL agents** (dependencies affect everyone) | Build + All |
+| [`core-common/build.gradle.kts`](../../core-common/build.gradle.kts) | [Build Agent](agents/build-agent.agent.md) | **ALL agents** (dependencies affect everyone) | Build + All |
+| [`core-network/build.gradle.kts`](../../core-network/build.gradle.kts) | [Build Agent](agents/build-agent.agent.md) | **ALL agents** (dependencies affect everyone) | Build + All |
 | [`AndroidManifest.xml`](../../app/src/main/AndroidManifest.xml) | [Build Agent](agents/build-agent.agent.md) | **ALL agents** (permissions affect everyone) | Build + All |
 
 **How agents must use this table:**
@@ -249,7 +252,7 @@ Agents focusing only on their narrow task without understanding:
    Example: Changing ChatViewModel.kt
    ├─ ui/ChatScreen.kt depends on it (observes state)
    ├─ test/ChatViewModelTest.kt depends on it (tests it)
-   └─ di/AppContainer.kt depends on it (provides instance)
+   └─ di/AiContainer.kt depends on it (provides instance)
    ```
 
 2. **"Will my change break anything downstream in other layers?"**
@@ -279,10 +282,10 @@ Agents focusing only on their narrow task without understanding:
 
 **Quick cross-checks (entire workspace):**
 
-- Search for usages in `app/src/main/java`, `app/src/test/java`, `app/src/androidTest/java`.
-- Verify DI wiring in [`di/AppContainer.kt`](../../app/src/main/java/com/novachat/app/di/AppContainer.kt).
-- Confirm UI observation in [`ui/`](../../app/src/main/java/com/novachat/app/ui).
-- Confirm tests in [`app/src/test/java/`](../../app/src/test/java).
+- Search for usages in `feature-ai/src/main/java`, `feature-ai/src/test/java`, `feature-ai/src/androidTest/java`.
+- Verify DI wiring in [`di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt).
+- Confirm UI observation in [`ui/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui).
+- Confirm tests in [`feature-ai/src/test/java/`](../../feature-ai/src/test/java).
 
 ### Build Agent Specific: Avoid Narrow Focus
 
@@ -365,10 +368,10 @@ I'll update in this order:
 
 Repo links for this scenario:
 
-- [`presentation/model/UiState.kt`](../../app/src/main/java/com/novachat/app/presentation/model/UiState.kt)
-- [`presentation/viewmodel/ChatViewModel.kt`](../../app/src/main/java/com/novachat/app/presentation/viewmodel/ChatViewModel.kt)
-- [`ui/ChatScreen.kt`](../../app/src/main/java/com/novachat/app/ui/ChatScreen.kt)
-- [`app/src/test/java/.../ChatViewModelTest.kt`](../../app/src/test/java/com/novachat/app/presentation/viewmodel/ChatViewModelTest.kt)
+- [`presentation/model/UiState.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt)
+- [`presentation/viewmodel/ChatViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt)
+- [`ui/ChatScreen.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt)
+- [`feature-ai/src/test/java/.../ChatViewModelTest.kt`](../../feature-ai/src/test/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModelTest.kt)
 
 ---
 
@@ -378,40 +381,40 @@ When the location of a change is unknown, use this workflow to avoid editing the
 
 Preferred search scope (start narrow, expand only if needed):
 
-- [`app/src/main/java`](../../app/src/main/java)
-- [`app/src/test/java`](../../app/src/test/java)
-- [`app/src/androidTest/java`](../../app/src/androidTest/java)
-- [`app/src/main/res`](../../app/src/main/res)
+- [`feature-ai/src/main/java`](../../feature-ai/src/main/java)
+- [`feature-ai/src/test/java`](../../feature-ai/src/test/java)
+- [`feature-ai/src/androidTest/java`](../../feature-ai/src/androidTest/java)
+- [`feature-ai/src/main/res`](../../feature-ai/src/main/res)
 
 ### Step 1: Semantic Discovery
 
 - Ask: "Where is X handled?" or "Where does Y get created?"
 - Use semantic search to find likely files and entry points
-- Start in [`app/src/main/java`](../../app/src/main/java) and narrow to [`presentation/`](../../app/src/main/java/com/novachat/app/presentation) or [`ui/`](../../app/src/main/java/com/novachat/app/ui) when possible
+- Start in [`feature-ai/src/main/java`](../../feature-ai/src/main/java) and narrow to [`presentation/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation) or [`ui/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui) when possible
 
 ### Step 2: Symbol Search
 
 - Use exact symbol search to jump to the definition
 - Confirm the file path and scope match the intended layer
-- Prefer jumping to definitions in [`presentation/viewmodel/`](../../app/src/main/java/com/novachat/app/presentation/viewmodel), [`domain/`](../../app/src/main/java/com/novachat/app/domain), or [`data/`](../../app/src/main/java/com/novachat/app/data)
+- Prefer jumping to definitions in [`presentation/viewmodel/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel), [`domain/`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain), or [`data/`](../../feature-ai/src/main/java/com/novachat/feature/ai/data)
 
 ### Step 3: Find References
 
 - Enumerate all usages of the symbol
 - Identify alternative implementations or similarly named blocks
-- Check references across [`app/src/main/java`](../../app/src/main/java) and [`app/src/test/java`](../../app/src/test/java)
+- Check references across [`feature-ai/src/main/java`](../../feature-ai/src/main/java) and [`feature-ai/src/test/java`](../../feature-ai/src/test/java)
 
 ### Step 4: Trace the Flow
 
 - UI → ViewModel → UseCase → Repository → Data Source
 - Verify the block is in the active path, not legacy or example code
-- Confirm each step exists in [`ui/`](../../app/src/main/java/com/novachat/app/ui), [`presentation/viewmodel/`](../../app/src/main/java/com/novachat/app/presentation/viewmodel), [`domain/usecase/`](../../app/src/main/java/com/novachat/app/domain/usecase), and [`data/repository/`](../../app/src/main/java/com/novachat/app/data/repository)
+- Confirm each step exists in [`ui/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui), [`presentation/viewmodel/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel), [`domain/usecase/`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain/usecase), and [`data/repository/`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository)
 
 ### Step 5: Verify with Tests
 
 - Check for tests that mention the symbol or behavior
 - Update tests when behavior or contracts change
-- Confirm test coverage in [`app/src/test/java`](../../app/src/test/java) and [`app/src/androidTest/java`](../../app/src/androidTest/java)
+- Confirm test coverage in [`feature-ai/src/test/java`](../../feature-ai/src/test/java) and [`feature-ai/src/androidTest/java`](../../feature-ai/src/androidTest/java)
 
 ### Common Symbol Search Patterns
 
@@ -447,7 +450,7 @@ Navigation:
 rg "NavHost|navController|navigate\("
 
 DI patterns:
-rg "AppContainer|provide[A-Za-z0-9]+|Factory|@Inject|@Singleton"
+rg "AiContainer|provide[A-Za-z0-9]+|Factory|@Inject|@Singleton"
 
 Coroutines:
 rg "suspend\b|coroutineScope|withContext|async|await|launch\b"
@@ -488,7 +491,7 @@ Generate code **one complete file at a time**.
 
 Example file:
 
-- [`app/src/main/java/com/novachat/app/ui/ChatScreen.kt`](../../app/src/main/java/com/novachat/app/ui/ChatScreen.kt)
+- [`feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt)
 
 ### What Counts as "One File"
 
@@ -519,7 +522,7 @@ Example file:
    - domain/usecase/MessageUseCases.kt (used by ViewModel)
    - data/repository/AiRepositoryImpl.kt (dependency chain)
    - test/ChatViewModelTest.kt (verifies behavior)
-   - di/AppContainer.kt (provides instance)
+   - di/AiContainer.kt (provides instance)
    ```
 
 2. **Determine ripple effects**:
@@ -683,7 +686,7 @@ fun ChatScreen() {
 // CORRECT - All imports present
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.novachat.app.viewmodel.ChatViewModel
+import com.novachat.feature.ai.presentation.viewmodel.ChatViewModel
 
 @Composable
 fun ChatScreen() {
@@ -852,7 +855,7 @@ Do you want to modify this existing implementation?"
 ```text
 User: "Add a settings screen"
 
-Agent checks: [`ui/SettingsScreen.kt`](../../app/src/main/java/com/novachat/app/ui/SettingsScreen.kt) already exists
+Agent checks: [`ui/SettingsScreen.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/SettingsScreen.kt) already exists
 
 Response:
 "I checked and found that SettingsScreen.kt already exists with the following features:
@@ -875,10 +878,10 @@ Response:
 "I want to make sure I implement exactly what you need. 
 'Update the chat feature' could mean several things:
 
-1. Update the ChatScreen UI? ([`ui/ChatScreen.kt`](../../app/src/main/java/com/novachat/app/ui/ChatScreen.kt))
-2. Update the ChatViewModel logic? ([`presentation/viewmodel/ChatViewModel.kt`](../../app/src/main/java/com/novachat/app/presentation/viewmodel/ChatViewModel.kt))
-3. Update the AI integration in `AiRepositoryImpl`? ([`data/repository/AiRepositoryImpl.kt`](../../app/src/main/java/com/novachat/app/data/repository/AiRepositoryImpl.kt))
-4. Update the message display format? ([`presentation/model/UiState.kt`](../../app/src/main/java/com/novachat/app/presentation/model/UiState.kt))
+1. Update the ChatScreen UI? ([`ui/ChatScreen.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt))
+2. Update the ChatViewModel logic? ([`presentation/viewmodel/ChatViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt))
+3. Update the AI integration in `AiRepositoryImpl`? ([`data/repository/AiRepositoryImpl.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository/AiRepositoryImpl.kt))
+4. Update the message display format? ([`presentation/model/UiState.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt))
 5. Something else?
 
 Which specific aspect would you like me to update?"
@@ -889,12 +892,12 @@ Which specific aspect would you like me to update?"
 ```text
 User: "Use LiveData for state management"
 
-Agent checks: Project currently uses StateFlow in [`presentation/viewmodel/`](../../app/src/main/java/com/novachat/app/presentation/viewmodel)
+Agent checks: Project currently uses StateFlow in [`presentation/viewmodel/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel)
 
 Response:
 "I notice that the project currently uses StateFlow for state management 
-(as seen in [`ChatViewModel.kt`](../../app/src/main/java/com/novachat/app/presentation/viewmodel/ChatViewModel.kt) and
-[`SettingsViewModel.kt`](../../app/src/main/java/com/novachat/app/presentation/viewmodel/SettingsViewModel.kt)). 
+(as seen in [`ChatViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt) and
+[`SettingsViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/SettingsViewModel.kt)). 
 
 LiveData and StateFlow are different approaches. Switching would require 
 updating multiple files and changing the architecture.
@@ -910,7 +913,7 @@ Did you mean to:
 ```text
 User: "Add Retrofit and OkHttp"
 
-Agent checks: [`app/build.gradle.kts`](../../app/build.gradle.kts) and [`build.gradle.kts`](../../build.gradle.kts)
+Agent checks: [`feature-ai/build.gradle.kts`](../../feature-ai/build.gradle.kts), [`app/build.gradle.kts`](../../app/build.gradle.kts), and [`build.gradle.kts`](../../build.gradle.kts)
 
 Response:
 "I checked the current build files and didn’t see Retrofit/OkHttp listed. 
@@ -949,7 +952,7 @@ Do you want:
 - **Compiler**: Integrated with Kotlin 2.2.21
 - **Material 3**: Exclusive (no Material 2)
 - **Navigation**: Compose Navigation 2.9.0+
- - **Where defined**: [`app/build.gradle.kts`](../../app/build.gradle.kts) and [`settings.gradle.kts`](../../settings.gradle.kts)
+ - **Where defined**: [`feature-ai/build.gradle.kts`](../../feature-ai/build.gradle.kts), [`app/build.gradle.kts`](../../app/build.gradle.kts), and [`settings.gradle.kts`](../../settings.gradle.kts)
 
 #### Dependencies
 
@@ -988,19 +991,19 @@ di/               → Dependency Injection
 ```
 
 Repo paths:
-- [`presentation/`](../../app/src/main/java/com/novachat/app/presentation)
-- [`ui/`](../../app/src/main/java/com/novachat/app/ui)
-- [`domain/`](../../app/src/main/java/com/novachat/app/domain)
-- [`data/repository/`](../../app/src/main/java/com/novachat/app/data/repository)
-- [`data/model/`](../../app/src/main/java/com/novachat/app/data/model)
-- [`di/`](../../app/src/main/java/com/novachat/app/di)
+- [`presentation/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation)
+- [`ui/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui)
+- [`domain/`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain)
+- [`data/repository/`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository)
+- [`data/model/`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/model)
+- [`di/`](../../feature-ai/src/main/java/com/novachat/feature/ai/di)
 
 #### State Management
 
-- **UI State**: Sealed interfaces or data classes in [`presentation/model/`](../../app/src/main/java/com/novachat/app/presentation/model)
-- **ViewModel State**: `StateFlow` (not LiveData) in [`presentation/viewmodel/`](../../app/src/main/java/com/novachat/app/presentation/viewmodel)
-- **Repository Results**: `Result<T>` or `Flow<T>` in [`data/repository/`](../../app/src/main/java/com/novachat/app/data/repository)
-- **Preferences**: DataStore (not SharedPreferences) in [`data/repository/`](../../app/src/main/java/com/novachat/app/data/repository)
+- **UI State**: Sealed interfaces or data classes in [`presentation/model/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model)
+- **ViewModel State**: `StateFlow` (not LiveData) in [`presentation/viewmodel/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel)
+- **Repository Results**: `Result<T>` or `Flow<T>` in [`data/repository/`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository)
+- **Preferences**: DataStore (not SharedPreferences) in [`data/repository/`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository)
 
 ---
 
@@ -1186,7 +1189,7 @@ Rules:
 - Always finish a logical block before stopping (no half-written functions).
 - Clearly label where the next section starts.
 - Do not skip imports or class headers in Section 1.
-- Prefer large file edits in ViewModels or complex UI files only (for example: [`presentation/viewmodel/ChatViewModel.kt`](../../app/src/main/java/com/novachat/app/presentation/viewmodel/ChatViewModel.kt)).
+- Prefer large file edits in ViewModels or complex UI files only (for example: [`presentation/viewmodel/ChatViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt)).
 
 ### Multiple Related Files
 
@@ -1209,10 +1212,10 @@ Rules:
 - Confirm all files are in scope before starting.
 - If any file is out of scope, stop and hand off.
 - Example dependency chain (NovaChat):
-  - [`presentation/model/UiState.kt`](../../app/src/main/java/com/novachat/app/presentation/model/UiState.kt)
-  - [`presentation/viewmodel/ChatViewModel.kt`](../../app/src/main/java/com/novachat/app/presentation/viewmodel/ChatViewModel.kt)
-  - [`ui/ChatScreen.kt`](../../app/src/main/java/com/novachat/app/ui/ChatScreen.kt)
-  - [`app/src/test/java/.../ChatViewModelTest.kt`](../../app/src/test/java/com/novachat/app/presentation/viewmodel/ChatViewModelTest.kt)
+   - [`presentation/model/UiState.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt)
+   - [`presentation/viewmodel/ChatViewModel.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt)
+   - [`ui/ChatScreen.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt)
+   - [`feature-ai/src/test/java/.../ChatViewModelTest.kt`](../../feature-ai/src/test/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModelTest.kt)
 
 ### Refactoring
 
@@ -1235,7 +1238,7 @@ Rules:
 - List all symbol renames and file moves before editing.
 - Update references in tests and DI wiring.
 - Avoid partial refactors; complete all references before stopping.
-- If a refactor touches DI, update [`di/AppContainer.kt`](../../app/src/main/java/com/novachat/app/di/AppContainer.kt) and re-check impacted tests in [`app/src/test/java`](../../app/src/test/java).
+- If a refactor touches DI, update [`di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt) and re-check impacted tests in [`feature-ai/src/test/java`](../../feature-ai/src/test/java).
 
 ---
 

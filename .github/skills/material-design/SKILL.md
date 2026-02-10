@@ -93,7 +93,7 @@ This skill provides **COMPLETE** Material Design 3 Compose patterns. All code ex
 
 Rules:
 
-- Define Material 3 colors in [`ui/theme/Color.kt`](../../app/src/main/java/com/novachat/app/ui/theme/Color.kt).
+- Define Material 3 colors in [`ui/theme/Color.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/Color.kt).
 - Use `md_theme_light_*` and `md_theme_dark_*` naming for all semantic colors.
 - Define colors as `Color(0xFF...)` constants.
 
@@ -101,7 +101,7 @@ Rules:
 
 Rules:
 
-- Configure the app theme in [`ui/theme/Theme.kt`](../../app/src/main/java/com/novachat/app/ui/theme/Theme.kt).
+- Configure the app theme in [`ui/theme/Theme.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/Theme.kt).
 - Provide light/dark color schemes and enable dynamic color on API 31+.
 - Set status bar color with `SideEffect` and wrap content in `MaterialTheme`.
 
@@ -109,7 +109,7 @@ Rules:
 
 Rules:
 
-- Define Typography in [`ui/theme/Type.kt`](../../app/src/main/java/com/novachat/app/ui/theme/Type.kt).
+- Define Typography in [`ui/theme/Type.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/Type.kt).
 - Provide all Material 3 text styles (display, headline, title, body, label).
 - Include `fontFamily`, `fontWeight`, `fontSize`, `lineHeight`, `letterSpacing`.
 

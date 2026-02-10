@@ -7,7 +7,7 @@ NovaChat follows the MVVM (Model-View-ViewModel) architecture pattern with Jetpa
 ### Project Structure
 
 ```
-app/src/main/java/com/novachat/app/
+feature-ai/src/main/java/com/novachat/feature/ai/
 ├── presentation/              # UI state + ViewModels
 │   ├── model/                 # UiState, UiEvent, UiEffect
 │   └── viewmodel/             # ChatViewModel, SettingsViewModel
@@ -23,7 +23,17 @@ app/src/main/java/com/novachat/app/
 │   ├── SettingsScreen.kt      # Settings screen
 │   └── theme/                 # App theming
 ├── di/                        # Dependency injection
-│   └── AppContainer.kt
+│   └── AiContainer.kt
+
+core-common/src/main/java/com/novachat/core/common/
+├── AppError.kt
+├── AppResult.kt
+└── ErrorMapper.kt
+
+core-network/src/main/java/com/novachat/core/network/
+└── NetworkFactories.kt
+
+app/src/main/java/com/novachat/app/
 ├── MainActivity.kt            # App entry point
 └── NovaChatApplication.kt     # Application class
 ```
@@ -37,12 +47,12 @@ app/src/main/java/com/novachat/app/
 - Contains message content, sender info, timestamp, and status
 - Used across layers via mappers
 
-**AiRepository (domain/repository/AiRepository.kt)**
+**AiRepository (domain/repository/Repositories.kt)**
 - Defines AI model interactions via `generateResponse()`
 - Implemented in data layer (`AiRepositoryImpl`)
 - Returns `Result<String>` for proper error handling
 
-**PreferencesRepository (domain/repository/PreferencesRepository.kt)**
+**PreferencesRepository (domain/repository/Repositories.kt)**
 - Manages user preferences using DataStore
 - Implemented in data layer (`PreferencesRepositoryImpl`)
 - Persists AI configuration and API keys
@@ -72,7 +82,7 @@ app/src/main/java/com/novachat/app/
 
 ### Adding a New AI Provider
 
-1. Add the new AI SDK dependency in `app/build.gradle.kts`
+1. Add the new AI SDK dependency in `feature-ai/build.gradle.kts`
 2. Implement a new path in `AiRepositoryImpl.kt`:
 ```kotlin
 suspend fun sendMessageToNewProvider(message: String): Result<String> {
@@ -94,7 +104,7 @@ suspend fun sendMessageToNewProvider(message: String): Result<String> {
 
 Currently, messages are stored in-memory. To add persistence:
 
-1. Add Room database dependency to `app/build.gradle.kts`
+1. Add Room database dependency to `feature-ai/build.gradle.kts`
 2. Create a `MessageEntity` and `MessageDao`
 3. Update `ChatViewModel` to save/load from database
 4. Use `Flow` to observe database changes
@@ -110,7 +120,7 @@ Currently, messages are stored in-memory. To add persistence:
 
 ### Unit Tests
 
-Create unit tests in `app/src/test/`:
+Create unit tests in `feature-ai/src/test/`:
 
 ```kotlin
 class ChatViewModelTest {
@@ -123,7 +133,7 @@ class ChatViewModelTest {
 
 ### UI Tests
 
-Create UI tests in `app/src/androidTest/`:
+Create UI tests in `feature-ai/src/androidTest/`:
 
 ```kotlin
 @Test

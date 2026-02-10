@@ -384,7 +384,7 @@ MISSING: Step-by-step checklist for new screen:
 3. Create use case(s)
 4. Create sealed interface for UiState, UiEvent, UiEffect
 5. Create ViewModel with SavedStateHandle
-6. Update DI (AppContainer.kt)
+6. Update DI (AiContainer.kt)
 7. Create Screen Composable
 8. Add navigation route
 9. Register in NavHost
@@ -396,7 +396,7 @@ When to refactor old code?
 
 **Why It Matters**: 
 - Agent might create ViewModel before defining state
-- Agent might forget to update AppContainer.kt
+- Agent might forget to update AiContainer.kt
 - Agent might miss navigation setup
 
 **Recommendation**: Add checklist section to copilot-instructions.md
@@ -600,7 +600,7 @@ val draftMessage: StateFlow<String> = savedStateHandle.getStateFlow(
 In UiState.kt, line ~101:
 ```kotlin
 data class Success(
-    val aiMode: com.novachat.app.domain.model.AiMode,
+    val aiMode: com.novachat.feature.ai.domain.model.AiMode,
     val hasApiKey: Boolean,
     val isOnlineModeAvailable: Boolean,
     val isOfflineModeAvailable: Boolean,
@@ -692,13 +692,13 @@ object MessageMapper {
 
 ---
 
-### 3.4 AppContainer DI Pattern - Accurate ✅
+### 3.4 AiContainer DI Pattern - Accurate ✅
 
-**Verified**: AppContainer.kt shows correct lazy singleton pattern
+**Verified**: AiContainer.kt shows correct lazy singleton pattern
 
 ```kotlin
 // Pattern shown:
-class AppContainer(private val context: Context) {
+class AiContainer(private val context: Context) {
     val messageRepository: MessageRepository by lazy {
         MessageRepositoryImpl()
     }
@@ -779,7 +779,7 @@ class SendMessageUseCase {
 **Missing Guidance**:
 1. **Dependency Injection Update Checklist**
    - When creating new repository, what changes elsewhere?
-   - Need to update AppContainer.kt?
+    - Need to update AiContainer.kt?
    - Is new repository a singleton or scoped?
 
 2. **Use Case Composition**
@@ -1008,7 +1008,7 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 
 4. **Create New Screen Step-by-Step Checklist**
    - Sequence of files to create
-   - When to update AppContainer
+    - When to update AiContainer
    - When to add navigation
 
 5. **Add Testing Patterns Section**
@@ -1084,7 +1084,7 @@ When Backend Agent creates ViewModel, what does it hand off to UI Agent?
 | Offline Mode | ❌ Incomplete | HIGH | Document AICore gap, add validation |
 | Testing | ❌ No Patterns | HIGH | Add full testing guide |
 | Agent Boundaries | ⚠️ Ambiguous | MEDIUM | Add decision trees |
-| DI (AppContainer) | ✅ Good | - | No change |
+| DI (AiContainer) | ✅ Good | - | No change |
 | Mappers | ✅ Good | - | No change |
 | Use Cases | ✅ Good | - | Add error propagation guide |
 | ViewModels | ⚠️ One Bug Found | HIGH | Fix SettingsViewModel or document |

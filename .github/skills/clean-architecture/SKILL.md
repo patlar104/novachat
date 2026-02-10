@@ -28,10 +28,10 @@ NovaChat uses **Clean Architecture** with **MVVM** for state management:
 
 Layer map (repo paths):
 
-- Presentation: [`ui/`](../../app/src/main/java/com/novachat/app/ui), [`presentation/viewmodel/`](../../app/src/main/java/com/novachat/app/presentation/viewmodel), [`presentation/model/`](../../app/src/main/java/com/novachat/app/presentation/model)
-- Domain: [`domain/usecase/`](../../app/src/main/java/com/novachat/app/domain/usecase), [`domain/repository/`](../../app/src/main/java/com/novachat/app/domain/repository), [`domain/model/`](../../app/src/main/java/com/novachat/app/domain/model)
-- Data: [`data/repository/`](../../app/src/main/java/com/novachat/app/data/repository), [`data/model/`](../../app/src/main/java/com/novachat/app/data/model), [`data/mapper/`](../../app/src/main/java/com/novachat/app/data/mapper)
-- DI: [`di/AppContainer.kt`](../../app/src/main/java/com/novachat/app/di/AppContainer.kt)
+- Presentation: [`ui/`](../../feature-ai/src/main/java/com/novachat/feature/ai/ui), [`presentation/viewmodel/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel), [`presentation/model/`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model)
+- Domain: [`domain/usecase/`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain/usecase), [`domain/repository/`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain/repository), [`domain/model/`](../../feature-ai/src/main/java/com/novachat/feature/ai/domain/model)
+- Data: [`data/repository/`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/repository), [`data/model/`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/model), [`data/mapper/`](../../feature-ai/src/main/java/com/novachat/feature/ai/data/mapper)
+- DI: [`di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt)
 
 ---
 
@@ -145,9 +145,9 @@ Rules:
 - Catch exceptions and return `Result.failure`.
 - **Firebase Functions Integration**: AiRepositoryImpl uses Firebase Functions callable (`aiProxy`) as the data source - never direct API calls. Function handles authentication, API key management, and external service communication.
 
-### DI Layer (AppContainer)
+### DI Layer (AiContainer)
 
-**Files**: `di/AppContainer.kt`
+**Files**: `di/AiContainer.kt`
 
 **Responsibilities**:
 - Create and provide singletons (repositories, use cases, ViewModels)
@@ -158,7 +158,7 @@ Rules:
 
 Rules:
 
-- Keep DI wiring in `di/AppContainer.kt`.
+- Keep DI wiring in `di/AiContainer.kt`.
 - Provide repositories and use cases as lazy singletons.
 - Provide ViewModel factories with required dependencies.
 
@@ -193,13 +193,13 @@ Rules:
 
 Rule:
 
-- Presentation layer MUST NOT import from `com.novachat.app.data.*`.
+- Presentation layer MUST NOT import from `com.novachat.feature.ai.data.*`.
 
 ### ✅ Do: Use Domain Models in Presentation
 
 Rule:
 
-- Presentation layer MUST use domain models (`com.novachat.app.domain.model.*`) for UI state.
+- Presentation layer MUST use domain models (`com.novachat.feature.ai.domain.model.*`) for UI state.
 
 ### ❌ Don't: Android Imports in Domain
 
@@ -237,7 +237,7 @@ Before committing backend/architecture code, verify:
 - [ ] **Repository interfaces** - domain/repository/ has only interfaces
 - [ ] **Repository implementations** - data/repository/ has implementations
 - [ ] **MapperFunctions** - Converting between Data and Domain models
-- [ ] **AppContainer complete** - All dependencies wired
+- [ ] **AiContainer complete** - All dependencies wired
 - [ ] **ViewModel uses UseCase** - Not calling Repository directly
 - [ ] **Presentation uses ViewModel** - Not using repository or use case
 

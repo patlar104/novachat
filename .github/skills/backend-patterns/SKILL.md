@@ -33,7 +33,7 @@ This skill provides **COMPLETE** backend implementation patterns for NovaChat. A
 - Creating new ViewModel files → `create_file`
 - Creating UseCase implementations → `create_file`
 - Creating Repository implementations → `create_file`
-- Modifying AppContainer for DI → `apply_patch`
+- Modifying AiContainer for DI → `apply_patch`
 - Searching for patterns in codebase → `grep_search` or `semantic_search`
 - Checking repo state or recent changes → **GitKraken MCP** (git_status, git_log_or_diff)
 - Finding older ViewModel/repository implementations from other IDEs → **Pieces MCP** (ask_pieces_ltm)
@@ -41,7 +41,7 @@ This skill provides **COMPLETE** backend implementation patterns for NovaChat. A
 **Do NOT describe; DO implement:**
 - Don't say "create a ViewModel"; create it using `create_file`
 - Don't say "add error handling"; implement the complete try-catch/Result<T>
-- Don't say "wire into DI"; update AppContainer using `apply_patch`
+- Don't say "wire into DI"; update AiContainer using `apply_patch`
 
 ### When to Hand Off to Other Agents
 

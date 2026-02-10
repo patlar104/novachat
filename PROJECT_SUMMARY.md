@@ -69,31 +69,25 @@ NovaChat is a complete, production-ready Android AI chatbot application that dem
 
 ```
 novachat/
-├── app/
-│   ├── src/
-│   │   └── main/
-│   │       ├── java/com/novachat/app/
-│   │       │   ├── data/           # Data layer
-│   │       │   │   ├── AiRepository.kt
-│   │       │   │   ├── ChatMessage.kt
-│   │       │   │   └── PreferencesRepository.kt
-│   │       │   ├── ui/             # UI layer
-│   │       │   │   ├── ChatScreen.kt
-│   │       │   │   ├── SettingsScreen.kt
-│   │       │   │   └── theme/
-│   │       │   │       ├── Color.kt
-│   │       │   │       ├── Theme.kt
-│   │       │   │       └── Type.kt
-│   │       │   ├── viewmodel/      # ViewModel layer
-│   │       │   │   └── ChatViewModel.kt
-│   │       │   └── MainActivity.kt
-│   │       ├── res/                # Resources
-│   │       │   ├── mipmap-*/       # App icons
-│   │       │   ├── values/         # Strings, colors, themes
-│   │       │   └── xml/            # Backup rules
-│   │       └── AndroidManifest.xml
-│   ├── build.gradle.kts
-│   └── proguard-rules.pro
+├── app/                            # Composition root
+│   ├── src/main/java/com/novachat/app/
+│   │   ├── MainActivity.kt
+│   │   └── NovaChatApplication.kt
+│   ├── src/main/res/               # App resources
+│   └── build.gradle.kts
+├── feature-ai/                     # AI feature module
+│   ├── src/main/java/com/novachat/feature/ai/
+│   │   ├── presentation/           # UiState/UiEvent + ViewModels
+│   │   ├── domain/                 # Use cases + domain models
+│   │   ├── data/                   # Repositories + mappers
+│   │   ├── ui/                     # Compose UI + theme
+│   │   └── di/                     # AiContainer
+│   ├── src/main/res/               # Feature resources
+│   └── build.gradle.kts
+├── core-common/                    # Shared primitives
+│   └── src/main/java/com/novachat/core/common/
+├── core-network/                   # Network factories
+│   └── src/main/java/com/novachat/core/network/
 ├── gradle/
 │   └── wrapper/                    # Gradle wrapper files
 ├── API.md                          # API documentation
@@ -132,7 +126,7 @@ novachat/
          │
          ↓
 ┌─────────────────┐
-│   Repository    │  AiRepository.kt, PreferencesRepository.kt
+│   Repository    │  Repositories.kt
 │                 │  - Data operations
 │                 │  - API calls
 │                 │  - Data persistence

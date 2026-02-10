@@ -123,10 +123,9 @@ Create a comprehensive handoff matrix showing:
 
 - DEVELOPMENT_PROTOCOL.md Section VI lists cross-boundary files:
 
-  - `presentation/model/*UiState.kt` - Modified by UI Agent, read by Backend Agent
-  - `presentation/model/*UiEvent.kt` - Modified by UI Agent, read by Backend Agent
+    - `presentation/model/UiState.kt` - Modified by UI Agent, read by Backend Agent (UiState/UiEvent/UiEffect)
   - `presentation/viewmodel/*.kt` - Modified by Backend Agent, read by UI Agent & Testing Agent
-  - `di/AppContainer.kt` - Modified by Backend Agent, synchronized across all agents
+    - `di/AiContainer.kt` - Modified by Backend Agent, synchronized across all agents
 
 **Problem**:
 
@@ -179,7 +178,7 @@ Missing skills for:
 
 - ❌ `backend-patterns/SKILL.md` - Domain modeling, use case patterns, repository patterns, error handling
 - ❌ `clean-architecture/SKILL.md` - MVVM structure, state management, ViewModels, sealed interfaces
-- ❌ `dependency-injection/SKILL.md` - Manual DI pattern, AppContainer, lazy singletons, factory functions
+- ❌ `dependency-injection/SKILL.md` - Manual DI pattern, AiContainer, lazy singletons, factory functions
 
 
 **Problem**:
@@ -212,7 +211,7 @@ Missing skills for:
    - Import policy (what can import what)
 
 3. ✅ Create `.github/skills/dependency-injection/SKILL.md`
-   - AppContainer structure
+    - AiContainer structure
    - Lazy singleton pattern
    - Factory function pattern
    - Wiring repositories, use cases, ViewModels
@@ -498,7 +497,7 @@ ChatViewModel.kt:
 ├─ Primary Owner: Backend Agent
 ├─ Readers: UI Agent, Testing Agent
 ├─ Modifiers Allowed: Backend Agent only
-└─ Related Files: ChatUiState.kt, ChatViewModelTest.kt, AppContainer.kt
+└─ Related Files: ChatUiState.kt, ChatViewModelTest.kt, AiContainer.kt
 ```
 
 **Impact**:

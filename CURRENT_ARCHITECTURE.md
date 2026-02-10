@@ -22,43 +22,30 @@ Compile SDK:   36
 **MVVM + Clean Architecture** with Unidirectional Data Flow
 
 - **State Management:** StateFlow (not LiveData)
-- **Dependency Injection:** Manual AppContainer (not Hilt, not Koin)
+- **Dependency Injection:** Manual AiContainer (not Hilt, not Koin)
 - **UI:** Jetpack Compose (100% declarative, no XML layouts)
 - **Async:** Kotlin Coroutines + Flow
 
 ## Project Structure
 
 ```
-app/src/main/java/com/novachat/app/
+feature-ai/src/main/java/com/novachat/feature/ai/
 ├── presentation/               # ViewModels & UI contracts
 │   ├── viewmodel/
 │   │   ├── ChatViewModel.kt
 │   │   └── SettingsViewModel.kt
 │   └── model/
-│       ├── ChatUiState.kt      # Sealed interfaces
-│       ├── ChatUiEvent.kt
-│       ├── SettingsUiState.kt
-│       ├── SettingsUiEvent.kt
-│       ├── UiEffect.kt
-│       └── NavigationDestination.kt
+│       └── UiState.kt           # UiState/UiEvent/UiEffect/NavigationDestination
 │
 ├── domain/                     # Business logic (Android-agnostic)
 │   ├── usecase/
-│   │   ├── SendMessageUseCase.kt
-│   │   ├── ObserveMessagesUseCase.kt
-│   │   ├── ClearConversationUseCase.kt
-│   │   ├── RetryMessageUseCase.kt
-│   │   ├── GetAiConfigurationUseCase.kt
-│   │   └── SaveAiConfigurationUseCase.kt
+│   │   └── MessageUseCases.kt   # Send/observe/clear/retry/etc.
 │   ├── model/
 │   │   ├── Message.kt
 │   │   ├── AiConfiguration.kt
-│   │   ├── AiMode.kt
-│   │   └── MessageSender.kt
+│   │   └── ThemePreferences.kt
 │   └── repository/             # Interface contracts only
-│       ├── AiRepository.kt
-│       ├── MessageRepository.kt
-│       └── PreferencesRepository.kt
+│       └── Repositories.kt
 │
 ├── data/                       # Data layer implementations
 │   ├── repository/
@@ -66,25 +53,34 @@ app/src/main/java/com/novachat/app/
 │   │   ├── MessageRepositoryImpl.kt
 │   │   └── PreferencesRepositoryImpl.kt
 │   ├── mapper/
-│   │   ├── MessageMapper.kt
-│   │   └── AiConfigurationMapper.kt
+│   │   └── Mappers.kt
 │   └── model/
 │       └── DataModels.kt
 │
 ├── ui/                         # Jetpack Compose screens
 │   ├── ChatScreen.kt
 │   ├── SettingsScreen.kt
-│   ├── components/
-│   │   ├── MessageBubble.kt
-│   │   └── ChatInput.kt
+│   ├── preview/
+│   │   ├── ChatScreenPreview.kt
+│   │   ├── PreviewChatScreenData.kt
+│   │   └── SharedPreviewComponents.kt
 │   └── theme/                  # Material 3 theme
 │       ├── Color.kt
 │       ├── Theme.kt
 │       └── Type.kt
 │
 ├── di/                         # Manual dependency injection
-│   └── AppContainer.kt
-│
+│   └── AiContainer.kt
+
+core-common/src/main/java/com/novachat/core/common/
+├── AppError.kt
+├── AppResult.kt
+└── ErrorMapper.kt
+
+core-network/src/main/java/com/novachat/core/network/
+└── NetworkFactories.kt
+
+app/src/main/java/com/novachat/app/
 ├── MainActivity.kt             # Navigation host
 └── NovaChatApplication.kt      # App initialization
 ```
@@ -143,10 +139,10 @@ UI recomposes automatically
 
 ## Dependency Injection
 
-Manual container pattern in `di/AppContainer.kt`:
+Manual container pattern in `di/AiContainer.kt`:
 
 ```kotlin
-class AppContainer(context: Context) {
+class AiContainer(context: Context) {
     // Repositories (eager initialization)
     val aiRepository: AiRepository = AiRepositoryImpl(context)
     val messageRepository: MessageRepository = MessageRepositoryImpl()
@@ -161,7 +157,11 @@ class AppContainer(context: Context) {
             preferencesRepository = preferencesRepository
         )
     }
-    // ... other use cases
+    val observeMessagesUseCase: ObserveMessagesUseCase by lazy {
+        ObserveMessagesUseCase(
+            messageRepository = messageRepository
+        )
+    }
 }
 ```
 
@@ -170,8 +170,7 @@ Access from Composables via custom ViewModelFactory:
 ```kotlin
 val viewModel: ChatViewModel = viewModel(
     factory = ViewModelFactory(
-        context = LocalContext.current,
-        appContainer = (LocalContext.current.applicationContext as NovaChatApplication).appContainer
+        container = LocalContext.current.aiContainer
     )
 )
 ```

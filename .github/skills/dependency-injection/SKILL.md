@@ -1,11 +1,11 @@
 ````skill
 ---
 name: dependency-injection
-description: Complete manual DI patterns for NovaChat using AppContainer (NO placeholders)
+description: Complete manual DI patterns for NovaChat using AiContainer (NO placeholders)
 category: architecture
 applies_to:
   - "**/di/**/*.kt"
-  - "**/AppContainer.kt"
+  - "**/AiContainer.kt"
   - "**/*ViewModelFactory.kt"
 protocol_compliance: true
 note: All examples are COMPLETE and runnable - following DEVELOPMENT_PROTOCOL.md zero-elision policy
@@ -13,10 +13,10 @@ note: All examples are COMPLETE and runnable - following DEVELOPMENT_PROTOCOL.md
 
 # Dependency Injection (DI) Skill for NovaChat
 
-This skill documents NovaChat's manual dependency injection pattern using `AppContainer`. No Hilt or Koin—just clean, explicit Kotlin lazy initialization.
+This skill documents NovaChat's manual dependency injection pattern using `AiContainer`. No Hilt or Koin—just clean, explicit Kotlin lazy initialization.
 
 > **PROTOCOL**: All examples follow [DEVELOPMENT_PROTOCOL.md](../../DEVELOPMENT_PROTOCOL.md)
-> - Complete AppContainer with all dependencies
+> - Complete AiContainer with all dependencies
 > - Complete ViewModel factory functions
 > - All lazy singleton patterns shown
 > - No placeholder dependencies
@@ -33,29 +33,29 @@ This skill documents NovaChat's manual dependency injection pattern using `AppCo
 
 ---
 
-## AppContainer Pattern (Complete)
+## AiContainer Pattern (Complete)
 
 ### Basic Structure
 
 Rules:
 
-- Keep DI wiring in [`di/AppContainer.kt`](../../app/src/main/java/com/novachat/app/di/AppContainer.kt).
+- Keep DI wiring in [`di/AiContainer.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt).
 - Use lazy singletons for data sources, repositories, and use cases.
-- ViewModel factories live in `AppContainer` and accept `SavedStateHandle`.
-- Composables access the container via `LocalContext.current.appContainer`.
-- **Firebase Dependencies**: AppContainer provides Firebase Functions and Firebase Auth instances for repositories. These are initialized in NovaChatApplication and passed to repositories that need them (e.g., AiRepositoryImpl).
+- ViewModel factories accept `SavedStateHandle` and receive dependencies from `AiContainer`.
+- Composables access the container via `LocalContext.current.aiContainer`.
+- **Firebase Dependencies**: AiContainer provides Firebase Functions and Firebase Auth instances for repositories. These are initialized in NovaChatApplication and passed to repositories that need them (e.g., AiRepositoryImpl).
 
 
 ---
 
-## Using AppContainer in Composables
+## Using AiContainer in Composables
 
 ### Step 1: Extend Application Class
 
 Rules:
 
-- Declare a custom `Application` class and initialize `AppContainer` in `onCreate()`.
-- Keep a `lateinit var appContainer` for app-wide access.
+- Declare a custom `Application` class and initialize `AiContainer` in `onCreate()`.
+- Implement `AiContainerProvider` and expose a `lateinit var aiContainer` for app-wide access.
 
 ### Step 2: Declare in Manifest
 
@@ -67,22 +67,22 @@ Rules:
 
 Rules:
 
-- Keep ViewModel factory in [`presentation/viewmodel/ViewModelFactory.kt`](../../app/src/main/java/com/novachat/app/presentation/viewmodel/ViewModelFactory.kt).
-- Factory delegates ViewModel creation to `AppContainer` methods.
+- Keep ViewModel factory in [`presentation/viewmodel/ViewModelFactory.kt`](../../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ViewModelFactory.kt).
+- Factory receives `AiContainer` and provides ViewModels with required dependencies.
 
-### Step 4: Provide AppContainer in MainActivity
+### Step 4: Provide AiContainer in MainActivity
 
 Rules:
 
-- Provide `LocalAppContainer` in `MainActivity` via `CompositionLocalProvider`.
-- Use the `Application` instance to access `appContainer`.
+- Access `aiContainer` via `Context.aiContainer` in `MainActivity`.
+- Pass `aiContainer` into `ViewModelFactory` when creating ViewModels.
 
 ### Step 5: Use in Composables
 
 Rules:
 
-- Access `LocalAppContainer.current` in Composables.
-- Create ViewModels with `ViewModelFactory(appContainer)`.
+- Access `LocalContext.current.aiContainer` in Composables.
+- Create ViewModels with `ViewModelFactory(aiContainer)`.
 
 ---
 
@@ -90,10 +90,10 @@ Rules:
 
 Rules:
 
-- `AppContainer` owns repositories, use cases, and ViewModel factories.
+- `AiContainer` owns repositories, use cases, and ViewModel factories.
 - Repositories are singletons reused across ViewModels.
 - UseCases depend on repositories and are singletons.
-- **Firebase Dependencies**: Firebase Functions and Firebase Auth instances are provided to repositories (e.g., AiRepositoryImpl) that need them. These are initialized in NovaChatApplication before AppContainer creation.
+- **Firebase Dependencies**: Firebase Functions and Firebase Auth instances are provided to repositories (e.g., AiRepositoryImpl) that need them. These are initialized in NovaChatApplication before AiContainer creation.
 
 ---
 
@@ -103,14 +103,14 @@ Rules:
 
 Rules:
 
-- Use `by lazy` for AppContainer dependencies.
+- Use `by lazy` for AiContainer dependencies.
 - First access creates the instance; subsequent access returns cached instance.
 
 ### Benefits for Testing
 
 Rules:
 
-- Construct real `AppContainer` in production.
+- Construct real `AiContainer` in production.
 - Inject fake repositories/use cases in tests.
 
 ---
@@ -123,7 +123,7 @@ Rules:
 
 - Add new repository interface in `domain/repository/` and implementation in `data/repository/`.
 - Add new use case in `domain/usecase/` with required dependencies.
-- Wire new repository/use case and factory method in `AppContainer`.
+- Wire new repository/use case and factory method in `AiContainer`.
 - Update `ViewModelFactory` to support the new ViewModel.
 
 ---
@@ -150,14 +150,14 @@ Rules:
 
 Before submitting DI code, verify:
 
-- [ ] **AppContainer complete** - All repositories, use cases, factories included
+- [ ] **AiContainer complete** - All repositories, use cases, factories included
 - [ ] **No circular dependencies** - Each dependency has clear direction
 - [ ] **All factories implemented** - Every ViewModel has factory method
 - [ ] **Lazy initialization used** - Dependencies only created when accessed
 - [ ] **Imports correct** - No missing imports for all dependencies
 - [ ] **Tested** - Fakes/mocks can be injected in tests
 - [ ] **Documented** - Comments explain dependencies
-- [ ] **No singletons bypassed** - Always use AppContainer, never static instances
+- [ ] **No singletons bypassed** - Always use AiContainer, never static instances
 
 **Remember: Clean DI makes testing and refactoring easy. Manual DI is explicit and testable!**
 

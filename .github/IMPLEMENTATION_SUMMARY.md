@@ -31,12 +31,12 @@ Created three essential backend architecture skills **with complete, production-
 - **Impact**: Clear guidance on maintaining architectural integrity across all layers
 
 #### [`dependency-injection/SKILL.md`](.github/skills/dependency-injection/SKILL.md)
-**Purpose**: Manual DI pattern using AppContainer with lazy singletons
-- ✅ Complete AppContainer.kt with all dependencies wired
-- ✅ Step-by-step integration into Application and Composables
-- ✅ ViewModel factory patterns with complete implementation
-- ✅ Composition local setup for app-wide DI access
-- ✅ How to add new dependencies to AppContainer
+ **Purpose**: Manual DI pattern using AiContainer with lazy singletons
+ ✅ Complete AiContainer.kt with all dependencies wired
+ ✅ Step-by-step integration into Application and Composables
+ ✅ ViewModel factory patterns with complete implementation
+ ✅ Composition local setup for app-wide DI access
+ ✅ How to add new dependencies to AiContainer
 - ✅ Circular dependency prevention
 - **Impact**: Explicit, testable dependency management without Hilt/Koin complexity
 

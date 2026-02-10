@@ -566,10 +566,9 @@ Correct approach (RIGHT):
 # CROSS-BOUNDARY FILES - MUST COMMUNICATE BEFORE MODIFYING
 
 Before modifying these files, communicate with other agents:
-- presentation/model/*UiState.kt → UI + Backend agents must coordinate
-- presentation/model/*UiEvent.kt → UI + Backend agents must coordinate
+- presentation/model/UiState.kt → UI + Backend agents must coordinate (UiState/UiEvent/UiEffect)
 - presentation/viewmodel/*.kt → Backend + UI agents must coordinate  
-- di/AppContainer.kt → ALL agents must coordinate
+- di/AiContainer.kt → ALL agents must coordinate
 - build.gradle.kts → ALL agents must coordinate
 
 If you modify a cross-boundary file:

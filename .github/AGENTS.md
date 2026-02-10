@@ -70,11 +70,11 @@ We have seven specialized agents, each with specific responsibilities and constr
 **Constraints**:
 
 - ONLY modifies UI-related files:
-  - [`app/src/main/java/.../ui/`](../app/src/main/java/com/novachat/app/ui)
-  - [`app/src/main/java/.../ui/theme/`](../app/src/main/java/com/novachat/app/ui/theme)
+  - [`feature-ai/src/main/java/.../ui/`](../feature-ai/src/main/java/com/novachat/feature/ai/ui)
+  - [`feature-ai/src/main/java/.../ui/theme/`](../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme)
   - [`app/src/main/java/.../MainActivity.kt`](../app/src/main/java/com/novachat/app/MainActivity.kt)
   - [`app/src/main/res/values/strings.xml`](../app/src/main/res/values/strings.xml)
-  - Not ViewModels or backend logic (see [`presentation/viewmodel/`](../app/src/main/java/com/novachat/app/presentation/viewmodel))
+  - Not ViewModels or backend logic (see [`presentation/viewmodel/`](../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel))
 - Never implements business logic
 - All UI in Compose (no XML layouts)
 - All strings must be in resources
@@ -97,10 +97,10 @@ We have seven specialized agents, each with specific responsibilities and constr
 
 **Scope**:
 
-- @Preview annotations on Composables ([`app/src/main/java/.../ui/`](../app/src/main/java/com/novachat/app/ui))
-- Preview composition files (`*ScreenPreview.kt`) in [`app/src/main/java/.../ui/preview/`](../app/src/main/java/com/novachat/app/ui/preview)
-- Preview data providers (`Preview*ScreenData`) in [`app/src/main/java/.../ui/preview/`](../app/src/main/java/com/novachat/app/ui/preview)
-- Preview utilities and device specifications in [`app/src/main/java/.../ui/preview/`](../app/src/main/java/com/novachat/app/ui/preview)
+- @Preview annotations on Composables ([`feature-ai/src/main/java/.../ui/`](../feature-ai/src/main/java/com/novachat/feature/ai/ui))
+- Preview composition files (`*ScreenPreview.kt`) in [`feature-ai/src/main/java/.../ui/preview/`](../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview)
+- Preview data providers (`Preview*ScreenData`) in [`feature-ai/src/main/java/.../ui/preview/`](../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview)
+- Preview utilities and device specifications in [`feature-ai/src/main/java/.../ui/preview/`](../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview)
 - Multi-state/device/theme preview composition
 
 **Constraints**:
@@ -131,19 +131,19 @@ We have seven specialized agents, each with specific responsibilities and constr
 
 **Scope**:
 
-- **Presentation Layer**: ViewModels (with StateFlow, UiState, UiEffect) in [`presentation/viewmodel/`](../app/src/main/java/com/novachat/app/presentation/viewmodel)
-- **Domain Layer**: Core models, Repository interfaces, and Use Cases in [`domain/`](../app/src/main/java/com/novachat/app/domain)
-- **Data Layer**: Repository implementations and data sources in [`data/`](../app/src/main/java/com/novachat/app/data)
-- **Dependency Injection**: AppContainer in [`di/AppContainer.kt`](../app/src/main/java/com/novachat/app/di/AppContainer.kt)
+- **Presentation Layer**: ViewModels (with StateFlow, UiState, UiEffect) in [`presentation/viewmodel/`](../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel)
+- **Domain Layer**: Core models, Repository interfaces, and Use Cases in [`domain/`](../feature-ai/src/main/java/com/novachat/feature/ai/domain)
+- **Data Layer**: Repository implementations and data sources in [`data/`](../feature-ai/src/main/java/com/novachat/feature/ai/data)
+- **Dependency Injection**: AiContainer in [`di/AiContainer.kt`](../feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt)
 
 **Constraints**:
 
 - ONLY modifies backend/logic files:
-  - [`app/src/main/java/.../data/`](../app/src/main/java/com/novachat/app/data)
-  - [`app/src/main/java/.../domain/`](../app/src/main/java/com/novachat/app/domain)
-  - [`app/src/main/java/.../presentation/model/`](../app/src/main/java/com/novachat/app/presentation/model)
-  - [`app/src/main/java/.../presentation/viewmodel/`](../app/src/main/java/com/novachat/app/presentation/viewmodel)
-  - [`app/src/main/java/.../di/`](../app/src/main/java/com/novachat/app/di)
+  - [`feature-ai/src/main/java/.../data/`](../feature-ai/src/main/java/com/novachat/feature/ai/data)
+  - [`feature-ai/src/main/java/.../domain/`](../feature-ai/src/main/java/com/novachat/feature/ai/domain)
+  - [`feature-ai/src/main/java/.../presentation/model/`](../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model)
+  - [`feature-ai/src/main/java/.../presentation/viewmodel/`](../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel)
+  - [`feature-ai/src/main/java/.../di/`](../feature-ai/src/main/java/com/novachat/feature/ai/di)
 - Never modifies UI files
 - ViewModels must not have UI references
 - All logic must be unit testable
@@ -166,9 +166,9 @@ We have seven specialized agents, each with specific responsibilities and constr
 
 **Scope**:
 
-- Unit tests (ViewModels, repositories) with coroutines in [`app/src/test/java/`](../app/src/test/java)
-- Compose UI tests (not Espresso) in [`app/src/androidTest/java/`](../app/src/androidTest/java)
-- Test utilities and helpers in [`app/src/test/java/`](../app/src/test/java)
+- Unit tests (ViewModels, repositories) with coroutines in [`feature-ai/src/test/java/`](../feature-ai/src/test/java) and [`app/src/test/java/`](../app/src/test/java)
+- Compose UI tests (not Espresso) in [`feature-ai/src/androidTest/java/`](../feature-ai/src/androidTest/java) and [`app/src/androidTest/java/`](../app/src/androidTest/java)
+- Test utilities and helpers in [`feature-ai/src/test/java/`](../feature-ai/src/test/java) and [`app/src/test/java/`](../app/src/test/java)
 
 **Constraints**:
 
@@ -195,8 +195,8 @@ We have seven specialized agents, each with specific responsibilities and constr
 
 **Scope**:
 
-- Gradle build files (Kotlin DSL) in [`build.gradle.kts`](../build.gradle.kts) and [`app/build.gradle.kts`](../app/build.gradle.kts)
-- Dependency management (Compose BOM, AI SDKs) in [`app/build.gradle.kts`](../app/build.gradle.kts)
+- Gradle build files (Kotlin DSL) in [`build.gradle.kts`](../build.gradle.kts), [`app/build.gradle.kts`](../app/build.gradle.kts), [`feature-ai/build.gradle.kts`](../feature-ai/build.gradle.kts), [`core-common/build.gradle.kts`](../core-common/build.gradle.kts), and [`core-network/build.gradle.kts`](../core-network/build.gradle.kts)
+- Dependency management (Compose BOM, AI SDKs) in [`feature-ai/build.gradle.kts`](../feature-ai/build.gradle.kts) and [`app/build.gradle.kts`](../app/build.gradle.kts)
 - Version catalogs (if used; see [`gradle/`](../gradle))
 - ProGuard/R8 rules in [`app/proguard-rules.pro`](../app/proguard-rules.pro)
 - Build variants
@@ -211,7 +211,7 @@ We have seven specialized agents, each with specific responsibilities and constr
 
 **Protocol Requirements**:
 
-- **Complete build.gradle.kts files** (no `// ... dependencies` placeholders) in [`build.gradle.kts`](../build.gradle.kts) and [`app/build.gradle.kts`](../app/build.gradle.kts)
+- **Complete build.gradle.kts files** (no `// ... dependencies` placeholders) in [`build.gradle.kts`](../build.gradle.kts), [`app/build.gradle.kts`](../app/build.gradle.kts), [`feature-ai/build.gradle.kts`](../feature-ai/build.gradle.kts), [`core-common/build.gradle.kts`](../core-common/build.gradle.kts), and [`core-network/build.gradle.kts`](../core-network/build.gradle.kts)
 - **All plugin configurations shown**
 - **Version catalog entries complete** (if used; see [`gradle/`](../gradle))
 - **Verify 2026 dependency versions** (Compose BOM 2026.01.01, Kotlin 2.2.21) against official sources using the user-selected tool (ask first; do not choose a tool unilaterally)
@@ -261,19 +261,21 @@ Validated against the current repository layout:
 - **Planner Agent**: No file modifications.
 - **Reviewer Agent**: No file modifications.
 - **UI Agent**:
-  - [`app/src/main/java/com/novachat/app/ui/**`](../app/src/main/java/com/novachat/app/ui)
-  - [`app/src/main/java/com/novachat/app/ui/theme/**`](../app/src/main/java/com/novachat/app/ui/theme)
+  - [`feature-ai/src/main/java/com/novachat/feature/ai/ui/**`](../feature-ai/src/main/java/com/novachat/feature/ai/ui)
+  - [`feature-ai/src/main/java/com/novachat/feature/ai/ui/theme/**`](../feature-ai/src/main/java/com/novachat/feature/ai/ui/theme)
   - [`app/src/main/java/com/novachat/app/MainActivity.kt`](../app/src/main/java/com/novachat/app/MainActivity.kt)
   - [`app/src/main/res/values/strings.xml`](../app/src/main/res/values/strings.xml)
-- **Preview Agent**: [`app/src/main/java/com/novachat/app/ui/preview/**`](../app/src/main/java/com/novachat/app/ui/preview)
+- **Preview Agent**: [`feature-ai/src/main/java/com/novachat/feature/ai/ui/preview/**`](../feature-ai/src/main/java/com/novachat/feature/ai/ui/preview)
 - **Backend Agent**:
-  - [`app/src/main/java/com/novachat/app/presentation/model/**`](../app/src/main/java/com/novachat/app/presentation/model)
-  - [`app/src/main/java/com/novachat/app/presentation/viewmodel/**`](../app/src/main/java/com/novachat/app/presentation/viewmodel)
-  - [`app/src/main/java/com/novachat/app/domain/**`](../app/src/main/java/com/novachat/app/domain)
-  - [`app/src/main/java/com/novachat/app/data/**`](../app/src/main/java/com/novachat/app/data)
-  - [`app/src/main/java/com/novachat/app/di/**`](../app/src/main/java/com/novachat/app/di)
+  - [`feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/**`](../feature-ai/src/main/java/com/novachat/feature/ai/presentation/model)
+  - [`feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/**`](../feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel)
+  - [`feature-ai/src/main/java/com/novachat/feature/ai/domain/**`](../feature-ai/src/main/java/com/novachat/feature/ai/domain)
+  - [`feature-ai/src/main/java/com/novachat/feature/ai/data/**`](../feature-ai/src/main/java/com/novachat/feature/ai/data)
+  - [`feature-ai/src/main/java/com/novachat/feature/ai/di/**`](../feature-ai/src/main/java/com/novachat/feature/ai/di)
   - [`app/src/main/java/com/novachat/app/NovaChatApplication.kt`](../app/src/main/java/com/novachat/app/NovaChatApplication.kt)
 - **Testing Agent**:
+  - [`feature-ai/src/test/java/**`](../feature-ai/src/test/java)
+  - [`feature-ai/src/androidTest/java/**`](../feature-ai/src/androidTest/java)
   - [`app/src/test/java/**`](../app/src/test/java)
   - [`app/src/androidTest/java/**`](../app/src/androidTest/java)
 - **Build Agent**:

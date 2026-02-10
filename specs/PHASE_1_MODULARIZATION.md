@@ -31,13 +31,13 @@ Create minimal modules so refactors do not ripple through the app. Phase 1 estab
 
 ## 3. Current State (Baseline)
 
-AI feature is currently embedded under app:
+AI feature now lives under feature-ai:
 
-- UI: app/src/main/java/com/novachat/app/ui/ChatScreen.kt, SettingsScreen.kt
-- ViewModels: app/src/main/java/com/novachat/app/presentation/viewmodel/*
-- Domain: app/src/main/java/com/novachat/app/domain/*
-- Data: app/src/main/java/com/novachat/app/data/*
-- DI: app/src/main/java/com/novachat/app/di/AppContainer.kt
+- UI: feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt, SettingsScreen.kt
+- ViewModels: feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/*
+- Domain: feature-ai/src/main/java/com/novachat/feature/ai/domain/*
+- Data: feature-ai/src/main/java/com/novachat/feature/ai/data/*
+- DI: feature-ai/src/main/java/com/novachat/feature/ai/di/AiContainer.kt
 
 ## 4. Target Module Graph
 
@@ -101,41 +101,41 @@ Notes:
 
 Move from app to feature-ai:
 
-- app/src/main/java/com/novachat/app/ui/ChatScreen.kt
-- app/src/main/java/com/novachat/app/ui/SettingsScreen.kt
-- app/src/main/java/com/novachat/app/ui/preview/ChatScreenPreview.kt
-- app/src/main/java/com/novachat/app/ui/preview/PreviewChatScreenData.kt
-- app/src/main/java/com/novachat/app/ui/preview/SharedPreviewComponents.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/ui/SettingsScreen.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/ui/preview/ChatScreenPreview.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/ui/preview/PreviewChatScreenData.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/ui/preview/SharedPreviewComponents.kt
 
 ### 6.2 Presentation
 
 Move from app to feature-ai:
 
-- app/src/main/java/com/novachat/app/presentation/model/UiState.kt
-- app/src/main/java/com/novachat/app/presentation/viewmodel/ChatViewModel.kt
-- app/src/main/java/com/novachat/app/presentation/viewmodel/SettingsViewModel.kt
-- app/src/main/java/com/novachat/app/presentation/viewmodel/ThemeViewModel.kt
-- app/src/main/java/com/novachat/app/presentation/viewmodel/ViewModelFactory.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/presentation/model/UiState.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ChatViewModel.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/SettingsViewModel.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ThemeViewModel.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/presentation/viewmodel/ViewModelFactory.kt
 
 ### 6.3 Domain
 
 Move from app to feature-ai:
 
-- app/src/main/java/com/novachat/app/domain/model/AiConfiguration.kt
-- app/src/main/java/com/novachat/app/domain/model/Message.kt
-- app/src/main/java/com/novachat/app/domain/model/ThemePreferences.kt
-- app/src/main/java/com/novachat/app/domain/repository/Repositories.kt
-- app/src/main/java/com/novachat/app/domain/usecase/MessageUseCases.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/domain/model/AiConfiguration.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/domain/model/Message.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/domain/model/ThemePreferences.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/domain/repository/Repositories.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/domain/usecase/MessageUseCases.kt
 
 ### 6.4 Data
 
 Move from app to feature-ai:
 
-- app/src/main/java/com/novachat/app/data/model/DataModels.kt
-- app/src/main/java/com/novachat/app/data/mapper/Mappers.kt
-- app/src/main/java/com/novachat/app/data/repository/AiRepositoryImpl.kt
-- app/src/main/java/com/novachat/app/data/repository/MessageRepositoryImpl.kt
-- app/src/main/java/com/novachat/app/data/repository/PreferencesRepositoryImpl.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/data/model/DataModels.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/data/mapper/Mappers.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/data/repository/AiRepositoryImpl.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/data/repository/MessageRepositoryImpl.kt
+- feature-ai/src/main/java/com/novachat/feature/ai/data/repository/PreferencesRepositoryImpl.kt
 
 ### 6.5 App Composition Root
 

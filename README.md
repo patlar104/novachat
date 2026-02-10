@@ -81,21 +81,31 @@ The app uses Firebase Cloud Functions as a proxy for AI requests. No API key set
 
 ## Project Structure
 
-NovaChat uses a layered architecture, following **Clean Architecture** principles (Domain, Data, Presentation) with **MVVM** pattern. Dependencies are managed manually via the `di` (Dependency Injection) package using `AppContainer`.
+NovaChat uses a layered architecture, following **Clean Architecture** principles (Domain, Data, Presentation) with **MVVM** pattern. Dependencies are managed manually via the `di` (Dependency Injection) package using `AiContainer`.
 
 ```
-app/
+feature-ai/
 ├── src/
 │   └── main/
-│       ├── java/com/novachat/app/
-│       │   ├── di/                # Dependency Injection (AppContainer)
+│       ├── java/com/novachat/feature/ai/
+│       │   ├── di/                # Dependency Injection (AiContainer)
 │       │   ├── data/              # Data Layer: Repository implementations and data sources
 │       │   ├── domain/            # Domain Layer: Core models, Repository interfaces, and Use Cases
 │       │   ├── presentation/      # Presentation Layer: UI State models, UI Events, and ViewModels
 │       │   │   └── viewmodel/     # ViewModels (e.g., ChatViewModel.kt, SettingsViewModel.kt)
 │       │   ├── ui/                # Compose UI screens and theming
-│       │   └── MainActivity.kt
+│       │   └── ui/preview/         # Compose previews and preview data
 │       ├── res/                   # Resources
+│       └── AndroidManifest.xml
+├── build.gradle.kts
+
+app/
+├── src/
+│   └── main/
+│       ├── java/com/novachat/app/
+│       │   ├── MainActivity.kt
+│       │   └── NovaChatApplication.kt
+│       ├── res/
 │       └── AndroidManifest.xml
 ├── build.gradle.kts
 └── proguard-rules.pro

@@ -108,11 +108,10 @@ ViewModel Implementation:
 □ Error handling with Result<T>
 
 DI Wiring:
-□ Add to AppContainer: repositories, usecases, viewmodel factory
+□ Add to AiContainer: repositories, usecases, viewmodel factory
 
 Files to Reference:
-- presentation/model/ChatUiState.kt (state contract from UI Agent)
-- presentation/model/ChatUiEvent.kt (event contract from UI Agent)
+- presentation/model/UiState.kt (state/event/effect contract from UI Agent)
 
 Acceptance Criteria:
 ✓ ViewModel correctly observes and emits state
@@ -233,8 +232,8 @@ Reference: specs/PHASE_005_CHAT_SCREEN.md
 
 Files to Review:
 □ UI Layer
-  - ui/ChatScreen.kt
-  - ui/preview/ChatScreenPreview.kt
+   - feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt
+   - feature-ai/src/main/java/com/novachat/feature/ai/ui/preview/ChatScreenPreview.kt
 □ Backend Layer
   - presentation/viewmodel/ChatViewModel.kt
   - domain/usecase/SendMessageUseCase.kt
@@ -312,7 +311,7 @@ UI AGENT → PREVIEW AGENT
 Task: Add preview coverage for ChatScreen
 
 Composable Location:
-- File: app/src/main/java/com/novachat/app/ui/ChatScreen.kt
+- File: feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt
 - Functions: ChatScreen() - Main composable to preview
 
 States to Preview:
@@ -356,7 +355,7 @@ UI AGENT → TESTING AGENT
 
 Task: Create UI tests for ChatScreen
 
-Composable: app/src/main/java/com/novachat/app/ui/ChatScreen.kt
+Composable: feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt
 
 Key Interactions to Test:
 □ User types message and taps send
@@ -560,7 +559,7 @@ Problem:
 - or: ViewModel being used in preview (not allowed)
 
 Location:
-- File: app/src/main/java/com/novachat/app/ui/ChatScreen.kt
+- File: feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt
 
 Fix Needed:
 □ Ensure all state parameters have default values
@@ -819,8 +818,8 @@ REVIEWER AGENT → UI AGENT
 Issue Category: Design System Non-Compliance
 
 Files Affected:
-- ui/ChatScreen.kt (line 45-50)
-- ui/SettingsScreen.kt (line 30)
+- feature-ai/src/main/java/com/novachat/feature/ai/ui/ChatScreen.kt (line 45-50)
+- feature-ai/src/main/java/com/novachat/feature/ai/ui/SettingsScreen.kt (line 30)
 
 Issues Found:
 □ CRITICAL: Text color hardcoded instead of MaterialTheme.colorScheme.onSurface

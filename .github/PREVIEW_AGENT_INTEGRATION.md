@@ -87,7 +87,7 @@ UI Composable → Preview Agent → @Preview Annotations + Preview Files
 When adding a new screen, Preview Agent creates:
 
 ```text
-app/src/main/java/com/novachat/app/ui/preview/
+feature-ai/src/main/java/com/novachat/feature/ai/ui/preview/
 ├── ChatScreenPreview.kt           # All preview variants of ChatScreen
 ├── SettingsScreenPreview.kt       # All preview variants of SettingsScreen
 ├── SharedPreviewComponents.kt     # Shared preview utilities, device constants
@@ -296,7 +296,7 @@ All Preview Agent code MUST comply with:
 The Preview Agent operates within this structure:
 
 ```text
-app/src/main/java/com/novachat/app/ui/
+feature-ai/src/main/java/com/novachat/feature/ai/ui/
 ├── ChatScreen.kt
 ├── SettingsScreen.kt
 ├── theme/
