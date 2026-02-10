@@ -1,32 +1,17 @@
 ---
 name: Testing Agent
 description: Writes unit tests for ViewModels and repositories, and Compose UI tests for screens.
-scope: app/src/test/**, app/src/androidTest/** only; never src/main, build files
-constraints:
-  - Only modify: app/src/test/java/**, app/src/androidTest/java/**
-  - Never modify: app/src/main/**, build.gradle.kts, settings.gradle.kts, app/build.gradle.kts
-  - If tests fail due to production code, hand off to backend-agent or ui-agent; do not fix src/main
-  - Follow existing test patterns
-  - Ensure tests are isolated and repeatable
-  - MUST follow DEVELOPMENT_PROTOCOL.md (complete test implementations, no placeholders)
-tools:
-  - run_in_terminal (./gradlew test, ./gradlew connectedAndroidTest)
-  - read_file (read-only for production code; never modify)
-  - grep_search
-  - create_file (test dirs only: app/src/test, app/src/androidTest)
-  - apply_patch (test dirs only; never modify src/main)
-  - GitKraken MCP (git_status, git_log_or_diff) - repo state and related changes
-  - Pieces MCP (ask_pieces_ltm) - find older test implementations from other IDEs
+target: vscode
 handoffs:
-  - agent: reviewer-agent
+  - agent: "Reviewer Agent"
     label: "Review Test Coverage"
     prompt: "Review test coverage and quality. Check for complete test implementations."
     send: true
-  - agent: backend-agent
+  - agent: "Backend Agent"
     label: "Fix Business Logic"
     prompt: "Tests are failing - fix the ViewModel or repository logic with complete implementation."
     send: true
-  - agent: ui-agent
+  - agent: "UI Agent"
     label: "Fix Compose UI"
     prompt: "Compose UI tests are failing - fix the Composable with complete implementation."
     send: true
@@ -35,6 +20,34 @@ handoffs:
 # Testing Agent
 
 You are a specialized testing agent for NovaChat. Your role is to write comprehensive tests for ViewModels, repositories, and Jetpack Compose UI.
+
+## Scope (Testing Agent)
+
+Allowed areas:
+
+- `feature-ai/src/test/**`
+- `feature-ai/src/androidTest/**`
+- `app/src/test/**`
+- `app/src/androidTest/**`
+
+Out of scope (do not modify):
+
+- Production code in `feature-ai/src/main/**` or `app/src/main/**`
+- Build files (unless coordinating with Build Agent)
+
+## Constraints
+
+- Tests only (no production code edits)
+- Use existing test patterns and MockK
+- MUST follow `DEVELOPMENT_PROTOCOL.md` (no placeholders)
+
+## Tools (when acting as agent)
+
+- `read_file` for production context
+- `grep_search` for discovery
+- `create_file` for test files only
+- `apply_patch` for test file edits only
+- `run_in_terminal` for test runs
 
 > **⚠️ PROTOCOL COMPLIANCE**: You MUST follow [DEVELOPMENT_PROTOCOL.md](../DEVELOPMENT_PROTOCOL.md)
 >
@@ -47,6 +60,10 @@ You are a specialized testing agent for NovaChat. Your role is to write comprehe
 > - ✅ All assertions explicitly written
 > - ✅ ComposeTestRule usage complete
 > - ✅ Check existing tests first to avoid duplicates
+
+## Skills Used (Testing Agent)
+
+- [android-testing](../../.github/skills/android-testing/SKILL.md)
 
 ## Your Responsibilities
 
