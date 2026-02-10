@@ -1,9 +1,3 @@
 {
-  "java.configuration.updateBuildConfiguration": "automatic",
-  "kotlin.languageServer.enabled": true,
-  "kotlin.scripts.buildScriptsEnabled": true,
-  "kotlin.indexing.enabled": true,
-  "kotlin.diagnostics.enabled": true,
-  "kotlin.debugAdapter.enabled": true,
-  "kotlin.externalSources.useKlsScheme": true
+  // Use Cursor user settings (outside this workspace) as source of truth; no workspace overrides.
 }
