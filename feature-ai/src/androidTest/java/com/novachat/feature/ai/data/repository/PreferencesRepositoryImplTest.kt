@@ -151,4 +151,31 @@ class PreferencesRepositoryImplTest {
         val validationResult = configWithoutKey.validate()
         validationResult.isSuccess.shouldBe(true)
     }
+
+    @Test
+    fun setWaitForDebuggerOnNextLaunch_persists_and_observes_true() = runTest {
+        repository.setWaitForDebuggerOnNextLaunch(true).isSuccess.shouldBe(true)
+
+        val observed = repository.observeWaitForDebuggerOnNextLaunch().first()
+        observed.shouldBe(true)
+    }
+
+    @Test
+    fun consumeWaitForDebuggerOnNextLaunch_when_true_returns_true_and_resets() = runTest {
+        repository.setWaitForDebuggerOnNextLaunch(true).isSuccess.shouldBe(true)
+
+        val consumed = repository.consumeWaitForDebuggerOnNextLaunch()
+        consumed.isSuccess.shouldBe(true)
+        consumed.getOrNull().shouldBe(true)
+
+        val observed = repository.observeWaitForDebuggerOnNextLaunch().first()
+        observed.shouldBe(false)
+    }
+
+    @Test
+    fun consumeWaitForDebuggerOnNextLaunch_when_false_returns_false() = runTest {
+        val consumed = repository.consumeWaitForDebuggerOnNextLaunch()
+        consumed.isSuccess.shouldBe(true)
+        consumed.getOrNull().shouldBe(false)
+    }
 }

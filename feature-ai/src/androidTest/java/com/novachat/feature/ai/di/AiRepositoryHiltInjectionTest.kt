@@ -153,6 +153,7 @@ private class FakePreferencesRepository : PreferencesRepository {
         )
     )
     private val themePreferencesFlow = MutableStateFlow(ThemePreferences.DEFAULT)
+    private val waitForDebuggerOnNextLaunchFlow = MutableStateFlow(false)
 
     override fun observeAiConfiguration(): Flow<AiConfiguration> = aiConfigFlow.asStateFlow()
 
@@ -172,6 +173,7 @@ private class FakePreferencesRepository : PreferencesRepository {
             modelParameters = ModelParameters.DEFAULT
         )
         themePreferencesFlow.value = ThemePreferences.DEFAULT
+        waitForDebuggerOnNextLaunchFlow.value = false
         return Result.success(Unit)
     }
 
@@ -181,5 +183,19 @@ private class FakePreferencesRepository : PreferencesRepository {
     override suspend fun updateThemePreferences(preferences: ThemePreferences): Result<Unit> {
         themePreferencesFlow.value = preferences
         return Result.success(Unit)
+    }
+
+    override fun observeWaitForDebuggerOnNextLaunch(): Flow<Boolean> =
+        waitForDebuggerOnNextLaunchFlow.asStateFlow()
+
+    override suspend fun setWaitForDebuggerOnNextLaunch(enabled: Boolean): Result<Unit> {
+        waitForDebuggerOnNextLaunchFlow.value = enabled
+        return Result.success(Unit)
+    }
+
+    override suspend fun consumeWaitForDebuggerOnNextLaunch(): Result<Boolean> {
+        val shouldWait = waitForDebuggerOnNextLaunchFlow.value
+        waitForDebuggerOnNextLaunchFlow.value = false
+        return Result.success(shouldWait)
     }
 }

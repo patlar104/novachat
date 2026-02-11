@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.novachat.feature.ai.BuildConfig
 import com.novachat.feature.ai.R
 import com.novachat.feature.ai.domain.model.AiConfiguration
 import com.novachat.feature.ai.domain.model.AiMode
@@ -36,7 +36,7 @@ import com.novachat.feature.ai.ui.theme.NovaChatTheme
 private fun ThemeSection(
     themePrefs: ThemePreferences,
     onThemeModeChange: (ThemeMode) -> Unit,
-    onDynamicColorChange: (Boolean) -> Unit
+    onDynamicColorChange: (Boolean) -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -95,14 +95,56 @@ private fun ThemeSection(
 }
 
 @Composable
+private fun DeveloperOptionsSection(
+    waitForDebuggerOnNextLaunch: Boolean,
+    onToggleWaitForDebuggerOnNextLaunch: (Boolean) -> Unit,
+) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.developer_options),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.wait_for_debugger_next_launch),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = stringResource(R.string.wait_for_debugger_next_launch_summary),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+                Switch(
+                    checked = waitForDebuggerOnNextLaunch,
+                    onCheckedChange = onToggleWaitForDebuggerOnNextLaunch
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun SettingsScreenContent(
     configuration: AiConfiguration,
     offlineCapability: OfflineCapability,
+    waitForDebuggerOnNextLaunch: Boolean,
     onChangeAiMode: (AiMode) -> Unit,
+    onToggleWaitForDebuggerOnNextLaunch: (Boolean) -> Unit,
     themePrefs: ThemePreferences,
     onThemeModeChange: (ThemeMode) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val offlineEnabled = offlineCapability is OfflineCapability.Available
     val offlineReason = (offlineCapability as? OfflineCapability.Unavailable)?.reason
@@ -119,6 +161,13 @@ fun SettingsScreenContent(
             onThemeModeChange = onThemeModeChange,
             onDynamicColorChange = onDynamicColorChange
         )
+
+        if (BuildConfig.DEBUG) {
+            DeveloperOptionsSection(
+                waitForDebuggerOnNextLaunch = waitForDebuggerOnNextLaunch,
+                onToggleWaitForDebuggerOnNextLaunch = onToggleWaitForDebuggerOnNextLaunch,
+            )
+        }
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -259,10 +308,12 @@ fun SettingsScreenContentOnlinePreview() {
         SettingsScreenContent(
             configuration = mockOnlineConfig,
             offlineCapability = OfflineCapability.Unavailable("Offline model not installed"),
+            waitForDebuggerOnNextLaunch = false,
             onChangeAiMode = {},
+            onToggleWaitForDebuggerOnNextLaunch = {},
             themePrefs = ThemePreferences.DEFAULT,
             onThemeModeChange = {},
-            onDynamicColorChange = {}
+            onDynamicColorChange = {},
         )
     }
 }
@@ -274,10 +325,12 @@ fun SettingsScreenContentOfflinePreview() {
         SettingsScreenContent(
             configuration = mockOfflineConfig,
             offlineCapability = OfflineCapability.Available,
+            waitForDebuggerOnNextLaunch = false,
             onChangeAiMode = {},
+            onToggleWaitForDebuggerOnNextLaunch = {},
             themePrefs = ThemePreferences.DEFAULT,
             onThemeModeChange = {},
-            onDynamicColorChange = {}
+            onDynamicColorChange = {},
         )
     }
 }

@@ -42,6 +42,16 @@
 npm run format:check
 ```
 
+## Debugger wait workflow (debug builds)
+
+Use this when you want app startup to pause until a debugger attaches.
+
+1. Run a debug build and open **Settings**.
+2. Enable **Developer Options** -> **Wait for debugger on next launch**.
+3. Close the app.
+4. Relaunch with Android Studio **Debug**.
+5. The app waits for debugger attach exactly once (up to ~10 seconds), then auto-resets.
+
 ## Documentation policy
 
 1. Keep active docs aligned to current code paths and contracts.

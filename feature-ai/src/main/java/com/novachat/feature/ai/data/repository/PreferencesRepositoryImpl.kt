@@ -40,6 +40,7 @@ class PreferencesRepositoryImpl @Inject constructor(
         val KEY_MAX_OUTPUT_TOKENS = intPreferencesKey("max_output_tokens")
         val KEY_THEME_MODE = stringPreferencesKey("theme_mode")
         val KEY_DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
+        val KEY_WAIT_FOR_DEBUGGER_NEXT_LAUNCH = booleanPreferencesKey("wait_for_debugger_next_launch")
     }
 
     override fun observeAiConfiguration(): Flow<AiConfiguration> {
@@ -169,6 +170,50 @@ class PreferencesRepositoryImpl @Inject constructor(
             Result.success(Unit)
         } catch (e: IOException) {
             Result.failure(IOException("Failed to save theme preferences", e))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override fun observeWaitForDebuggerOnNextLaunch(): Flow<Boolean> {
+        return context.dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(androidx.datastore.preferences.core.emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[KEY_WAIT_FOR_DEBUGGER_NEXT_LAUNCH] ?: false
+            }
+    }
+
+    override suspend fun setWaitForDebuggerOnNextLaunch(enabled: Boolean): Result<Unit> {
+        return try {
+            context.dataStore.edit { preferences ->
+                preferences[KEY_WAIT_FOR_DEBUGGER_NEXT_LAUNCH] = enabled
+            }
+
+            Result.success(Unit)
+        } catch (e: IOException) {
+            Result.failure(IOException("Failed to persist debugger wait preference", e))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun consumeWaitForDebuggerOnNextLaunch(): Result<Boolean> {
+        return try {
+            var shouldWait = false
+            context.dataStore.edit { preferences ->
+                shouldWait = preferences[KEY_WAIT_FOR_DEBUGGER_NEXT_LAUNCH] ?: false
+                preferences[KEY_WAIT_FOR_DEBUGGER_NEXT_LAUNCH] = false
+            }
+
+            Result.success(shouldWait)
+        } catch (e: IOException) {
+            Result.failure(IOException("Failed to consume debugger wait preference", e))
         } catch (e: Exception) {
             Result.failure(e)
         }

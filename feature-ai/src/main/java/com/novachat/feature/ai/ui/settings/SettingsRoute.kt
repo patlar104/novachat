@@ -115,7 +115,11 @@ fun SettingsScreen(
                 SettingsScreenContent(
                     configuration = state.configuration,
                     offlineCapability = state.offlineCapability,
+                    waitForDebuggerOnNextLaunch = state.waitForDebuggerOnNextLaunch,
                     onChangeAiMode = { viewModel.onEvent(SettingsUiEvent.ChangeAiMode(it)) },
+                    onToggleWaitForDebuggerOnNextLaunch = {
+                        viewModel.onEvent(SettingsUiEvent.ToggleWaitForDebuggerOnNextLaunch(it))
+                    },
                     themePrefs = themePrefs,
                     onThemeModeChange = { themeViewModel.setThemeMode(it) },
                     onDynamicColorChange = { themeViewModel.setDynamicColor(it) },

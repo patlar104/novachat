@@ -15,6 +15,9 @@ Last updated: 2026-02-11
 ### Composition root (`app`)
 
 - `NovaChatApplication` initializes Firebase and startup auth guard behavior.
+- In debug builds, `NovaChatApplication` can consume a one-shot
+  `wait_for_debugger_next_launch` preference and pause startup for debugger
+  attachment with timeout fallback.
 - `MainActivity` wires theme, navigation destinations, and screen ViewModels.
 
 ### Feature layer (`feature-ai`)
@@ -24,6 +27,8 @@ Last updated: 2026-02-11
 - Models: `Message`, `AiConfiguration`, `ThemePreferences`, `OfflineCapability`.
 - Repositories: `AiRepository`, `MessageRepository`, `PreferencesRepository`.
 - Use cases are split one-per-file.
+- `PreferencesRepository` also exposes developer debug-startup preference
+  operations (`observe`, `set`, `consume`) for debugger wait on next launch.
 
 #### Data
 
@@ -43,6 +48,8 @@ Last updated: 2026-02-11
 
 - Chat UI split into route/content/components/previews.
 - Settings UI split into route/content components.
+- Settings includes a debug-only developer option to arm one-shot wait for
+  debugger on next app launch.
 
 ## Core modules
 

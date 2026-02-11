@@ -17,4 +17,10 @@ interface PreferencesRepository {
     fun observeThemePreferences(): Flow<ThemePreferences>
 
     suspend fun updateThemePreferences(preferences: ThemePreferences): Result<Unit>
+
+    fun observeWaitForDebuggerOnNextLaunch(): Flow<Boolean>
+
+    suspend fun setWaitForDebuggerOnNextLaunch(enabled: Boolean): Result<Unit>
+
+    suspend fun consumeWaitForDebuggerOnNextLaunch(): Result<Boolean>
 }

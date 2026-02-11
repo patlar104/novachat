@@ -10,7 +10,8 @@ sealed interface SettingsUiState {
 
     data class Success(
         val configuration: AiConfiguration,
-        val offlineCapability: OfflineCapability
+        val offlineCapability: OfflineCapability,
+        val waitForDebuggerOnNextLaunch: Boolean
     ) : SettingsUiState {
         fun isValidConfiguration(): Boolean = configuration.validate().isSuccess
 

@@ -6,6 +6,8 @@ import com.novachat.feature.ai.domain.model.AiMode
 import com.novachat.feature.ai.domain.model.OfflineCapability
 import com.novachat.feature.ai.domain.usecase.ObserveAiConfigurationUseCase
 import com.novachat.feature.ai.domain.usecase.ObserveAiModeAvailabilityUseCase
+import com.novachat.feature.ai.domain.usecase.ObserveWaitForDebuggerOnNextLaunchUseCase
+import com.novachat.feature.ai.domain.usecase.SetWaitForDebuggerOnNextLaunchUseCase
 import com.novachat.feature.ai.domain.usecase.UpdateAiConfigurationUseCase
 import com.novachat.feature.ai.presentation.model.SettingsUiEvent
 import com.novachat.feature.ai.presentation.model.SettingsUiState
@@ -26,7 +28,9 @@ import kotlinx.coroutines.launch
 class SettingsViewModel @Inject constructor(
     private val observeAiConfigurationUseCase: ObserveAiConfigurationUseCase,
     private val observeAiModeAvailabilityUseCase: ObserveAiModeAvailabilityUseCase,
-    private val updateAiConfigurationUseCase: UpdateAiConfigurationUseCase
+    private val observeWaitForDebuggerOnNextLaunchUseCase: ObserveWaitForDebuggerOnNextLaunchUseCase,
+    private val setWaitForDebuggerOnNextLaunchUseCase: SetWaitForDebuggerOnNextLaunchUseCase,
+    private val updateAiConfigurationUseCase: UpdateAiConfigurationUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Initial)
@@ -43,11 +47,13 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 observeAiConfigurationUseCase(),
-                observeAiModeAvailabilityUseCase()
-            ) { configuration, offlineCapability ->
+                observeAiModeAvailabilityUseCase(),
+                observeWaitForDebuggerOnNextLaunchUseCase(),
+            ) { configuration, offlineCapability, waitForDebuggerOnNextLaunch ->
                 SettingsUiState.Success(
                     configuration = configuration,
-                    offlineCapability = offlineCapability
+                    offlineCapability = offlineCapability,
+                    waitForDebuggerOnNextLaunch = waitForDebuggerOnNextLaunch,
                 )
             }
                 .catch { exception ->
@@ -66,6 +72,8 @@ class SettingsViewModel @Inject constructor(
     fun onEvent(event: SettingsUiEvent) {
         when (event) {
             is SettingsUiEvent.ChangeAiMode -> handleChangeAiMode(event.mode)
+            is SettingsUiEvent.ToggleWaitForDebuggerOnNextLaunch ->
+                handleToggleWaitForDebuggerOnNextLaunch(event.enabled)
             is SettingsUiEvent.NavigateBack -> handleNavigateBack()
         }
     }
@@ -114,6 +122,37 @@ class SettingsViewModel @Inject constructor(
 
     private fun handleNavigateBack() {
         emitEffect(UiEffect.NavigateBack)
+    }
+
+    private fun handleToggleWaitForDebuggerOnNextLaunch(enabled: Boolean) {
+        viewModelScope.launch {
+            val result = setWaitForDebuggerOnNextLaunchUseCase(enabled)
+            result.fold(
+                onSuccess = {
+                    if (enabled) {
+                        emitEffect(
+                            UiEffect.ShowSnackbar(
+                                message = "Wait for debugger is armed for next launch. " +
+                                    "Close the app and relaunch with Debug.",
+                                actionLabel = "Dismiss"
+                            )
+                        )
+                    } else {
+                        emitEffect(
+                            UiEffect.ShowToast("Wait for debugger on next launch disabled")
+                        )
+                    }
+                },
+                onFailure = { exception ->
+                    emitEffect(
+                        UiEffect.ShowSnackbar(
+                            message = "Failed to update debugger wait setting: ${exception.message}",
+                            actionLabel = "Dismiss"
+                        )
+                    )
+                }
+            )
+        }
     }
 
     private fun emitEffect(effect: UiEffect) {
