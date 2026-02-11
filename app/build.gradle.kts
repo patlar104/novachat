@@ -96,7 +96,6 @@ dependencies {
     // Note: All KTX modules removed - KTX functionality now in main modules (BOM v34.0.0+)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.functions)
-    implementation(libs.firebase.dataconnect)
 
     // Hilt
     implementation(libs.hilt.android)
@@ -109,8 +108,6 @@ dependencies {
     // implementation("androidx.ai.edge.aicore:aicore:1.0.0-alpha01")
     
     // Modules
-    implementation(project(":core-common"))
-    implementation(project(":core-network"))
     implementation(project(":feature-ai"))
 
     // Testing - Android Instrumented Tests
