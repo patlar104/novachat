@@ -28,10 +28,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Provision google-services.json for CI
+      - name: Provision google-services.json for release
         uses: ./.github/actions/provision-google-services
         with:
           google-services-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          strict: "true"
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4

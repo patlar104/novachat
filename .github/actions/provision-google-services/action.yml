@@ -5,6 +5,10 @@ inputs:
   google-services-json:
     description: Raw google-services.json contents from secrets
     required: false
+  strict:
+    description: Fail when a real Firebase config is unavailable (no placeholder fallback)
+    required: false
+    default: "false"
 
 runs:
   using: composite
@@ -13,12 +17,17 @@ runs:
       shell: bash
       env:
         GOOGLE_SERVICES_JSON: ${{ inputs.google-services-json }}
+        STRICT_MODE: ${{ inputs.strict }}
       run: |
         if [ -f app/google-services.json ]; then
           echo "google-services.json already present"
         elif [ -n "$GOOGLE_SERVICES_JSON" ]; then
           printf '%s' "$GOOGLE_SERVICES_JSON" > app/google-services.json
           echo "google-services.json written from secret"
+        elif [ "$STRICT_MODE" = "true" ]; then
+          echo "Missing GOOGLE_SERVICES_JSON and no app/google-services.json present."
+          echo "Strict mode is enabled; refusing to use placeholder Firebase config."
+          exit 1
         else
           cat > app/google-services.json <<'JSON'
         {
@@ -46,4 +55,12 @@ runs:
         }
         JSON
           echo "google-services.json written from CI placeholder"
+        fi
+
+        if [ "$STRICT_MODE" = "true" ]; then
+          if grep -Eq '"project_id"\s*:\s*"ci-placeholder"|AIzaSyDUMMY_PLACEHOLDER_KEY' app/google-services.json; then
+            echo "Placeholder Firebase config detected in strict mode."
+            echo "Provide a real GOOGLE_SERVICES_JSON secret for release builds."
+            exit 1
+          fi
         fi
