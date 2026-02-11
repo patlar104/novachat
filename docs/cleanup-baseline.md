@@ -30,7 +30,7 @@ Result: build and lint both passed.
 Command:
 
 ```bash
-cd /Users/patrick/dev/projects/novachat && npm run format:check
+npm run format:check
 ```
 
 Result: all matched files formatted.

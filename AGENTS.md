@@ -30,7 +30,7 @@ Run these before finalizing substantial changes:
 ```bash
 ./gradlew :app:assembleDebug :feature-ai:testDebugUnitTest
 (cd functions && npm run build && npm run lint && npm test)
-(cd /Users/patrick/dev/projects/novachat && npm run format:check)
+npm run format:check
 ```
 
 ## Architecture guardrails

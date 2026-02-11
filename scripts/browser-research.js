@@ -11,7 +11,6 @@
  */
 
 const { chromium } = require("playwright");
-const path = require("path");
 
 const url = process.argv[2];
 
