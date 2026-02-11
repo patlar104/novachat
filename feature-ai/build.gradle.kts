@@ -66,11 +66,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
 
-    // Firebase
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.functions)
-    implementation(libs.firebase.auth)
-
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

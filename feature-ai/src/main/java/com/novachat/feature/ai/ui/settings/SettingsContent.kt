@@ -2,195 +2,35 @@ package com.novachat.feature.ai.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.novachat.feature.ai.R
 import com.novachat.feature.ai.domain.model.AiConfiguration
 import com.novachat.feature.ai.domain.model.AiMode
+import com.novachat.feature.ai.domain.model.OfflineCapability
 import com.novachat.feature.ai.domain.model.ThemeMode
 import com.novachat.feature.ai.domain.model.ThemePreferences
-import com.novachat.feature.ai.presentation.model.SettingsUiEvent
-import com.novachat.feature.ai.presentation.model.SettingsUiState
-import com.novachat.feature.ai.presentation.model.UiEffect
-import com.novachat.feature.ai.presentation.viewmodel.SettingsViewModel
-import com.novachat.feature.ai.presentation.viewmodel.ThemeViewModel
 import com.novachat.feature.ai.ui.theme.NovaChatTheme
-
-/**
- * Settings screen composable using the new architecture.
- *
- * Demonstrates:
- * - Observing UI state with sealed classes
- * - Handling UI effects
- * - Form validation
- * - Configuration management
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SettingsScreen(
-    viewModel: SettingsViewModel,
-    themeViewModel: ThemeViewModel,
-    onNavigateBack: () -> Unit
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    // Handle one-time effects
-    LaunchedEffect(Unit) {
-        viewModel.uiEffect.collect { effect ->
-            when (effect) {
-                is UiEffect.ShowToast -> {
-                    snackbarHostState.showSnackbar(
-                        message = effect.message,
-                        duration = SnackbarDuration.Short
-                    )
-                }
-                is UiEffect.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(
-                        message = effect.message,
-                        actionLabel = effect.actionLabel,
-                        duration = SnackbarDuration.Long
-                    )
-                }
-                is UiEffect.NavigateBack -> onNavigateBack()
-                else -> Unit
-            }
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.settings_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { viewModel.onEvent(SettingsUiEvent.NavigateBack) }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { paddingValues ->
-        when (val state = uiState) {
-            is SettingsUiState.Initial -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            is SettingsUiState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            is SettingsUiState.Success -> {
-                val themePrefs by themeViewModel.themePreferences.collectAsStateWithLifecycle(
-                    ThemePreferences.DEFAULT
-                )
-                SettingsScreenContent(
-                    configuration = state.configuration,
-                    onChangeAiMode = { viewModel.onEvent(SettingsUiEvent.ChangeAiMode(it)) },
-                    themePrefs = themePrefs,
-                    onThemeModeChange = { themeViewModel.setThemeMode(it) },
-                    onDynamicColorChange = { themeViewModel.setDynamicColor(it) },
-                    modifier = Modifier.padding(paddingValues)
-                )
-            }
-
-            is SettingsUiState.Error -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(32.dp)
-                    ) {
-                        Text(
-                            text = "❌",
-                            style = MaterialTheme.typography.displayLarge
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = state.message,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 private fun ThemeSection(
@@ -257,12 +97,15 @@ private fun ThemeSection(
 @Composable
 fun SettingsScreenContent(
     configuration: AiConfiguration,
+    offlineCapability: OfflineCapability,
     onChangeAiMode: (AiMode) -> Unit,
     themePrefs: ThemePreferences,
     onThemeModeChange: (ThemeMode) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val offlineEnabled = offlineCapability is OfflineCapability.Available
+    val offlineReason = (offlineCapability as? OfflineCapability.Unavailable)?.reason
 
     Column(
         modifier = modifier
@@ -277,7 +120,6 @@ fun SettingsScreenContent(
             onDynamicColorChange = onDynamicColorChange
         )
 
-        // AI Mode Selection
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -289,7 +131,6 @@ fun SettingsScreenContent(
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                // Online Mode
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -307,21 +148,34 @@ fun SettingsScreenContent(
                     )
                 }
 
-                // Offline Mode
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onChangeAiMode(AiMode.OFFLINE) }
+                        .clickable(enabled = offlineEnabled) { onChangeAiMode(AiMode.OFFLINE) }
                         .padding(vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     RadioButton(
                         selected = configuration.mode == AiMode.OFFLINE,
-                        onClick = { onChangeAiMode(AiMode.OFFLINE) }
+                        onClick = { onChangeAiMode(AiMode.OFFLINE) },
+                        enabled = offlineEnabled
                     )
                     Text(
                         text = stringResource(R.string.offline_mode),
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = if (offlineEnabled) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        }
+                    )
+                }
+
+                if (offlineReason != null) {
+                    Text(
+                        text = offlineReason,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
 
@@ -334,7 +188,6 @@ fun SettingsScreenContent(
             }
         }
 
-        // Online Mode Info Card
         if (configuration.mode == AiMode.ONLINE) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -359,7 +212,6 @@ fun SettingsScreenContent(
             }
         }
 
-        // Information Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -377,7 +229,7 @@ fun SettingsScreenContent(
                 )
 
                 Text(
-                    text = "NovaChat is an AI chatbot assistant that supports both online (Google Gemini) and offline (on-device) AI models.",
+                    text = "NovaChat is an AI chatbot assistant that supports online and scaffolded offline AI modes.",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -392,16 +244,12 @@ fun SettingsScreenContent(
     }
 }
 
-// ---------------------- Previews ----------------------
-
 private val mockOnlineConfig = AiConfiguration(
-    mode = AiMode.ONLINE,
-    apiKey = null, // API key not required - Firebase Functions handles it
+    mode = AiMode.ONLINE
 )
 
 private val mockOfflineConfig = AiConfiguration(
-    mode = AiMode.OFFLINE,
-    apiKey = null
+    mode = AiMode.OFFLINE
 )
 
 @Preview(showBackground = true, name = "Settings - Online Mode")
@@ -410,6 +258,7 @@ fun SettingsScreenContentOnlinePreview() {
     NovaChatTheme {
         SettingsScreenContent(
             configuration = mockOnlineConfig,
+            offlineCapability = OfflineCapability.Unavailable("Offline model not installed"),
             onChangeAiMode = {},
             themePrefs = ThemePreferences.DEFAULT,
             onThemeModeChange = {},
@@ -424,6 +273,7 @@ fun SettingsScreenContentOfflinePreview() {
     NovaChatTheme {
         SettingsScreenContent(
             configuration = mockOfflineConfig,
+            offlineCapability = OfflineCapability.Available,
             onChangeAiMode = {},
             themePrefs = ThemePreferences.DEFAULT,
             onThemeModeChange = {},

@@ -3,6 +3,8 @@ package com.novachat.feature.ai.di
 import com.novachat.feature.ai.data.repository.AiRepositoryImpl
 import com.novachat.feature.ai.data.repository.MessageRepositoryImpl
 import com.novachat.feature.ai.data.repository.PreferencesRepositoryImpl
+import com.novachat.feature.ai.data.offline.UnavailableOfflineAiEngine
+import com.novachat.feature.ai.domain.offline.OfflineAiEngine
 import com.novachat.feature.ai.domain.repository.AiRepository
 import com.novachat.feature.ai.domain.repository.MessageRepository
 import com.novachat.feature.ai.domain.repository.PreferencesRepository
@@ -39,4 +41,10 @@ abstract class RepositoryModule {
     abstract fun bindPreferencesRepository(
         impl: PreferencesRepositoryImpl
     ): PreferencesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindOfflineAiEngine(
+        impl: UnavailableOfflineAiEngine
+    ): OfflineAiEngine
 }
