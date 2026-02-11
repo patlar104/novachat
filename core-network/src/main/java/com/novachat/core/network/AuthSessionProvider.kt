@@ -1,6 +1,7 @@
 package com.novachat.core.network
 
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 
 class AuthSessionProvider(
@@ -20,6 +21,8 @@ class AuthSessionProvider(
             } else {
                 Result.success(Unit)
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(
                 SecurityException(

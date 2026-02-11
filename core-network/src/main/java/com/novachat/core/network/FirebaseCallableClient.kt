@@ -1,6 +1,7 @@
 package com.novachat.core.network
 
 import com.google.firebase.functions.FirebaseFunctions
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 
 class FirebaseCallableClient(
@@ -13,6 +14,8 @@ class FirebaseCallableClient(
             @Suppress("UNCHECKED_CAST")
             val payload = (result.data as? Map<String, Any?>) ?: emptyMap()
             Result.success(payload)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
