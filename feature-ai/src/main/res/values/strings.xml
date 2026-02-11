@@ -42,9 +42,6 @@
     <string name="developer_options">Developer Options</string>
     <string name="wait_for_debugger_next_launch">Wait for debugger on next launch</string>
     <string name="wait_for_debugger_next_launch_summary">Pauses app startup until a debugger attaches once, then auto-resets.</string>
-    <string name="wait_for_debugger_relaunch_message">Wait for debugger is armed for next launch. Close the app and relaunch with Debug.</string>
-    <string name="wait_for_debugger_disabled_message">Wait for debugger on next launch disabled</string>
-    <string name="wait_for_debugger_update_error">Failed to update debugger wait setting</string>
 
     <!-- Online mode info -->
     <string name="online_mode_info_title">Online Mode</string>
