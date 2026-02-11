@@ -6,6 +6,7 @@ import com.novachat.core.common.error.ErrorMapper
 import com.novachat.core.network.AiProxyRemoteDataSource
 import com.novachat.core.network.AiProxyRequest
 import com.novachat.core.network.AuthSessionProvider
+import com.novachat.core.network.FirebaseFunctionsErrorMapper
 import com.novachat.core.network.PlayServicesChecker
 import com.novachat.feature.ai.domain.model.AiConfiguration
 import com.novachat.feature.ai.domain.model.AiMode
@@ -100,11 +101,12 @@ class AiRepositoryImpl @Inject constructor(
                     Result.success(response.response)
                 },
                 onFailure = { throwable ->
-                    val mapped = mapOnlineThrowable(throwable)
+                    val mappedAppError = mapOnlineAppError(throwable)
+                    val mapped = mapOnlineThrowable(mappedAppError, throwable)
                     updateServiceStatus(
                         AiServiceStatus.Error(
                             error = mapped,
-                            isRecoverable = isRecoverable(throwable)
+                            isRecoverable = isRecoverable(throwable, mappedAppError)
                         )
                     )
                     Result.failure(mapped)
@@ -157,23 +159,26 @@ class AiRepositoryImpl @Inject constructor(
         serviceStatusFlow.value = status
     }
 
-    private fun isRecoverable(throwable: Throwable): Boolean {
-        return when (throwable) {
-            is SecurityException -> true
-            is IllegalArgumentException -> false
+    private fun isRecoverable(throwable: Throwable, appError: AppError): Boolean {
+        FirebaseFunctionsErrorMapper.isRecoverable(throwable)?.let { return it }
+        return when (appError) {
+            is AppError.Validation -> false
             else -> true
         }
     }
 
-    private fun mapOnlineThrowable(throwable: Throwable): Exception {
-        val mapped = ErrorMapper.map(throwable)
+    private fun mapOnlineAppError(throwable: Throwable): AppError {
+        return FirebaseFunctionsErrorMapper.map(throwable) ?: ErrorMapper.map(throwable)
+    }
+
+    private fun mapOnlineThrowable(mapped: AppError, throwable: Throwable): Exception {
         val message = when (mapped) {
             is AppError.Network -> "Network error. Please check your connection and try again."
-            is AppError.Unauthorized -> "Authentication error. Please retry sign-in."
+            is AppError.Unauthorized -> mapped.message
             is AppError.Validation -> mapped.message
             is AppError.ServiceUnavailable -> mapped.message
             is AppError.NotFound -> mapped.message
-            is AppError.Unknown -> "Unexpected error: ${mapped.message}"
+            is AppError.Unknown -> "Unexpected error. Please try again."
         }
 
         return Exception(message, throwable)
