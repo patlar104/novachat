@@ -17,11 +17,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -56,6 +59,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var consumeWaitForDebuggerOnNextLaunchUseCase: ConsumeWaitForDebuggerOnNextLaunchUseCase
 
+    private var isWaitingForDebugger by mutableStateOf(false)
+
     private companion object {
         const val TAG = "MainActivity"
         const val DEBUGGER_ATTACH_TIMEOUT_MS = 10_000L
@@ -66,13 +71,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        setContent {
+            if (isWaitingForDebugger) {
+                DebuggerWaitContent()
+            } else {
+                MainContent()
+            }
+        }
+
         lifecycleScope.launch {
             val shouldWaitForDebugger = consumeDebuggerWaitFlag()
             if (shouldWaitForDebugger && !Debug.isDebuggerConnected()) {
-                setContent { DebuggerWaitContent() }
+                isWaitingForDebugger = true
                 waitForDebuggerWithTimeout()
+                isWaitingForDebugger = false
             }
-            setContent { MainContent() }
         }
     }
 
@@ -124,7 +137,7 @@ private fun DebuggerWaitContent() {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 CircularProgressIndicator()
                 androidx.compose.material3.Text(
-                    text = "Waiting for debugger...",
+                    text = stringResource(R.string.waiting_for_debugger),
                     modifier = Modifier.padding(top = 16.dp)
                 )
             }
