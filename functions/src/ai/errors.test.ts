@@ -53,12 +53,12 @@ test("mapToHttpsError maps quota failures to unavailable", () => {
   assert.equal(mapped.details, undefined);
 });
 
-test("mapToHttpsError maps missing gemini key to internal config error", () => {
+test("mapToHttpsError maps missing gemini key to failed-precondition config error", () => {
   const mapped = mapToHttpsError(
     new Error("GEMINI_API_KEY is not configured in Firebase environment")
   );
 
-  assert.equal(mapped.code, "internal");
+  assert.equal(mapped.code, "failed-precondition");
   assert.equal(
     mapped.message,
     "AI service configuration error. Please contact support."

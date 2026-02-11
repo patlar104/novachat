@@ -18,7 +18,7 @@ export function mapToHttpsError(error: unknown): HttpsError {
 
   if (CONFIGURATION_PATTERN.test(message)) {
     return new HttpsError(
-      "internal",
+      "failed-precondition",
       "AI service configuration error. Please contact support."
     );
   }
