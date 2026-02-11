@@ -112,8 +112,6 @@ dependencies {
     implementation(project(":core-common"))
     implementation(project(":core-network"))
     implementation(project(":feature-ai"))
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.config)
 
     // Testing - Android Instrumented Tests
     testImplementation(libs.hilt.android.testing)

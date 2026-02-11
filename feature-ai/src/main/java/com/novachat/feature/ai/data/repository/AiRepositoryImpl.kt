@@ -1,6 +1,8 @@
 package com.novachat.feature.ai.data.repository
 
 import android.content.Context
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
@@ -39,6 +41,7 @@ class AiRepositoryImpl @Inject constructor(
 
     private val functions: FirebaseFunctions = FirebaseFunctions.getInstance("us-central1")
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val googleApiAvailability: GoogleApiAvailability = GoogleApiAvailability.getInstance()
 
     /**
      * Current service status.
@@ -105,11 +108,20 @@ class AiRepositoryImpl @Inject constructor(
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
-                // Ensure user is authenticated (required for Firebase Functions)
-                if (auth.currentUser == null) {
-                    val error = SecurityException(
-                        "Authentication required. Please wait for sign-in to complete."
+                val playServicesStatus = ensureGooglePlayServicesAvailable()
+                if (playServicesStatus.isFailure) {
+                    val error = playServicesStatus.exceptionOrNull()
+                        ?: SecurityException("Google Play Services unavailable")
+                    updateServiceStatus(
+                        AiServiceStatus.Error(error = error, isRecoverable = true)
                     )
+                    return@withContext Result.failure(error)
+                }
+
+                val authStatus = ensureAuthenticatedForOnlineCall()
+                if (authStatus.isFailure) {
+                    val error = authStatus.exceptionOrNull()
+                        ?: SecurityException("Unable to authenticate with Firebase")
                     updateServiceStatus(
                         AiServiceStatus.Error(error = error, isRecoverable = true)
                     )
@@ -176,7 +188,7 @@ class AiRepositoryImpl @Inject constructor(
                 // Firebase Functions error
                 val errorMessage = when (e.code) {
                     FirebaseFunctionsException.Code.UNAUTHENTICATED ->
-                        "Authentication required. Please sign in."
+                        "Authentication required. Please check Google Play Services and retry."
                     FirebaseFunctionsException.Code.PERMISSION_DENIED ->
                         "Permission denied. Please check your account."
                     FirebaseFunctionsException.Code.INVALID_ARGUMENT ->
@@ -202,7 +214,10 @@ class AiRepositoryImpl @Inject constructor(
 
             } catch (e: SecurityException) {
                 // Auth error
-                val error = SecurityException("Authentication error: ${e.message}", e)
+                val error = SecurityException(
+                    "Authentication/Play Services error: ${e.message}",
+                    e
+                )
                 updateServiceStatus(
                     AiServiceStatus.Error(error = error, isRecoverable = true)
                 )
@@ -263,7 +278,7 @@ class AiRepositoryImpl @Inject constructor(
     /**
      * Checks if the specified AI mode is available on this device.
      *
-     * For ONLINE mode: Always returns true (assuming network is available)
+     * For ONLINE mode: Requires Google Play Services availability
      * For OFFLINE mode: Returns false until AICore is available
      *
      * @param mode The AI mode to check
@@ -272,9 +287,8 @@ class AiRepositoryImpl @Inject constructor(
     override suspend fun isModeAvailable(mode: AiMode): Boolean {
         return when (mode) {
             AiMode.ONLINE -> {
-                // Online mode is always available if we have network
-                // In a production app, you might want to check actual connectivity
-                true
+                googleApiAvailability.isGooglePlayServicesAvailable(context) ==
+                    ConnectionResult.SUCCESS
             }
             AiMode.OFFLINE -> {
                 // AICore is not yet available
@@ -301,6 +315,49 @@ class AiRepositoryImpl @Inject constructor(
      */
     private fun updateServiceStatus(status: AiServiceStatus) {
         serviceStatusFlow.value = status
+    }
+
+    /**
+     * Returns failure when Google Play Services cannot service Firebase calls.
+     */
+    private fun ensureGooglePlayServicesAvailable(): Result<Unit> {
+        val availabilityCode = googleApiAvailability.isGooglePlayServicesAvailable(context)
+        if (availabilityCode == ConnectionResult.SUCCESS) {
+            return Result.success(Unit)
+        }
+
+        val errorString = googleApiAvailability.getErrorString(availabilityCode)
+        val message =
+            "Google Play Services is unavailable ($errorString / code=$availabilityCode). " +
+                "Update Play Services in system settings and retry."
+        return Result.failure(SecurityException(message))
+    }
+
+    /**
+     * Ensures an authenticated Firebase user is present before a callable request.
+     */
+    private suspend fun ensureAuthenticatedForOnlineCall(): Result<Unit> {
+        return try {
+            if (auth.currentUser == null) {
+                auth.signInAnonymously().await()
+            }
+            if (auth.currentUser == null) {
+                Result.failure(
+                    SecurityException(
+                        "Anonymous Firebase sign-in did not complete. Please retry."
+                    )
+                )
+            } else {
+                Result.success(Unit)
+            }
+        } catch (e: Exception) {
+            Result.failure(
+                SecurityException(
+                    "Failed to sign in with Firebase. Check Play Services and network, then retry.",
+                    e
+                )
+            )
+        }
     }
 
     /**

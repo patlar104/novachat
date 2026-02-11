@@ -1,6 +1,9 @@
 package com.novachat.app
 
 import android.app.Application
+import android.util.Log
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.HiltAndroidApp
@@ -25,6 +28,10 @@ import kotlinx.coroutines.tasks.await
 class NovaChatApplication : Application() {
 
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    private companion object {
+        const val TAG = "NovaChatApplication"
+    }
     
     override fun onCreate() {
         super.onCreate()
@@ -33,8 +40,28 @@ class NovaChatApplication : Application() {
         
         // Initialize Firebase Auth and sign in anonymously
         // This is required for Firebase Functions authentication
-        initializeFirebaseAuth()
+        initializeFirebaseAuthIfPlayServicesAvailable()
         
+    }
+
+    /**
+     * Starts auth initialization only when Google Play Services is ready.
+     *
+     * On devices where Play Services is missing/outdated, we skip eager sign-in and
+     * rely on request-time checks to surface recoverable guidance.
+     */
+    private fun initializeFirebaseAuthIfPlayServicesAvailable() {
+        val apiAvailability = GoogleApiAvailability.getInstance()
+        val availabilityCode = apiAvailability.isGooglePlayServicesAvailable(this)
+        if (availabilityCode != ConnectionResult.SUCCESS) {
+            Log.w(
+                TAG,
+                "Skipping startup Firebase auth init: Google Play Services unavailable " +
+                    "(${apiAvailability.getErrorString(availabilityCode)} / code=$availabilityCode)"
+            )
+            return
+        }
+        initializeFirebaseAuth()
     }
     
     /**
@@ -52,7 +79,7 @@ class NovaChatApplication : Application() {
                 }
             } catch (e: Exception) {
                 // Log error but don't crash - app can still work
-                android.util.Log.e("NovaChatApplication", "Failed to sign in anonymously", e)
+                Log.e(TAG, "Failed to sign in anonymously at startup", e)
             }
         }
     }
