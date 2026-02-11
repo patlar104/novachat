@@ -33,7 +33,11 @@ export const aiProxy = onCall(
 
       return result;
     } catch (error: unknown) {
-      functions.logger.error("AI Proxy error:", error);
+      functions.logger.error("AI Proxy error", {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        error,
+      });
       throw mapToHttpsError(error);
     }
   }
