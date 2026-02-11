@@ -8,6 +8,7 @@ import com.novachat.feature.ai.domain.repository.AiRepository
 import com.novachat.feature.ai.domain.repository.MessageRepository
 import com.novachat.feature.ai.domain.repository.PreferencesRepository
 import kotlinx.coroutines.flow.first
+import javax.inject.Inject
 
 /**
  * Use case for sending a user message and getting an AI response.
@@ -27,7 +28,7 @@ import kotlinx.coroutines.flow.first
  *
  * @since 1.0.0
  */
-class SendMessageUseCase(
+class SendMessageUseCase @Inject constructor(
     private val messageRepository: MessageRepository,
     private val aiRepository: AiRepository,
     private val preferencesRepository: PreferencesRepository
@@ -169,7 +170,7 @@ class SendMessageUseCase(
  *
  * @since 1.0.0
  */
-class ObserveMessagesUseCase(
+class ObserveMessagesUseCase @Inject constructor(
     private val messageRepository: MessageRepository
 ) {
     /**
@@ -193,7 +194,7 @@ class ObserveMessagesUseCase(
  *
  * @since 1.0.0
  */
-class ClearConversationUseCase(
+class ClearConversationUseCase @Inject constructor(
     private val messageRepository: MessageRepository
 ) {
     /**
@@ -220,7 +221,7 @@ class ClearConversationUseCase(
  *
  * @since 1.0.0
  */
-class UpdateAiConfigurationUseCase(
+class UpdateAiConfigurationUseCase @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
     private val aiRepository: AiRepository
 ) {
@@ -265,7 +266,7 @@ class UpdateAiConfigurationUseCase(
  *
  * @since 1.0.0
  */
-class ObserveAiConfigurationUseCase(
+class ObserveAiConfigurationUseCase @Inject constructor(
     private val preferencesRepository: PreferencesRepository
 ) {
     /**
@@ -290,7 +291,7 @@ class ObserveAiConfigurationUseCase(
  *
  * @since 1.0.0
  */
-class RetryMessageUseCase(
+class RetryMessageUseCase @Inject constructor(
     private val messageRepository: MessageRepository,
     private val aiRepository: AiRepository,
     private val preferencesRepository: PreferencesRepository
@@ -402,7 +403,7 @@ class RetryMessageUseCase(
  *
  * @since 1.0.0
  */
-class ObserveThemePreferencesUseCase(
+class ObserveThemePreferencesUseCase @Inject constructor(
     private val preferencesRepository: PreferencesRepository
 ) {
     operator fun invoke() = preferencesRepository.observeThemePreferences()
@@ -415,7 +416,7 @@ class ObserveThemePreferencesUseCase(
  *
  * @since 1.0.0
  */
-class UpdateThemePreferencesUseCase(
+class UpdateThemePreferencesUseCase @Inject constructor(
     private val preferencesRepository: PreferencesRepository
 ) {
     suspend operator fun invoke(preferences: ThemePreferences): Result<Unit> =

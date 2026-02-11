@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.services)
     alias(libs.plugins.android.junit)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
 }
 
 // Configure Kotlin compiler options for AGP 9.0+
@@ -78,6 +80,7 @@ dependencies {
     
     // Navigation
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
     
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -94,6 +97,10 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.functions)
     implementation(libs.firebase.dataconnect)
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
     
     // AICore for on-device AI
     // NOTE: AICore is experimental and not yet publicly available on Google Maven (as of Jan 2026)
@@ -109,6 +116,7 @@ dependencies {
     implementation(libs.firebase.config)
 
     // Testing - Android Instrumented Tests
+    testImplementation(libs.hilt.android.testing)
     androidTestImplementation(platform(libs.junit.bom))
     androidTestImplementation(libs.junit.jupiter.api)
     androidTestImplementation(libs.androidx.test.core)
@@ -116,6 +124,8 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
     
     // Testing - Debug
     debugImplementation(libs.androidx.compose.ui.tooling)

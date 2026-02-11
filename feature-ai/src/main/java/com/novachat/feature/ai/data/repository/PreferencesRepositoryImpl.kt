@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 /**
  * DataStore extension property for preferences.
@@ -48,8 +50,8 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
  *
  * @since 1.0.0
  */
-class PreferencesRepositoryImpl(
-    private val context: Context
+class PreferencesRepositoryImpl @Inject constructor(
+    @ApplicationContext private val context: Context
 ) : PreferencesRepository {
 
     /**

@@ -9,6 +9,8 @@ import com.novachat.feature.ai.domain.usecase.UpdateAiConfigurationUseCase
 import com.novachat.feature.ai.presentation.model.SettingsUiEvent
 import com.novachat.feature.ai.presentation.model.SettingsUiState
 import com.novachat.feature.ai.presentation.model.UiEffect
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,7 +37,8 @@ import kotlinx.coroutines.launch
  *
  * @since 1.0.0
  */
-class SettingsViewModel(
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val observeAiConfigurationUseCase: ObserveAiConfigurationUseCase,
     private val updateAiConfigurationUseCase: UpdateAiConfigurationUseCase

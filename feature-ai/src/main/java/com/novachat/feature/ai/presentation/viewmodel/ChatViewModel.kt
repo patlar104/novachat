@@ -12,6 +12,8 @@ import com.novachat.feature.ai.presentation.model.ChatUiEvent
 import com.novachat.feature.ai.presentation.model.ChatUiState
 import com.novachat.feature.ai.presentation.model.NavigationDestination
 import com.novachat.feature.ai.presentation.model.UiEffect
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,7 +46,8 @@ import kotlinx.coroutines.launch
  *
  * @since 1.0.0
  */
-class ChatViewModel(
+@HiltViewModel
+class ChatViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val sendMessageUseCase: SendMessageUseCase,
     private val observeMessagesUseCase: ObserveMessagesUseCase,

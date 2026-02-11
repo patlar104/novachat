@@ -2,11 +2,13 @@
 agp = "9.0.0"
 kotlin = "2.2.21"
 google-services = "4.4.4"
+ksp = "2.3.5"
 androidx-core = "1.17.0"
 lifecycle = "2.10.0"
 activity-compose = "1.12.3"
 compose-bom = "2026.01.01"
 navigation-compose = "2.9.7"
+hilt-navigation-compose = "1.3.0"
 coroutines = "1.10.2"
 firebase-bom = "34.9.0"
 datastore-preferences = "1.2.0"
@@ -27,6 +29,7 @@ firebase-analytics = "23.0.0"
 firebase-config = "23.0.1"
 play-services-base = "18.4.0"
 play-services-auth = "21.2.0"
+hilt = "2.59.1"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
@@ -44,6 +47,7 @@ androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 
@@ -80,6 +84,9 @@ firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics
 firebase-config = { group = "com.google.firebase", name = "firebase-config", version.ref = "firebase-config" }
 play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "play-services-base" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -88,3 +95,5 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-junit = { id = "de.mannodermaus.android-junit", version.ref = "android-junit" }
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

@@ -16,6 +16,8 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.UnknownHostException
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 /**
  * Implementation of AiRepository using Firebase Cloud Functions as a proxy.
@@ -31,8 +33,8 @@ import java.net.UnknownHostException
  *
  * @since 1.0.0
  */
-class AiRepositoryImpl(
-    private val context: Context
+class AiRepositoryImpl @Inject constructor(
+    @ApplicationContext private val context: Context
 ) : AiRepository {
 
     private val functions: FirebaseFunctions = FirebaseFunctions.getInstance("us-central1")

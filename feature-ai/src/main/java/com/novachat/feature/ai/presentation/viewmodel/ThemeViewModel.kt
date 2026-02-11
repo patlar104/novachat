@@ -6,6 +6,8 @@ import com.novachat.feature.ai.domain.model.ThemeMode
 import com.novachat.feature.ai.domain.model.ThemePreferences
 import com.novachat.feature.ai.domain.usecase.ObserveThemePreferencesUseCase
 import com.novachat.feature.ai.domain.usecase.UpdateThemePreferencesUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +21,8 @@ import kotlinx.coroutines.launch
  *
  * @since 1.0.0
  */
-class ThemeViewModel(
+@HiltViewModel
+class ThemeViewModel @Inject constructor(
     private val observeThemePreferencesUseCase: ObserveThemePreferencesUseCase,
     private val updateThemePreferencesUseCase: UpdateThemePreferencesUseCase
 ) : ViewModel() {

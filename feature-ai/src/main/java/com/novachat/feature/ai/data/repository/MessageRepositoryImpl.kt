@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import javax.inject.Inject
 
 /**
  * In-memory implementation of MessageRepository.
@@ -27,7 +28,7 @@ import kotlinx.coroutines.sync.withLock
  *
  * @since 1.0.0
  */
-class MessageRepositoryImpl : MessageRepository {
+class MessageRepositoryImpl @Inject constructor() : MessageRepository {
     /**
      * Internal storage for message entities.
      * Using LinkedHashMap to maintain insertion order.

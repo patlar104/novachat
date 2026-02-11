@@ -3,8 +3,7 @@ package com.novachat.app
 import android.app.Application
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.novachat.feature.ai.di.AiContainer
-import com.novachat.feature.ai.di.AiContainerProvider
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -22,15 +21,9 @@ import kotlinx.coroutines.tasks.await
  *
  * @since 1.0.0
  */
-class NovaChatApplication : Application(), AiContainerProvider {
-    
-    /**
-     * Dependency injection container.
-     * Created lazily on first access and reused throughout the app lifecycle.
-     */
-    override lateinit var aiContainer: AiContainer
-        private set
-    
+@HiltAndroidApp
+class NovaChatApplication : Application() {
+
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     
     override fun onCreate() {
@@ -42,8 +35,6 @@ class NovaChatApplication : Application(), AiContainerProvider {
         // This is required for Firebase Functions authentication
         initializeFirebaseAuth()
         
-        // Initialize dependency injection container
-        aiContainer = AiContainer(this)
     }
     
     /**

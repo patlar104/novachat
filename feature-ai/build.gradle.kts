@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.android.junit)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -16,7 +18,7 @@ android {
 
     defaultConfig {
         minSdk = 28
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.novachat.feature.ai.HiltTestRunner"
     }
 
     compileOptions {
@@ -69,6 +71,10 @@ dependencies {
     implementation(libs.firebase.functions)
     implementation(libs.firebase.auth)
 
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
     // DataStore for preferences
     implementation(libs.datastore.preferences)
 
@@ -81,6 +87,7 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.androidx.test.core)
+    testImplementation(libs.hilt.android.testing)
 
     // Testing - Android Instrumented Tests
     androidTestImplementation(platform(libs.junit.bom))
@@ -93,6 +100,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.play.services.base)
     androidTestImplementation(libs.play.services.auth)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
 
     // Testing - Debug
     debugImplementation(libs.androidx.compose.ui.tooling)

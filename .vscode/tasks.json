@@ -10,11 +10,35 @@
 			]
 		},
 		{
-			"label": "Run feature-ai unit tests",
+			"label": "Assemble debug APK",
 			"type": "shell",
 			"command": "./gradlew",
 			"args": [
-				":feature-ai:test"
+				"assembleDebug"
+			]
+		},
+		{
+			"label": "Run unit tests",
+			"type": "shell",
+			"command": "./gradlew",
+			"args": [
+				"test"
+			]
+		},
+		{
+			"label": "Run lint",
+			"type": "shell",
+			"command": "./gradlew",
+			"args": [
+				"lint"
+			]
+		},
+		{
+			"label": "Install debug APK",
+			"type": "shell",
+			"command": "./gradlew",
+			"args": [
+				"installDebug"
 			]
 		}
 	]
