@@ -32,10 +32,11 @@ export async function callGemini(
 ): Promise<GeminiResponse> {
   const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
-  const response = await fetch(`${geminiUrl}?key=${apiKey}`, {
+  const response = await fetch(geminiUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "x-goog-api-key": apiKey,
     },
     body: JSON.stringify({
       contents: [
