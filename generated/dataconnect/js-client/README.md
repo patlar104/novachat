@@ -65,7 +65,7 @@ The following is true for both the action shortcut function and the `QueryRef` f
 Below are examples of how to use the `example` connector's generated functions to execute each query. You can also follow the examples from the [Data Connect documentation](https://firebase.google.com/docs/data-connect/web-sdk#using-queries).
 
 ## ListMovies
-You can execute the `ListMovies` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+You can execute the `ListMovies` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [js-client/index.d.ts](./index.d.ts):
 ```typescript
 listMovies(): QueryPromise<ListMoviesData, undefined>;
 
@@ -98,7 +98,7 @@ The `ListMovies` query has no variables.
 ### Return Type
 Recall that executing the `ListMovies` query returns a `QueryPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `ListMoviesData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `ListMoviesData`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
 export interface ListMoviesData {
   movies: ({
@@ -161,7 +161,7 @@ executeQuery(ref).then((response) => {
 ```
 
 ## ListUsers
-You can execute the `ListUsers` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+You can execute the `ListUsers` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [js-client/index.d.ts](./index.d.ts):
 ```typescript
 listUsers(): QueryPromise<ListUsersData, undefined>;
 
@@ -194,7 +194,7 @@ The `ListUsers` query has no variables.
 ### Return Type
 Recall that executing the `ListUsers` query returns a `QueryPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `ListUsersData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `ListUsersData`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
 export interface ListUsersData {
   users: ({
@@ -255,7 +255,7 @@ executeQuery(ref).then((response) => {
 ```
 
 ## ListUserReviews
-You can execute the `ListUserReviews` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+You can execute the `ListUserReviews` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [js-client/index.d.ts](./index.d.ts):
 ```typescript
 listUserReviews(): QueryPromise<ListUserReviewsData, undefined>;
 
@@ -288,7 +288,7 @@ The `ListUserReviews` query has no variables.
 ### Return Type
 Recall that executing the `ListUserReviews` query returns a `QueryPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `ListUserReviewsData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `ListUserReviewsData`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
 export interface ListUserReviewsData {
   user?: {
@@ -358,7 +358,7 @@ executeQuery(ref).then((response) => {
 ```
 
 ## GetMovieById
-You can execute the `GetMovieById` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+You can execute the `GetMovieById` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [js-client/index.d.ts](./index.d.ts):
 ```typescript
 getMovieById(vars: GetMovieByIdVariables): QueryPromise<GetMovieByIdData, GetMovieByIdVariables>;
 
@@ -387,7 +387,7 @@ console.log(name);
 ```
 
 ### Variables
-The `GetMovieById` query requires an argument of type `GetMovieByIdVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `GetMovieById` query requires an argument of type `GetMovieByIdVariables`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
 export interface GetMovieByIdVariables {
@@ -397,7 +397,7 @@ export interface GetMovieByIdVariables {
 ### Return Type
 Recall that executing the `GetMovieById` query returns a `QueryPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `GetMovieByIdData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `GetMovieByIdData`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
 export interface GetMovieByIdData {
   movie?: {
@@ -486,7 +486,7 @@ executeQuery(ref).then((response) => {
 ```
 
 ## SearchMovie
-You can execute the `SearchMovie` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+You can execute the `SearchMovie` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [js-client/index.d.ts](./index.d.ts):
 ```typescript
 searchMovie(vars?: SearchMovieVariables): QueryPromise<SearchMovieData, SearchMovieVariables>;
 
@@ -515,7 +515,7 @@ console.log(name);
 ```
 
 ### Variables
-The `SearchMovie` query has an optional argument of type `SearchMovieVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `SearchMovie` query has an optional argument of type `SearchMovieVariables`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
 export interface SearchMovieVariables {
@@ -526,7 +526,7 @@ export interface SearchMovieVariables {
 ### Return Type
 Recall that executing the `SearchMovie` query returns a `QueryPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `SearchMovieData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `SearchMovieData`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
 export interface SearchMovieData {
   movies: ({
@@ -622,7 +622,7 @@ The following is true for both the action shortcut function and the `MutationRef
 Below are examples of how to use the `example` connector's generated functions to execute each mutation. You can also follow the examples from the [Data Connect documentation](https://firebase.google.com/docs/data-connect/web-sdk#using-mutations).
 
 ## CreateMovie
-You can execute the `CreateMovie` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+You can execute the `CreateMovie` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [js-client/index.d.ts](./index.d.ts):
 ```typescript
 createMovie(vars: CreateMovieVariables): MutationPromise<CreateMovieData, CreateMovieVariables>;
 
@@ -651,7 +651,7 @@ console.log(name);
 ```
 
 ### Variables
-The `CreateMovie` mutation requires an argument of type `CreateMovieVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `CreateMovie` mutation requires an argument of type `CreateMovieVariables`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
 export interface CreateMovieVariables {
@@ -663,7 +663,7 @@ export interface CreateMovieVariables {
 ### Return Type
 Recall that executing the `CreateMovie` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `CreateMovieData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `CreateMovieData`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
 export interface CreateMovieData {
   movie_insert: Movie_Key;
@@ -737,7 +737,7 @@ executeMutation(ref).then((response) => {
 ```
 
 ## UpsertUser
-You can execute the `UpsertUser` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+You can execute the `UpsertUser` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [js-client/index.d.ts](./index.d.ts):
 ```typescript
 upsertUser(vars: UpsertUserVariables): MutationPromise<UpsertUserData, UpsertUserVariables>;
 
@@ -766,7 +766,7 @@ console.log(name);
 ```
 
 ### Variables
-The `UpsertUser` mutation requires an argument of type `UpsertUserVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `UpsertUser` mutation requires an argument of type `UpsertUserVariables`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
 export interface UpsertUserVariables {
@@ -776,7 +776,7 @@ export interface UpsertUserVariables {
 ### Return Type
 Recall that executing the `UpsertUser` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `UpsertUserData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `UpsertUserData`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
 export interface UpsertUserData {
   user_upsert: User_Key;
@@ -846,7 +846,7 @@ executeMutation(ref).then((response) => {
 ```
 
 ## AddReview
-You can execute the `AddReview` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+You can execute the `AddReview` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [js-client/index.d.ts](./index.d.ts):
 ```typescript
 addReview(vars: AddReviewVariables): MutationPromise<AddReviewData, AddReviewVariables>;
 
@@ -875,7 +875,7 @@ console.log(name);
 ```
 
 ### Variables
-The `AddReview` mutation requires an argument of type `AddReviewVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `AddReview` mutation requires an argument of type `AddReviewVariables`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
 export interface AddReviewVariables {
@@ -887,7 +887,7 @@ export interface AddReviewVariables {
 ### Return Type
 Recall that executing the `AddReview` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `AddReviewData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `AddReviewData`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
 export interface AddReviewData {
   review_upsert: Review_Key;
@@ -961,7 +961,7 @@ executeMutation(ref).then((response) => {
 ```
 
 ## DeleteReview
-You can execute the `DeleteReview` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+You can execute the `DeleteReview` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [js-client/index.d.ts](./index.d.ts):
 ```typescript
 deleteReview(vars: DeleteReviewVariables): MutationPromise<DeleteReviewData, DeleteReviewVariables>;
 
@@ -990,7 +990,7 @@ console.log(name);
 ```
 
 ### Variables
-The `DeleteReview` mutation requires an argument of type `DeleteReviewVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `DeleteReview` mutation requires an argument of type `DeleteReviewVariables`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
 export interface DeleteReviewVariables {
@@ -1000,7 +1000,7 @@ export interface DeleteReviewVariables {
 ### Return Type
 Recall that executing the `DeleteReview` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `DeleteReviewData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `DeleteReviewData`, which is defined in [js-client/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
 export interface DeleteReviewData {
   review_delete?: Review_Key | null;

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     // Note: kotlin.android plugin is no longer needed in AGP 9.0.0 - Kotlin support is built-in
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.services)
     alias(libs.plugins.android.junit)
     alias(libs.plugins.hilt.android)
@@ -58,6 +59,11 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    sourceSets {
+        getByName("main").kotlin.directories.add(
+            "../generated/dataconnect/android/com/google/firebase/dataconnect/generated"
+        )
+    }
 }
 
 junitPlatform {
@@ -96,7 +102,9 @@ dependencies {
     // Note: firebase-ai removed - using Firebase Functions proxy instead
     // Note: All KTX modules removed - KTX functionality now in main modules (BOM v34.0.0+)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.dataconnect)
     implementation(libs.firebase.functions)
+    implementation(libs.kotlinx.serialization.json)
 
     // Hilt
     implementation(libs.hilt.android)
