@@ -122,12 +122,12 @@ class AiRepositoryImpl @Inject constructor(
         return withContext(Dispatchers.IO) {
             val result = offlineAiEngine.generateResponse(message, configuration)
             result.onFailure { throwable ->
-                val reason = (observeOfflineCapability().first() as? OfflineCapability.Unavailable)
-                    ?.reason
-                    ?: "Offline engine unavailable"
-                updateServiceStatus(AiServiceStatus.Unavailable(reason))
-
-                if (throwable !is UnsupportedOperationException) {
+                if (throwable is UnsupportedOperationException) {
+                    val reason = (observeOfflineCapability().first() as? OfflineCapability.Unavailable)
+                        ?.reason
+                        ?: "Offline engine unavailable"
+                    updateServiceStatus(AiServiceStatus.Unavailable(reason))
+                } else {
                     updateServiceStatus(
                         AiServiceStatus.Error(
                             error = throwable,
