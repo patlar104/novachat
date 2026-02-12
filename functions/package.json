@@ -17,7 +17,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@dataconnect/admin-generated": "file:src/dataconnect-admin-generated",
+    "@dataconnect/admin-generated": "file:../generated/dataconnect/functions-admin",
     "firebase-admin": "^13.6.1",
     "firebase-functions": "^6.6.0"
   },

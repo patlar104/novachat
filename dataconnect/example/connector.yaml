@@ -10,6 +10,6 @@ generate:
     - outputDir: ../../generated/dataconnect/android
       package: com.google.firebase.dataconnect.generated
   adminNodeSdk:
-    - outputDir: ../../functions/src/dataconnect-admin-generated
+    - outputDir: ../../generated/dataconnect/functions-admin
       package: "@dataconnect/admin-generated"
       packageJsonDir: ../../functions
