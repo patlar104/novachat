@@ -13,7 +13,6 @@ module.exports = {
   ignorePatterns: [
     "/lib/**/*", // Ignore built files.
     "/generated/**/*",
-    "/src/dataconnect-admin-generated/**/*",
     ".eslintrc.js", // Ignore ESLint config file
   ],
   plugins: ["@typescript-eslint"],
