@@ -138,7 +138,7 @@ fun SettingsScreen(
                         modifier = Modifier.padding(32.dp)
                     ) {
                         Text(
-                            text = "❌",
+                            text = stringResource(R.string.emoji_error),
                             style = MaterialTheme.typography.displayLarge
                         )
                         Text(
