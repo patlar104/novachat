@@ -46,7 +46,7 @@ runs:
               },
               "api_key": [
                 {
-                  "current_key": "AIzaSyDUMMY_PLACEHOLDER_KEY"
+                  "current_key": "DUMMY_PLACEHOLDER_API_KEY_NON_SECRET"
                 }
               ]
             }
@@ -58,7 +58,7 @@ runs:
         fi
 
         if [ "$STRICT_MODE" = "true" ]; then
-          if grep -Eq '"project_id"\s*:\s*"ci-placeholder"|AIzaSyDUMMY_PLACEHOLDER_KEY' app/google-services.json; then
+          if grep -Eq '"project_id"\s*:\s*"ci-placeholder"|DUMMY_PLACEHOLDER_API_KEY_NON_SECRET' app/google-services.json; then
             echo "Placeholder Firebase config detected in strict mode."
             echo "Provide a real GOOGLE_SERVICES_JSON secret for release builds."
             exit 1

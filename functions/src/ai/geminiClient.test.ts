@@ -22,7 +22,7 @@ test("callGemini sends API key in header and not URL query params", async () => 
       );
     }) as typeof fetch;
 
-    const result = await callGemini("AIzaSecretForTest", {
+    const result = await callGemini("fake-test-api-key-no-secret", {
       message: "hello",
       modelParameters: {
         temperature: 0.7,
@@ -34,7 +34,10 @@ test("callGemini sends API key in header and not URL query params", async () => 
 
     assert.equal(result.response, "ok");
     assert.equal(capturedUrl.includes("?key="), false);
-    assert.equal(capturedHeaders?.get("x-goog-api-key"), "AIzaSecretForTest");
+    assert.equal(
+      capturedHeaders?.get("x-goog-api-key"),
+      "fake-test-api-key-no-secret"
+    );
   } finally {
     globalThis.fetch = originalFetch;
   }
