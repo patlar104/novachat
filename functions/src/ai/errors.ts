@@ -1,6 +1,7 @@
 import { HttpsError } from "firebase-functions/v2/https";
 
 const UNAUTHENTICATED_PATTERN = /\bunauth(?:enticated|orized)?\b/i;
+const CONFIGURATION_PATTERN = /\bGEMINI_API_KEY\b|api key is not configured/i;
 const PERMISSION_DENIED_PATTERN = /\bpermission\b/i;
 const UNAVAILABLE_PATTERN =
   /\b(unavailable|timeout|timed out|network|quota|rate limit|too many requests|resource exhausted)\b/i;
@@ -14,6 +15,13 @@ export function mapToHttpsError(error: unknown): HttpsError {
 
   const message =
     error instanceof Error ? error.message : "Unknown error occurred";
+
+  if (CONFIGURATION_PATTERN.test(message)) {
+    return new HttpsError(
+      "failed-precondition",
+      "AI service configuration error. Please contact support."
+    );
+  }
 
   if (UNAUTHENTICATED_PATTERN.test(message)) {
     return new HttpsError("unauthenticated", "Authentication required.");

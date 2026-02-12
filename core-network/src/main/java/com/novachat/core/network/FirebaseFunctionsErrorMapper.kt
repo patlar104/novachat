@@ -29,6 +29,12 @@ object FirebaseFunctionsErrorMapper {
                     cause = throwable
                 )
             }
+            FirebaseFunctionsException.Code.FAILED_PRECONDITION -> {
+                AppError.ServiceUnavailable(
+                    message = "Service configuration error. Please contact support.",
+                    cause = throwable
+                )
+            }
             FirebaseFunctionsException.Code.NOT_FOUND -> {
                 AppError.NotFound(
                     message = "AI service endpoint was not found. Please try again later.",
