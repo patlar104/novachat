@@ -1,10 +1,13 @@
 package com.novachat.feature.ai.presentation.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.novachat.feature.ai.domain.model.AiMode
+import com.novachat.feature.ai.domain.model.OfflineCapability
 import com.novachat.feature.ai.domain.usecase.ObserveAiConfigurationUseCase
+import com.novachat.feature.ai.domain.usecase.ObserveAiModeAvailabilityUseCase
+import com.novachat.feature.ai.domain.usecase.ObserveWaitForDebuggerOnNextLaunchUseCase
+import com.novachat.feature.ai.domain.usecase.SetWaitForDebuggerOnNextLaunchUseCase
 import com.novachat.feature.ai.domain.usecase.UpdateAiConfigurationUseCase
 import com.novachat.feature.ai.presentation.model.SettingsUiEvent
 import com.novachat.feature.ai.presentation.model.SettingsUiState
@@ -16,32 +19,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for the settings screen following 2026 Android best practices.
- *
- * This ViewModel:
- * - Uses use cases instead of repositories directly
- * - Implements SavedStateHandle for process death survival
- * - Uses sealed UI state classes for type safety
- * - Separates one-time effects from persistent state
- * - Handles all user events through a single entry point
- * - Validates configuration before saving
- *
- * @property savedStateHandle For surviving process death
- * @property observeAiConfigurationUseCase Observes current configuration
- * @property updateAiConfigurationUseCase Updates configuration
- *
- * @since 1.0.0
- */
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
     private val observeAiConfigurationUseCase: ObserveAiConfigurationUseCase,
-    private val updateAiConfigurationUseCase: UpdateAiConfigurationUseCase
+    private val observeAiModeAvailabilityUseCase: ObserveAiModeAvailabilityUseCase,
+    private val observeWaitForDebuggerOnNextLaunchUseCase: ObserveWaitForDebuggerOnNextLaunchUseCase,
+    private val setWaitForDebuggerOnNextLaunchUseCase: SetWaitForDebuggerOnNextLaunchUseCase,
+    private val updateAiConfigurationUseCase: UpdateAiConfigurationUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Initial)
@@ -50,17 +39,23 @@ class SettingsViewModel @Inject constructor(
     private val _uiEffect = Channel<UiEffect>(Channel.BUFFERED)
     val uiEffect = _uiEffect.receiveAsFlow()
 
-    private companion object {
-        // Removed API key state - no longer needed with Firebase Functions proxy
-    }
-
     init {
         observeConfiguration()
     }
 
     private fun observeConfiguration() {
         viewModelScope.launch {
-            observeAiConfigurationUseCase()
+            combine(
+                observeAiConfigurationUseCase(),
+                observeAiModeAvailabilityUseCase(),
+                observeWaitForDebuggerOnNextLaunchUseCase(),
+            ) { configuration, offlineCapability, waitForDebuggerOnNextLaunch ->
+                SettingsUiState.Success(
+                    configuration = configuration,
+                    offlineCapability = offlineCapability,
+                    waitForDebuggerOnNextLaunch = waitForDebuggerOnNextLaunch,
+                )
+            }
                 .catch { exception ->
                     _uiState.update {
                         SettingsUiState.Error(
@@ -68,27 +63,18 @@ class SettingsViewModel @Inject constructor(
                         )
                     }
                 }
-                .collect { configuration ->
-                    _uiState.update {
-                        SettingsUiState.Success(configuration = configuration)
-                    }
+                .collect { state ->
+                    _uiState.value = state
                 }
         }
     }
 
     fun onEvent(event: SettingsUiEvent) {
         when (event) {
-            is SettingsUiEvent.SaveApiKey -> {
-                // API key saving no longer needed - Firebase Functions handles authentication
-                // Keep event handler for compatibility but do nothing
-            }
             is SettingsUiEvent.ChangeAiMode -> handleChangeAiMode(event.mode)
-            is SettingsUiEvent.TestConfiguration -> handleTestConfiguration()
-            is SettingsUiEvent.DismissSaveSuccess -> {
-                // No-op - kept for compatibility
-            }
+            is SettingsUiEvent.ToggleWaitForDebuggerOnNextLaunch ->
+                handleToggleWaitForDebuggerOnNextLaunch(event.enabled)
             is SettingsUiEvent.NavigateBack -> handleNavigateBack()
-            is SettingsUiEvent.ScreenLoaded -> handleScreenLoaded()
         }
     }
 
@@ -97,6 +83,17 @@ class SettingsViewModel @Inject constructor(
             val currentState = _uiState.value
 
             if (currentState !is SettingsUiState.Success) {
+                return@launch
+            }
+
+            val offlineCapability = currentState.offlineCapability
+            if (mode == AiMode.OFFLINE && offlineCapability is OfflineCapability.Unavailable) {
+                emitEffect(
+                    UiEffect.ShowSnackbar(
+                        message = offlineCapability.reason,
+                        actionLabel = "Dismiss"
+                    )
+                )
                 return@launch
             }
 
@@ -123,32 +120,39 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private fun handleTestConfiguration() {
-        val currentState = _uiState.value
-
-        if (currentState !is SettingsUiState.Success) {
-            return
-        }
-
-        if (currentState.isValidConfiguration()) {
-            emitEffect(UiEffect.ShowToast("Configuration is valid ✓"))
-        } else {
-            val message = currentState.getValidationMessage() ?: "Invalid configuration"
-            emitEffect(
-                UiEffect.ShowSnackbar(
-                    message = message,
-                    actionLabel = "Dismiss"
-                )
-            )
-        }
-    }
-
     private fun handleNavigateBack() {
         emitEffect(UiEffect.NavigateBack)
     }
 
-    private fun handleScreenLoaded() {
-        // Currently no action needed
+    private fun handleToggleWaitForDebuggerOnNextLaunch(enabled: Boolean) {
+        viewModelScope.launch {
+            val result = setWaitForDebuggerOnNextLaunchUseCase(enabled)
+            result.fold(
+                onSuccess = {
+                    if (enabled) {
+                        emitEffect(
+                            UiEffect.ShowSnackbar(
+                                message = "Wait for debugger is armed for next launch. " +
+                                    "Close the app and relaunch with Debug.",
+                                actionLabel = "Dismiss"
+                            )
+                        )
+                    } else {
+                        emitEffect(
+                            UiEffect.ShowToast("Wait for debugger on next launch disabled")
+                        )
+                    }
+                },
+                onFailure = { exception ->
+                    emitEffect(
+                        UiEffect.ShowSnackbar(
+                            message = "Failed to update debugger wait setting: ${exception.message}",
+                            actionLabel = "Dismiss"
+                        )
+                    )
+                }
+            )
+        }
     }
 
     private fun emitEffect(effect: UiEffect) {

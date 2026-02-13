@@ -113,7 +113,6 @@ class ChatViewModel @Inject constructor(
             is ChatUiEvent.RetryMessage -> handleRetryMessage(event.messageId)
             is ChatUiEvent.DismissError -> handleDismissError()
             is ChatUiEvent.NavigateToSettings -> handleNavigateToSettings()
-            is ChatUiEvent.ScreenLoaded -> handleScreenLoaded()
         }
     }
 
@@ -257,10 +256,6 @@ class ChatViewModel @Inject constructor(
 
     private fun handleNavigateToSettings() {
         emitEffect(UiEffect.Navigate(NavigationDestination.Settings))
-    }
-
-    private fun handleScreenLoaded() {
-        // Currently no action needed
     }
 
     private fun emitEffect(effect: UiEffect) {

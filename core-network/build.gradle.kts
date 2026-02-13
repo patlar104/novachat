@@ -26,9 +26,9 @@ android {
 dependencies {
     implementation(project(":core-common"))
 
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.serialization)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.functions)
+    implementation(libs.play.services.base)
+    implementation(libs.kotlinx.coroutines.play.services)
 }

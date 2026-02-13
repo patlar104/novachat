@@ -1,0 +1,66 @@
+name: Provision Google Services
+description: Ensure app/google-services.json exists for CI and release builds
+
+inputs:
+  google-services-json:
+    description: Raw google-services.json contents from secrets
+    required: false
+  strict:
+    description: Fail when a real Firebase config is unavailable (no placeholder fallback)
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Provision google-services.json for CI
+      shell: bash
+      env:
+        GOOGLE_SERVICES_JSON: ${{ inputs.google-services-json }}
+        STRICT_MODE: ${{ inputs.strict }}
+      run: |
+        if [ -f app/google-services.json ]; then
+          echo "google-services.json already present"
+        elif [ -n "$GOOGLE_SERVICES_JSON" ]; then
+          printf '%s' "$GOOGLE_SERVICES_JSON" > app/google-services.json
+          echo "google-services.json written from secret"
+        elif [ "$STRICT_MODE" = "true" ]; then
+          echo "Missing GOOGLE_SERVICES_JSON and no app/google-services.json present."
+          echo "Strict mode is enabled; refusing to use placeholder Firebase config."
+          exit 1
+        else
+          cat > app/google-services.json <<'JSON'
+        {
+          "project_info": {
+            "project_number": "000000000000",
+            "project_id": "ci-placeholder",
+            "storage_bucket": "ci-placeholder.appspot.com"
+          },
+          "client": [
+            {
+              "client_info": {
+                "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+                "android_client_info": {
+                  "package_name": "com.novachat.app"
+                }
+              },
+              "api_key": [
+                {
+                  "current_key": "DUMMY_PLACEHOLDER_API_KEY_NON_SECRET"
+                }
+              ]
+            }
+          ],
+          "configuration_version": "1"
+        }
+        JSON
+          echo "google-services.json written from CI placeholder"
+        fi
+
+        if [ "$STRICT_MODE" = "true" ]; then
+          if grep -Eq '"project_id"\s*:\s*"ci-placeholder"|DUMMY_PLACEHOLDER_API_KEY_NON_SECRET' app/google-services.json; then
+            echo "Placeholder Firebase config detected in strict mode."
+            echo "Provide a real GOOGLE_SERVICES_JSON secret for release builds."
+            exit 1
+          fi
+        fi

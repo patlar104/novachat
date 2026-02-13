@@ -6,6 +6,7 @@ import com.novachat.feature.ai.domain.model.AiMode
 import com.novachat.feature.ai.domain.model.Message
 import com.novachat.feature.ai.domain.model.MessageId
 import com.novachat.feature.ai.domain.model.ModelParameters
+import com.novachat.feature.ai.domain.model.OfflineCapability
 import com.novachat.feature.ai.domain.model.ThemePreferences
 import com.novachat.feature.ai.domain.repository.AiRepository
 import com.novachat.feature.ai.domain.repository.AiServiceStatus
@@ -51,17 +52,13 @@ class AiRepositoryHiltInjectionTest {
 
     @Test
     fun hilt_injects_test_ai_repository() = runTest {
-        // Arrange
         val configuration = AiConfiguration(
             mode = AiMode.ONLINE,
-            apiKey = null,
             modelParameters = ModelParameters.DEFAULT
         )
 
-        // Act
         val result = aiRepository.generateResponse("Hello", configuration)
 
-        // Assert
         aiRepository.shouldBeInstanceOf<FakeAiRepository>()
         result.getOrNull().shouldBe("Test response")
     }
@@ -89,6 +86,9 @@ private class FakeAiRepository : AiRepository {
     private val statusFlow = MutableStateFlow<AiServiceStatus>(
         AiServiceStatus.Available(AiMode.DEFAULT_MODEL_NAME)
     )
+    private val offlineCapabilityFlow = MutableStateFlow<OfflineCapability>(
+        OfflineCapability.Unavailable("Offline engine unavailable")
+    )
 
     override suspend fun generateResponse(
         message: String,
@@ -103,6 +103,10 @@ private class FakeAiRepository : AiRepository {
 
     override fun observeServiceStatus(): Flow<AiServiceStatus> {
         return statusFlow.asStateFlow()
+    }
+
+    override fun observeOfflineCapability(): Flow<OfflineCapability> {
+        return offlineCapabilityFlow.asStateFlow()
     }
 }
 
@@ -145,11 +149,11 @@ private class FakePreferencesRepository : PreferencesRepository {
     private val aiConfigFlow = MutableStateFlow(
         AiConfiguration(
             mode = AiMode.ONLINE,
-            apiKey = null,
             modelParameters = ModelParameters.DEFAULT
         )
     )
     private val themePreferencesFlow = MutableStateFlow(ThemePreferences.DEFAULT)
+    private val waitForDebuggerOnNextLaunchFlow = MutableStateFlow(false)
 
     override fun observeAiConfiguration(): Flow<AiConfiguration> = aiConfigFlow.asStateFlow()
 
@@ -163,18 +167,13 @@ private class FakePreferencesRepository : PreferencesRepository {
         return Result.success(Unit)
     }
 
-    override suspend fun updateApiKey(apiKey: com.novachat.feature.ai.domain.model.ApiKey?): Result<Unit> {
-        aiConfigFlow.value = aiConfigFlow.value.copy(apiKey = null)
-        return Result.success(Unit)
-    }
-
     override suspend fun clearAll(): Result<Unit> {
         aiConfigFlow.value = AiConfiguration(
             mode = AiMode.ONLINE,
-            apiKey = null,
             modelParameters = ModelParameters.DEFAULT
         )
         themePreferencesFlow.value = ThemePreferences.DEFAULT
+        waitForDebuggerOnNextLaunchFlow.value = false
         return Result.success(Unit)
     }
 
@@ -184,5 +183,19 @@ private class FakePreferencesRepository : PreferencesRepository {
     override suspend fun updateThemePreferences(preferences: ThemePreferences): Result<Unit> {
         themePreferencesFlow.value = preferences
         return Result.success(Unit)
+    }
+
+    override fun observeWaitForDebuggerOnNextLaunch(): Flow<Boolean> =
+        waitForDebuggerOnNextLaunchFlow.asStateFlow()
+
+    override suspend fun setWaitForDebuggerOnNextLaunch(enabled: Boolean): Result<Unit> {
+        waitForDebuggerOnNextLaunchFlow.value = enabled
+        return Result.success(Unit)
+    }
+
+    override suspend fun consumeWaitForDebuggerOnNextLaunch(): Result<Boolean> {
+        val shouldWait = waitForDebuggerOnNextLaunchFlow.value
+        waitForDebuggerOnNextLaunchFlow.value = false
+        return Result.success(shouldWait)
     }
 }

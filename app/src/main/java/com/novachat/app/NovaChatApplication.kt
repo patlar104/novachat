@@ -26,7 +26,6 @@ import kotlinx.coroutines.tasks.await
  */
 @HiltAndroidApp
 class NovaChatApplication : Application() {
-
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private companion object {
@@ -35,13 +34,12 @@ class NovaChatApplication : Application() {
     
     override fun onCreate() {
         super.onCreate()
-        
+
         FirebaseApp.initializeApp(this)
-        
+
         // Initialize Firebase Auth and sign in anonymously
         // This is required for Firebase Functions authentication
         initializeFirebaseAuthIfPlayServicesAvailable()
-        
     }
 
     /**

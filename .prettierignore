@@ -10,6 +10,7 @@ dist/
 
 # Generated files
 **/dataconnect-generated/
+**/dataconnect-admin-generated/
 **/generated/
 
 # Lock files

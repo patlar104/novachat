@@ -2,7 +2,6 @@ package com.novachat.feature.ai.domain.usecase
 
 import com.novachat.feature.ai.domain.model.AiConfiguration
 import com.novachat.feature.ai.domain.model.AiMode
-import com.novachat.feature.ai.domain.model.ApiKey
 import com.novachat.feature.ai.domain.model.Message
 import com.novachat.feature.ai.domain.model.MessageSender
 import com.novachat.feature.ai.domain.model.ModelParameters
@@ -64,10 +63,8 @@ class SendMessageUseCaseTest {
     fun invoke_with_valid_message_stores_user_message() = runTest {
         // Arrange
         val messageText = "hello ai"
-        val apiKey = ApiKey.unsafe("test-api-key-1234567890")
         val configuration = AiConfiguration(
             mode = AiMode.ONLINE,
-            apiKey = apiKey,
             modelParameters = ModelParameters.DEFAULT
         )
 
@@ -91,10 +88,8 @@ class SendMessageUseCaseTest {
         // Arrange
         val messageText = "test message"
         val aiResponse = "ai response"
-        val apiKey = ApiKey.unsafe("test-api-key-1234567890")
         val configuration = AiConfiguration(
             mode = AiMode.ONLINE,
-            apiKey = apiKey,
             modelParameters = ModelParameters.DEFAULT
         )
 
@@ -118,10 +113,8 @@ class SendMessageUseCaseTest {
         // Arrange
         val messageText = "error message"
         val aiError = Exception("AI service unavailable")
-        val apiKey = ApiKey.unsafe("test-api-key-1234567890")
         val configuration = AiConfiguration(
             mode = AiMode.ONLINE,
-            apiKey = apiKey,
             modelParameters = ModelParameters.DEFAULT
         )
 
@@ -146,7 +139,6 @@ class SendMessageUseCaseTest {
         val messageText = "message"
         val configuration = AiConfiguration(
             mode = AiMode.ONLINE,
-            apiKey = null,
             modelParameters = ModelParameters.DEFAULT
         )
 
@@ -171,7 +163,6 @@ class SendMessageUseCaseTest {
         val aiResponse = "offline response"
         val configuration = AiConfiguration(
             mode = AiMode.OFFLINE,
-            apiKey = null,
             modelParameters = ModelParameters.DEFAULT
         )
 

@@ -1,68 +1,42 @@
-# Firebase Functions - AI Proxy
+# NovaChat Functions
 
-This directory contains Cloud Functions for NovaChat's AI proxy service.
+This directory contains the Firebase Functions backend for the `aiProxy` callable endpoint.
 
-## Setup
+## Runtime
 
-1. Install dependencies:
-   ```bash
-   cd functions
-   npm install
-   ```
+- Node.js 20
+- TypeScript
+- Firebase Functions v2
 
-2. Set up your Gemini API key:
-   
-   **Option A: Using Firebase Secrets (requires Blaze plan):**
-   ```bash
-   firebase functions:secrets:set GEMINI_API_KEY
-   # Then enter your API key when prompted
-   ```
-   
-   **Option B: Set as environment variable (works on Spark plan):**
-   ```bash
-   export GEMINI_API_KEY="YOUR_API_KEY"
-   firebase deploy --only functions
-   ```
-   
-   **Option C: Use .env.local file (for local development):**
-   ```bash
-   # Create .env.local file in functions/ directory
-   echo "GEMINI_API_KEY=your-key-here" > functions/.env.local
-   # Then deploy (the function will read from process.env)
-   ```
-   
-   **Important:** The function uses the new `params` package. If you're on Spark plan, 
-   use Option B (environment variable). The function will automatically use it.
+## Source layout
 
-3. Build the TypeScript code:
-   ```bash
-   npm run build
-   ```
+- `src/index.ts`: export wiring.
+- `src/functions/aiProxy.ts`: callable function handler.
+- `src/ai/validateRequest.ts`: payload validation.
+- `src/ai/geminiClient.ts`: Gemini request execution.
+- `src/ai/errors.ts`: conversion to `HttpsError`.
+- `src/analytics/usageLogger.ts`: usage logging.
+- `src/config/env.ts`: API key/env access.
 
-4. Test locally (optional):
-   ```bash
-   npm run serve
-   ```
+## Required environment
 
-5. Deploy:
-   ```bash
-   npm run deploy
-   # or
-   firebase deploy --only functions
-   ```
+- `GEMINI_API_KEY` must be available to the functions runtime.
 
-## Function Details
+## Local commands
 
-### `aiProxy`
+```bash
+npm install
+npm run build
+npm run lint
+npm test
+npm run serve
+```
 
-**Endpoint:** `https://us-central1-novachat-13010.cloudfunctions.net/aiProxy`
+## Callable contract summary
 
-**Authentication:** Requires Firebase ID token
+Input:
 
-**Method:** Callable function (use Firebase SDK's `functions.httpsCallable()`)
-
-**Request:**
-```typescript
+```ts
 {
   message: string;
   modelParameters?: {
@@ -70,25 +44,17 @@ This directory contains Cloud Functions for NovaChat's AI proxy service.
     topK?: number;
     topP?: number;
     maxOutputTokens?: number;
-  }
+  };
 }
 ```
 
-**Response:**
-```typescript
+Output:
+
+```ts
 {
   response: string;
-  model: "gemini-2.5-flash";
+  model: string;
 }
 ```
 
-## Environment Configuration
-
-- **Staging:** Use a separate Firebase project or function name
-- **Production:** Deploy to `novachat-13010` project
-
-## Security
-
-- All requests require Firebase Authentication
-- API key is stored securely in Firebase config/secrets
-- Usage is logged to Firestore for analytics
+Authentication is required (`request.auth` must be present).

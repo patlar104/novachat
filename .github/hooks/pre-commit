@@ -1,63 +1,52 @@
 #!/bin/bash
 # Pre-commit hook for NovaChat
-# Runs ktlint format and basic validation before commit
+# Runs real configured checks for changed areas.
 
-set -e
+set -euo pipefail
 
-echo "🔍 Running pre-commit checks..."
+echo "Running pre-commit checks..."
 
-# Check if app directory exists
-if [ ! -d "app" ]; then
-    echo "✅ No app directory found, skipping checks"
-    exit 0
+if ! command -v git >/dev/null 2>&1; then
+  echo "git is required"
+  exit 1
 fi
 
-# Check if gradlew exists
-if [ ! -f "gradlew" ]; then
-    echo "⚠️  gradlew not found, skipping checks"
-    exit 0
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
+
+if [ -z "$STAGED_FILES" ]; then
+  echo "No staged files detected"
+  exit 0
 fi
 
-# Make gradlew executable
-chmod +x gradlew
+# Android-related changes
+if echo "$STAGED_FILES" | grep -E '^(app/|feature-ai/|core-common/|core-network/|build.gradle.kts|settings.gradle.kts|gradle/|gradle.properties|gradle/libs.versions.toml)' >/dev/null; then
+  if [ ! -f "gradlew" ]; then
+    echo "gradlew not found"
+    exit 1
+  fi
 
-# Get list of staged Kotlin files
-STAGED_KT_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '\.kt$' || true)
-
-if [ -z "$STAGED_KT_FILES" ]; then
-    echo "✅ No Kotlin files changed"
-    exit 0
+  chmod +x gradlew
+  echo "Running :feature-ai:testDebugUnitTest"
+  ./gradlew :feature-ai:testDebugUnitTest --no-daemon
 fi
 
-echo "📝 Found Kotlin files to check:"
-echo "$STAGED_KT_FILES"
+# Functions changes
+if echo "$STAGED_FILES" | grep -E '^functions/' >/dev/null; then
+  if [ ! -d "functions" ]; then
+    echo "functions directory not found"
+    exit 1
+  fi
 
-# Run ktlint format on staged files (if ktlint is configured)
-echo ""
-echo "🎨 Running ktlint format..."
-if ./gradlew ktlintFormat --quiet 2>/dev/null; then
-    echo "✅ ktlint format completed"
-    
-    # Re-add formatted files
-    for file in $STAGED_KT_FILES; do
-        if [ -f "$file" ]; then
-            git add "$file"
-        fi
-    done
-else
-    echo "⚠️  ktlint not configured or failed, continuing..."
+  echo "Running functions build + lint"
+  (cd functions && npm run build && npm run lint)
 fi
 
-# Run basic Kotlin compilation check (optional, commented out for speed)
-# echo ""
-# echo "🔨 Running compilation check..."
-# if ./gradlew compileDebugKotlin --quiet; then
-#     echo "✅ Compilation check passed"
-# else
-#     echo "❌ Compilation check failed"
-#     exit 1
-# fi
+# JS/TS/JSON formatting checks
+if echo "$STAGED_FILES" | grep -E '\.(js|ts|json)$' >/dev/null; then
+  if [ -f "package.json" ]; then
+    echo "Running format:check"
+    npm run format:check
+  fi
+fi
 
-echo ""
-echo "✅ Pre-commit checks completed successfully!"
-exit 0
+echo "Pre-commit checks passed"

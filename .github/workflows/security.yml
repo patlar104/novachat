@@ -4,190 +4,132 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'app/**'
+      - 'feature-ai/**'
+      - 'core-common/**'
+      - 'core-network/**'
+      - 'functions/**'
+      - 'gradle/**'
+      - '.github/actions/provision-google-services/**'
+      - '.github/workflows/security.yml'
+      - '.github/dependabot.yml'
   pull_request:
     branches:
       - main
-      - 'copilot/**'
+    paths:
+      - 'app/**'
+      - 'feature-ai/**'
+      - 'core-common/**'
+      - 'core-network/**'
+      - 'functions/**'
+      - 'gradle/**'
+      - '.github/actions/provision-google-services/**'
+      - '.github/workflows/security.yml'
+      - '.github/dependabot.yml'
   schedule:
-    # Run weekly on Mondays at 00:00 UTC
     - cron: '0 0 * * 1'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  dependency-check:
-    name: Dependency Security Scan
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Check app directory exists
-        id: check_app
-        run: |
-          if [ -d "app" ] && [ -f "gradlew" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Set up JDK 21
-        if: steps.check_app.outputs.exists == 'true'
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-      
-      - name: Grant execute permission for gradlew
-        if: steps.check_app.outputs.exists == 'true'
-        run: |
-          if [ -f "gradlew" ]; then
-            chmod +x gradlew
-          else
-            echo "gradlew not found, skipping"
-          fi
-      
-      - name: Run dependency vulnerability scan
-        if: steps.check_app.outputs.exists == 'true'
-        run: |
-          ./gradlew dependencyCheckAnalyze --no-daemon || echo "Dependency check not configured"
-        continue-on-error: true
-      
-      - name: Upload dependency check report
-        if: steps.check_app.outputs.exists == 'true' && always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-check-report
-          path: build/reports/dependency-check-report.html
-          retention-days: 30
-        continue-on-error: true
-
   codeql-analysis:
     name: CodeQL Security Analysis
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     permissions:
       actions: read
       contents: read
       security-events: write
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Check app directory exists
-        id: check_app
-        run: |
-          if [ -d "app" ] && [ -f "gradlew" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-      
+      - name: Provision google-services.json for CI
+        uses: ./.github/actions/provision-google-services
+        with:
+          google-services-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+
       - name: Initialize CodeQL
-        if: steps.check_app.outputs.exists == 'true'
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: java-kotlin
           queries: security-extended
-      
+
       - name: Set up JDK 21
-        if: steps.check_app.outputs.exists == 'true'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
           cache: 'gradle'
-      
+
       - name: Grant execute permission for gradlew
-        if: steps.check_app.outputs.exists == 'true'
-        run: |
-          if [ -f "gradlew" ]; then
-            chmod +x gradlew
-          else
-            echo "gradlew not found, skipping"
-          fi
-      
+        run: chmod +x gradlew
+
       - name: Build for CodeQL
-        if: steps.check_app.outputs.exists == 'true'
-        run: ./gradlew assembleDebug --no-daemon
-        continue-on-error: true
-      
-      - name: Perform CodeQL Analysis
-        if: steps.check_app.outputs.exists == 'true'
-        uses: github/codeql-action/analyze@v3
+        run: ./gradlew :app:assembleDebug --no-daemon
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v4
         with:
-          category: "/language:java-kotlin"
+          category: '/language:java-kotlin'
 
   secret-scanning:
     name: Secret Scanning
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      
-      - name: TruffleHog Secret Scan
-        uses: trufflesecurity/trufflehog@main
+
+      - name: Set commit range for scanning
+        id: set-range
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "base=${{ github.event.pull_request.base.sha }}" >> $GITHUB_OUTPUT
+            echo "head=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "push" ]; then
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.event.after }}"
+            # For initial commits, github.event.before is all zeros
+            if [ "$BASE" == "0000000000000000000000000000000000000000" ]; then
+              # Scan from the beginning of the branch
+              FIRST_COMMIT=$(git rev-list --max-parents=0 HEAD | head -n 1)
+              echo "base=$FIRST_COMMIT" >> $GITHUB_OUTPUT
+            else
+              echo "base=$BASE" >> $GITHUB_OUTPUT
+            fi
+            echo "head=$HEAD" >> $GITHUB_OUTPUT
+          else
+            # For scheduled runs, scan the entire default branch
+            echo "base=" >> $GITHUB_OUTPUT
+            echo "head=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate commit range
+        run: |
+          BASE="${{ steps.set-range.outputs.base }}"
+          HEAD="${{ steps.set-range.outputs.head }}"
+          echo "Base commit: ${BASE:-<empty>}"
+          echo "Head commit: $HEAD"
+          if [ -n "$BASE" ] && [ "$BASE" == "$HEAD" ]; then
+            echo "::error::BASE and HEAD commits are the same. TruffleHog won't scan anything."
+            exit 1
+          fi
+
+      - name: TruffleHog secret scan
+        uses: trufflesecurity/trufflehog@6961f2bace57ab32b23b3ba40f8f420f6bc7e004 # main
         with:
           path: ./
-          base: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
-          head: HEAD
-          extra_args: --debug --only-verified
-
-  gradle-security:
-    name: Gradle Security Scan
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Check app directory exists
-        id: check_app
-        run: |
-          if [ -d "app" ] && [ -f "gradlew" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Set up JDK 21
-        if: steps.check_app.outputs.exists == 'true'
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'gradle'
-      
-      - name: Grant execute permission for gradlew
-        if: steps.check_app.outputs.exists == 'true'
-        run: |
-          if [ -f "gradlew" ]; then
-            chmod +x gradlew
-          else
-            echo "gradlew not found, skipping"
-          fi
-      
-      - name: Check for outdated dependencies
-        if: steps.check_app.outputs.exists == 'true'
-        run: |
-          ./gradlew dependencyUpdates --no-daemon || echo "Dependency updates check not configured"
-        continue-on-error: true
-      
-      - name: Upload dependency update report
-        if: steps.check_app.outputs.exists == 'true' && always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-updates-report
-          path: build/dependencyUpdates/
-          retention-days: 30
-        continue-on-error: true
+          base: ${{ steps.set-range.outputs.base }}
+          head: ${{ steps.set-range.outputs.head }}
+          extra_args: --only-verified
