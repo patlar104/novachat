@@ -85,7 +85,7 @@ jobs:
 
   instrumentation-tests:
     name: Instrumentation Tests
-    runs-on: macos-13
+    runs-on: macos-15-large
     timeout-minutes: 45
     if: github.event_name == 'pull_request'
 
