@@ -61,7 +61,7 @@ android {
     }
     sourceSets {
         getByName("main").kotlin.directories.add(
-            "../generated/dataconnect/android/com/google/firebase/dataconnect/generated"
+            "../generated/dataconnect/android"
         )
     }
 }
