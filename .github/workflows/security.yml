@@ -103,7 +103,7 @@ jobs:
             # For initial commits, github.event.before is all zeros
             if [ "$BASE" == "0000000000000000000000000000000000000000" ]; then
               # Scan from the beginning of the branch
-              FIRST_COMMIT=$(git rev-list --max-parents=0 HEAD)
+              FIRST_COMMIT=$(git rev-list --max-parents=0 HEAD | head -n 1)
               echo "base=$FIRST_COMMIT" >> $GITHUB_OUTPUT
             else
               echo "base=$BASE" >> $GITHUB_OUTPUT
@@ -112,7 +112,7 @@ jobs:
           else
             # For scheduled runs, scan the entire default branch
             echo "base=" >> $GITHUB_OUTPUT
-            echo "head=HEAD" >> $GITHUB_OUTPUT
+            echo "head=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           fi
 
       - name: Validate commit range
