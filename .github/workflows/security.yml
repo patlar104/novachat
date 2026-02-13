@@ -102,14 +102,16 @@ jobs:
             HEAD="${{ github.event.after }}"
             # For initial commits, github.event.before is all zeros
             if [ "$BASE" == "0000000000000000000000000000000000000000" ]; then
-              echo "base=HEAD~1" >> $GITHUB_OUTPUT
+              # Scan from the beginning of the branch
+              FIRST_COMMIT=$(git rev-list --max-parents=0 HEAD)
+              echo "base=$FIRST_COMMIT" >> $GITHUB_OUTPUT
             else
               echo "base=$BASE" >> $GITHUB_OUTPUT
             fi
             echo "head=$HEAD" >> $GITHUB_OUTPUT
           else
-            # For scheduled runs, scan the last commit
-            echo "base=HEAD~1" >> $GITHUB_OUTPUT
+            # For scheduled runs, scan the entire default branch
+            echo "base=" >> $GITHUB_OUTPUT
             echo "head=HEAD" >> $GITHUB_OUTPUT
           fi
 
@@ -117,9 +119,9 @@ jobs:
         run: |
           BASE="${{ steps.set-range.outputs.base }}"
           HEAD="${{ steps.set-range.outputs.head }}"
-          echo "Base commit: $BASE"
+          echo "Base commit: ${BASE:-<empty>}"
           echo "Head commit: $HEAD"
-          if [ "$BASE" == "$HEAD" ]; then
+          if [ -n "$BASE" ] && [ "$BASE" == "$HEAD" ]; then
             echo "::error::BASE and HEAD commits are the same. TruffleHog won't scan anything."
             exit 1
           fi
