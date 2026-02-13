@@ -126,6 +126,7 @@ node_modules/
 functions/node_modules/
 functions/lib/
 functions/.env
-functions/.env.local
+functions/.env.*
+!functions/.env.example
 functions/*.log
 functions/.firebase/
