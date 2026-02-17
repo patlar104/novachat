@@ -32,4 +32,21 @@ class AuthSessionProvider(
             )
         }
     }
+
+    suspend fun getIdToken(): Result<String> {
+        return try {
+            ensureAuthenticated().getOrThrow()
+            val result = auth.currentUser?.getIdToken(false)?.await()
+            val token = result?.token
+            if (token != null) {
+                Result.success(token)
+            } else {
+                Result.failure(
+                    SecurityException("No ID token available")
+                )
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

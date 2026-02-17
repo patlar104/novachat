@@ -21,7 +21,7 @@ class FirebaseEmulatorSmokeTest {
 
     private val host = "10.0.2.2"
     private val authPort = 9099
-    private val functionsPort = 5001
+    private val functionsPort = 5002
 
     @Before
     fun setup() {

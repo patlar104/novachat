@@ -7,6 +7,9 @@ import com.novachat.feature.ai.domain.model.AiConfiguration
 import com.novachat.feature.ai.domain.model.AiMode
 import com.novachat.feature.ai.domain.model.ModelParameters
 import com.novachat.feature.ai.domain.model.OfflineCapability
+import com.novachat.feature.ai.domain.model.RequestCompletionState
+import com.novachat.feature.ai.domain.model.SubmitRequest
+import com.novachat.feature.ai.domain.model.SubmitResult
 import com.novachat.feature.ai.domain.repository.AiRepository
 import com.novachat.feature.ai.domain.repository.AiServiceStatus
 import com.novachat.feature.ai.domain.repository.MessageRepository
@@ -81,6 +84,14 @@ class PreferencesRepositoryImplTest {
 
                 override fun observeOfflineCapability(): Flow<OfflineCapability> {
                     return flowOf(OfflineCapability.Unavailable("Unavailable in fake"))
+                }
+
+                override suspend fun submitAsync(request: SubmitRequest): Result<SubmitResult> {
+                    return Result.failure(UnsupportedOperationException("Fake AI Repository"))
+                }
+
+                override fun observeCompletion(requestId: String): Flow<RequestCompletionState> {
+                    return emptyFlow()
                 }
             }
         }

@@ -18,9 +18,13 @@ object MessageMapper {
             MessageSender.ASSISTANT -> MessageEntity.SENDER_ASSISTANT
         }
 
-        val (statusType, errorMessage, isRetryable) = when (val status = message.status) {
+        val status = message.status
+        val (statusType, errorMessage, isRetryable) = when (status) {
             MessageStatus.Sent -> Triple(MessageEntity.STATUS_SENT, null, true)
+            MessageStatus.Queued -> Triple(MessageEntity.STATUS_QUEUED, null, true)
             MessageStatus.Processing -> Triple(MessageEntity.STATUS_PROCESSING, null, true)
+            MessageStatus.Completed -> Triple(MessageEntity.STATUS_COMPLETED, null, true)
+            MessageStatus.Deferred -> Triple(MessageEntity.STATUS_DEFERRED, null, true)
             is MessageStatus.Failed -> Triple(
                 MessageEntity.STATUS_FAILED,
                 status.error.message ?: "Unknown error",
@@ -35,7 +39,12 @@ object MessageMapper {
             timestampMillis = message.timestamp.toEpochMilli(),
             statusType = statusType,
             errorMessage = errorMessage,
-            isRetryable = isRetryable
+            isRetryable = isRetryable,
+            conversationId = null,
+            requestId = message.requestId,
+            errorCode = message.errorCode ?: (status as? MessageStatus.Failed)?.errorCode,
+            tokenIn = message.tokenIn,
+            tokenOut = message.tokenOut
         )
     }
 
@@ -56,10 +65,14 @@ object MessageMapper {
 
         val status = when (entity.statusType) {
             MessageEntity.STATUS_SENT -> MessageStatus.Sent
+            MessageEntity.STATUS_QUEUED -> MessageStatus.Queued
             MessageEntity.STATUS_PROCESSING -> MessageStatus.Processing
+            MessageEntity.STATUS_COMPLETED -> MessageStatus.Completed
+            MessageEntity.STATUS_DEFERRED -> MessageStatus.Deferred
             MessageEntity.STATUS_FAILED -> MessageStatus.Failed(
                 error = Exception(entity.errorMessage ?: "Unknown error"),
-                isRetryable = entity.isRetryable
+                isRetryable = entity.isRetryable,
+                errorCode = entity.errorCode
             )
             else -> throw IllegalArgumentException("Unknown status type: ${entity.statusType}")
         }
@@ -69,7 +82,11 @@ object MessageMapper {
             content = entity.content,
             sender = sender,
             timestamp = timestamp,
-            status = status
+            status = status,
+            requestId = entity.requestId,
+            errorCode = entity.errorCode,
+            tokenIn = entity.tokenIn,
+            tokenOut = entity.tokenOut
         )
     }
 

@@ -74,6 +74,19 @@ dependencies {
     // DataStore for preferences
     implementation(libs.datastore.preferences)
 
+    // Room for durable chat and outbound requests
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.ksp)
+
+    // WorkManager for reconciliation
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.hilt.work)
+
+    // Firestore for status observation (async chat)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
+
     // Testing - Unit Tests
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
