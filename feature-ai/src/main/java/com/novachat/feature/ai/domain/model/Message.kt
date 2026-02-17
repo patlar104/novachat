@@ -23,7 +23,11 @@ data class Message(
     val content: String,
     val sender: MessageSender,
     val timestamp: Instant = Instant.now(),
-    val status: MessageStatus = MessageStatus.Sent
+    val status: MessageStatus = MessageStatus.Sent,
+    val requestId: String? = null,
+    val errorCode: String? = null,
+    val tokenIn: Int? = null,
+    val tokenOut: Int? = null
 ) {
     /**
      * Validates that the message content is not blank.
@@ -110,26 +114,34 @@ sealed interface MessageSender {
  *
  * This sealed hierarchy allows for type-safe status handling and ensures
  * all possible states are handled in when expressions.
+ * Aligns with SPEC-1: QUEUED, PROCESSING, COMPLETED, FAILED, DEFERRED.
  */
 sealed interface MessageStatus {
-    /**
-     * Message has been successfully sent/received.
-     */
+    /** Message has been successfully sent/received. */
     data object Sent : MessageStatus
 
-    /**
-     * Message is currently being processed (e.g., AI is generating a response).
-     */
+    /** Message is queued locally or on server (async path). */
+    data object Queued : MessageStatus
+
+    /** Message is currently being processed (e.g., AI is generating a response). */
     data object Processing : MessageStatus
+
+    /** Request completed successfully (async path). */
+    data object Completed : MessageStatus
+
+    /** Response delayed (circuit breaker / severe mode). */
+    data object Deferred : MessageStatus
 
     /**
      * Message failed to send or process.
      *
      * @property error The exception that caused the failure
      * @property isRetryable Whether the operation can be retried
+     * @property errorCode Optional server/spec error code (e.g. RATE_LIMIT, GEMINI_TIMEOUT)
      */
     data class Failed(
         val error: Throwable,
-        val isRetryable: Boolean = true
+        val isRetryable: Boolean = true,
+        val errorCode: String? = null
     ) : MessageStatus
 }

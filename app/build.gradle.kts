@@ -32,6 +32,13 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        // Optional: set novachat.functionsEmulatorHost in gradle.properties to your Mac's LAN IP
+        // (e.g. 192.168.1.5) so a real device can reach the Functions emulator. Leave unset for production.
+        buildConfigField(
+            "String",
+            "FUNCTIONS_EMULATOR_HOST",
+            "\"${project.findProperty("novachat.functionsEmulatorHost") ?: ""}\""
+        )
     }
 
     buildTypes {
@@ -104,7 +111,12 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.dataconnect)
     implementation(libs.firebase.functions)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.config)
+    implementation(libs.firebase.appcheck)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.hilt.work)
 
     // Hilt
     implementation(libs.hilt.android)

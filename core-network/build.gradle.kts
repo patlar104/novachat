@@ -31,4 +31,6 @@ dependencies {
     implementation(libs.firebase.functions)
     implementation(libs.play.services.base)
     implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.okhttp)
 }

@@ -2,16 +2,20 @@ package com.novachat.feature.ai.di
 
 import com.novachat.feature.ai.data.repository.AiRepositoryImpl
 import com.novachat.feature.ai.data.repository.MessageRepositoryImpl
+import com.novachat.feature.ai.data.repository.MessageRepositoryRoomImpl
+import com.novachat.feature.ai.data.repository.OutboundRequestRepositoryRoomImpl
 import com.novachat.feature.ai.data.repository.PreferencesRepositoryImpl
 import com.novachat.feature.ai.data.offline.UnavailableOfflineAiEngine
 import com.novachat.feature.ai.domain.offline.OfflineAiEngine
 import com.novachat.feature.ai.domain.repository.AiRepository
 import com.novachat.feature.ai.domain.repository.MessageRepository
+import com.novachat.feature.ai.domain.repository.OutboundRequestRepository
 import com.novachat.feature.ai.domain.repository.PreferencesRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -47,4 +51,17 @@ abstract class RepositoryModule {
     abstract fun bindOfflineAiEngine(
         impl: UnavailableOfflineAiEngine
     ): OfflineAiEngine
+
+    @Binds
+    @Singleton
+    abstract fun bindOutboundRequestRepository(
+        impl: OutboundRequestRepositoryRoomImpl
+    ): OutboundRequestRepository
+
+    @Binds
+    @Singleton
+    @Named("message_repository_room")
+    abstract fun bindMessageRepositoryRoom(
+        impl: MessageRepositoryRoomImpl
+    ): MessageRepository
 }

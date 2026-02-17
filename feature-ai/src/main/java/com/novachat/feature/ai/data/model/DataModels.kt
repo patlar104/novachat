@@ -7,14 +7,22 @@ data class MessageEntity(
     val timestampMillis: Long,
     val statusType: String,
     val errorMessage: String? = null,
-    val isRetryable: Boolean = true
+    val isRetryable: Boolean = true,
+    val conversationId: String? = null,
+    val requestId: String? = null,
+    val errorCode: String? = null,
+    val tokenIn: Int? = null,
+    val tokenOut: Int? = null
 ) {
     companion object {
         const val SENDER_USER = "USER"
         const val SENDER_ASSISTANT = "ASSISTANT"
 
         const val STATUS_SENT = "SENT"
+        const val STATUS_QUEUED = "QUEUED"
         const val STATUS_PROCESSING = "PROCESSING"
+        const val STATUS_COMPLETED = "COMPLETED"
+        const val STATUS_DEFERRED = "DEFERRED"
         const val STATUS_FAILED = "FAILED"
     }
 
@@ -24,7 +32,10 @@ data class MessageEntity(
             (senderType == SENDER_USER || senderType == SENDER_ASSISTANT) &&
             timestampMillis > 0 &&
             (statusType == STATUS_SENT ||
+                statusType == STATUS_QUEUED ||
                 statusType == STATUS_PROCESSING ||
+                statusType == STATUS_COMPLETED ||
+                statusType == STATUS_DEFERRED ||
                 statusType == STATUS_FAILED)
     }
 

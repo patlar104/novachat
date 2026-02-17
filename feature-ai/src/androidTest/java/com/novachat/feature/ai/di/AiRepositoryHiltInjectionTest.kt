@@ -7,6 +7,9 @@ import com.novachat.feature.ai.domain.model.Message
 import com.novachat.feature.ai.domain.model.MessageId
 import com.novachat.feature.ai.domain.model.ModelParameters
 import com.novachat.feature.ai.domain.model.OfflineCapability
+import com.novachat.feature.ai.domain.model.RequestCompletionState
+import com.novachat.feature.ai.domain.model.SubmitRequest
+import com.novachat.feature.ai.domain.model.SubmitResult
 import com.novachat.feature.ai.domain.model.ThemePreferences
 import com.novachat.feature.ai.domain.repository.AiRepository
 import com.novachat.feature.ai.domain.repository.AiServiceStatus
@@ -107,6 +110,14 @@ private class FakeAiRepository : AiRepository {
 
     override fun observeOfflineCapability(): Flow<OfflineCapability> {
         return offlineCapabilityFlow.asStateFlow()
+    }
+
+    override suspend fun submitAsync(request: SubmitRequest): Result<SubmitResult> {
+        return Result.failure(UnsupportedOperationException("Fake AI Repository"))
+    }
+
+    override fun observeCompletion(requestId: String): Flow<RequestCompletionState> {
+        return kotlinx.coroutines.flow.emptyFlow<RequestCompletionState>()
     }
 }
 
