@@ -1,10 +1,10 @@
 # NovaChat Functions
 
-This directory contains the Firebase Functions backend for the `aiProxy` callable endpoint.
+This directory contains the Firebase Functions backend for the `aiProxy` callable endpoint. Full backend contracts and Path A/B behavior: **`specs/NOVACHAT_ARCHITECTURE_SPEC.md`** §3.
 
 ## Runtime
 
-- Node.js 20
+- Node.js 24 (defined by `engines` in package.json and `.nvmrc`)
 - TypeScript
 - Firebase Functions v2
 

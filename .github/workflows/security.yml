@@ -5,30 +5,30 @@ on:
     branches:
       - main
     paths:
-      - 'app/**'
-      - 'feature-ai/**'
-      - 'core-common/**'
-      - 'core-network/**'
-      - 'functions/**'
-      - 'gradle/**'
-      - '.github/actions/provision-google-services/**'
-      - '.github/workflows/security.yml'
-      - '.github/dependabot.yml'
+      - "app/**"
+      - "feature-ai/**"
+      - "core-common/**"
+      - "core-network/**"
+      - "functions/**"
+      - "gradle/**"
+      - ".github/actions/provision-google-services/**"
+      - ".github/workflows/security.yml"
+      - ".github/dependabot.yml"
   pull_request:
     branches:
       - main
     paths:
-      - 'app/**'
-      - 'feature-ai/**'
-      - 'core-common/**'
-      - 'core-network/**'
-      - 'functions/**'
-      - 'gradle/**'
-      - '.github/actions/provision-google-services/**'
-      - '.github/workflows/security.yml'
-      - '.github/dependabot.yml'
+      - "app/**"
+      - "feature-ai/**"
+      - "core-common/**"
+      - "core-network/**"
+      - "functions/**"
+      - "gradle/**"
+      - ".github/actions/provision-google-services/**"
+      - ".github/workflows/security.yml"
+      - ".github/dependabot.yml"
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: "0 0 * * 1"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Provision google-services.json for CI
         uses: ./.github/actions/provision-google-services
@@ -59,26 +59,30 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
-          languages: java-kotlin
+          languages: java-kotlin, javascript
           queries: security-extended
 
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'gradle'
+          distribution: "temurin"
+          java-version: "21"
+          cache: "gradle"
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build for CodeQL
+      - name: Build for CodeQL (Android)
         run: ./gradlew :app:assembleDebug --no-daemon
+
+      - name: Build for CodeQL (Functions)
+        run: |
+          cd functions && npm ci && npm run build && cd ..
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v4
         with:
-          category: '/language:java-kotlin'
+          category: "/language:java-kotlin"
 
   secret-scanning:
     name: Secret Scanning
@@ -87,7 +91,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
 

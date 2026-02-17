@@ -1,29 +1,12 @@
-# Dependencies
+generated/
+build/
+**/build/
 node_modules/
 **/node_modules/
-
-# Build outputs
 lib/
-build/
-dist/
+**/lib/
 .gradle/
-
-# Generated files
-**/dataconnect-generated/
-**/dataconnect-admin-generated/
-**/generated/
-
-# Lock files
-package-lock.json
-yarn.lock
-
-# Firebase
-firebase-debug.log
-firebase-debug.*.log
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
+app/build/
+feature-ai/build/
+core-common/build/
+core-network/build/

@@ -30,6 +30,7 @@ play-services-auth = "21.2.0"
 hilt = "2.59.1"
 room = "2.7.0"
 work = "2.9.0"
+detekt = "1.23.8"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
@@ -104,3 +105,4 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 android-junit = { id = "de.mannodermaus.android-junit", version.ref = "android-junit" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
