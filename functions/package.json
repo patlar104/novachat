@@ -2,7 +2,7 @@
   "name": "functions",
   "description": "Cloud Functions for NovaChat AI Proxy",
   "scripts": {
-    "lint": "eslint --ext .ts src",
+    "lint": "eslint src",
     "build": "tsc",
     "test": "npm run build && node --test lib/**/*.test.js",
     "build:watch": "tsc --watch",
@@ -13,20 +13,44 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "20"
+    "node": "24"
   },
   "main": "lib/index.js",
   "dependencies": {
     "@dataconnect/admin-generated": "file:../generated/dataconnect/functions-admin",
+    "@google-cloud/tasks": "^5.4.0",
     "firebase-admin": "^13.6.1",
     "firebase-functions": "^7.0.5"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
-    "eslint": "^8.57.0",
+    "@eslint/compat": "^2.0.2",
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^10.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.55.0",
+    "@typescript-eslint/parser": "^8.55.0",
+    "eslint": "^10.0.0",
     "eslint-config-google": "^0.14.0",
-    "typescript": "^5.9.3"
+    "globals": "^17.3.0",
+    "jiti": "^2.6.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.55.0"
+  },
+  "overrides": {
+    "@typescript-eslint/eslint-plugin": {
+      "eslint": "$eslint"
+    },
+    "@typescript-eslint/parser": {
+      "eslint": "$eslint"
+    },
+    "eslint-config-google": {
+      "eslint": "$eslint"
+    },
+    "@eslint/compat": {
+      "eslint": "$eslint"
+    },
+    "typescript-eslint": {
+      "eslint": "$eslint"
+    }
   },
   "private": true
 }
