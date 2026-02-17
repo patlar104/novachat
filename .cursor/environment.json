@@ -1,0 +1,21 @@
+{
+  "name": "NovaChat Cloud Runtime",
+  "build": {
+    "context": ".",
+    "dockerfile": "Dockerfile"
+  },
+  "env": {
+    "ANDROID_HOME": "/home/ubuntu/android-sdk"
+  },
+  "install": "npm install && (cd functions && npm install) || true",
+  "start": "cd functions && npm run build 2>/dev/null || true",
+  "terminals": [
+    {
+      "name": "emulators",
+      "command": "cd functions && npm run serve",
+      "ports": [5001, 8080]
+    }
+  ],
+  "persistedDirectories": ["node_modules", "functions/node_modules"],
+  "requiredSecrets": ["GEMINI_API_KEY"]
+}
