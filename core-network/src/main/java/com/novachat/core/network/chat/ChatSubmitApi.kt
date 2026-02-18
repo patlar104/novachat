@@ -35,10 +35,12 @@ class ChatSubmitApi(
         runCatching {
             client.newCall(okRequest).execute().use { response ->
                 if (!response.isSuccessful) {
-                    val msg = response.body?.string() ?: response.message
+                    val bodyMsg = response.body.string()
+                    val msg = bodyMsg.takeIf { it.isNotEmpty() } ?: response.message
                     throw Exception("Submit failed: ${response.code} $msg")
                 }
-                val json = response.body?.string() ?: throw Exception("Empty body")
+                val json = response.body.string().takeIf { it.isNotEmpty() }
+                    ?: throw Exception("Empty body")
                 parseResponse(json)
             }
         }

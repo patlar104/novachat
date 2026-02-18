@@ -4,6 +4,18 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+    resolutionStrategy {
+        eachPlugin {
+            when (requested.id.id) {
+                "org.jetbrains.kotlin.plugin.serialization" -> {
+                    useModule("org.jetbrains.kotlin:kotlin-serialization:${requested.version}")
+                }
+                "com.google.devtools.ksp" -> {
+                    useModule("com.google.devtools.ksp:symbol-processing-gradle-plugin:${requested.version}")
+                }
+            }
+        }
+    }
 }
 
 dependencyResolutionManagement {

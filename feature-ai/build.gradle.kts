@@ -120,5 +120,5 @@ dependencies {
 
 detekt {
     config.setFrom(files("${rootProject.projectDir}/config/detekt.yml"))
-    baseline = file("${rootProject.projectDir}/config/detekt-baseline.xml")
+    baseline = rootProject.layout.projectDirectory.file("config/detekt-baseline.xml").asFile
 }
