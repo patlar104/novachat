@@ -51,7 +51,8 @@
     },
     "typescript-eslint": {
       "eslint": "$eslint"
-    }
+    },
+    "fast-xml-parser": "^5.3.6"
   },
   "private": true
 }
