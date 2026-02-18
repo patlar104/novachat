@@ -10,13 +10,10 @@ NovaChat is a modular Android chat application that uses a Firebase Functions pr
 
 ## Tech stack
 
-- Kotlin 2.2.21
-- Android Gradle Plugin 9.0.0
-- Gradle 9.1.0
-- Jetpack Compose BOM 2026.01.01
+- Android versions: see `gradle/libs.versions.toml` (Kotlin 2.3.x, AGP 9.x, Compose BOM 2026.01.01).
 - Hilt DI
 - Firebase Auth + Firebase Functions
-- Cloud Functions for Firebase (TypeScript)
+- Cloud Functions for Firebase (TypeScript, Node 24)
 
 ## Repository layout
 
@@ -25,13 +22,17 @@ NovaChat is a modular Android chat application that uses a Firebase Functions pr
 - `core-common/`: shared error/result primitives.
 - `core-network/`: Firebase transport abstractions.
 - `functions/`: backend callable function implementation.
-- `generated/`: isolated generated artifacts.
+- `generated/`: generated artifacts (do not edit by hand; Data Connect and other codegen).
 - `docs/`: active documentation and archived history.
 
 ## Build and verification
 
+Run **`npm run verify`** to run Android build, unit tests, lint, Detekt, functions build/lint/test, and format check (matches CI).
+
+Or run per stack:
+
 ```bash
-./gradlew :app:assembleDebug :feature-ai:testDebugUnitTest
+./gradlew :app:assembleDebug :feature-ai:testDebugUnitTest :app:lintDebug :app:detekt :feature-ai:detekt
 (cd functions && npm run build && npm run lint && npm test)
 npm run format:check
 ```
@@ -45,16 +46,20 @@ npm run format:check
 
 ## Active documentation
 
-- `README.md`
-- `DEVELOPMENT.md`
-- `API.md`
-- `docs/ARCHITECTURE.md`
-- `functions/README.md`
-
-Historical material is archived under `docs/archive/`.
+- `README.md` (this file)
+- `specs/NOVACHAT_ARCHITECTURE_SPEC.md` — architecture and product spec (single source of truth)
+- `AGENTS.md` — canonical rules for agents and contributors
+- `docs/CONTRIBUTING.md` — how to contribute, build, hooks, commits
+- `docs/ARCHITECTURE.md` — short pointer to the spec
+- `DEVELOPMENT.md` — dev setup, emulators, env
+- `API.md` — backend API summary (full contracts in spec §3)
+- `functions/README.md` — Functions layout and callable contract
+- `docs/plans/` — implementation plans
+- `docs/archive/` — historical material only (not active guidance)
 
 ## Contributor instructions
 
-- Canonical contributor rules: `AGENTS.md`
+- Canonical rules: `AGENTS.md`
+- Contributing: `docs/CONTRIBUTING.md`
 - Copilot adapter: `.github/copilot-instructions.md`
 - Path-scoped rules: `.github/instructions/*.instructions.md`

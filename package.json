@@ -7,9 +7,11 @@
     "doc": "docs"
   },
   "scripts": {
-    "browser:research": "node scripts/browser-research.js",
     "format": "prettier --write \"**/*.{json,js,ts}\"",
-    "format:check": "prettier --check \"**/*.{json,js,ts}\""
+    "format:check": "prettier --check \"**/*.{json,js,ts}\"",
+    "verify:android": "./gradlew :app:assembleDebug :feature-ai:testDebugUnitTest :app:lintDebug :app:detekt :feature-ai:detekt --no-daemon",
+    "verify:functions": "cd functions && npm ci && npm run build && npm run lint && npm test",
+    "verify": "npm run verify:android && npm run verify:functions && npm run format:check"
   },
   "repository": {
     "type": "git",

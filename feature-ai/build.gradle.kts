@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.junit)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.detekt)
 }
 
 kotlin {
@@ -115,4 +116,9 @@ dependencies {
     // Testing - Debug
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+detekt {
+    config.setFrom(files("${rootProject.projectDir}/config/detekt.yml"))
+    baseline = file("${rootProject.projectDir}/config/detekt-baseline.xml")
 }

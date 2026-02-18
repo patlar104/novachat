@@ -3,6 +3,7 @@
   "description": "Cloud Functions for NovaChat AI Proxy",
   "scripts": {
     "lint": "eslint src",
+    "audit": "npm audit --audit-level=high",
     "build": "tsc",
     "test": "npm run build && node --test lib/**/*.test.js",
     "build:watch": "tsc --watch",
