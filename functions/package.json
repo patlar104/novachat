@@ -3,8 +3,9 @@
   "description": "Cloud Functions for NovaChat AI Proxy",
   "scripts": {
     "lint": "eslint src",
+    "audit": "npm audit --audit-level=high",
     "build": "tsc",
-    "test": "npm run build && node --test lib/**/*.test.js",
+    "test": "npm run build && node --no-deprecation --test lib/**/*.test.js",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
@@ -50,7 +51,8 @@
     },
     "typescript-eslint": {
       "eslint": "$eslint"
-    }
+    },
+    "fast-xml-parser": "^5.3.6"
   },
   "private": true
 }

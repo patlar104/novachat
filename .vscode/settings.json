@@ -106,5 +106,8 @@
   "markdown.validate.fileLinks.enabled": "ignore",
   "markdown.validate.referenceLinks.enabled": "ignore",
   "markdown.validate.fragmentLinks.enabled": "ignore",
-  "java.configuration.updateBuildConfiguration": "automatic"
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  }
 }

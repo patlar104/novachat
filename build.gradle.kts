@@ -10,4 +10,5 @@ plugins {
     alias(libs.plugins.android.junit) apply false
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.detekt) apply false
 }

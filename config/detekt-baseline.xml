@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>LongMethod:SettingsRoute.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( viewModel: SettingsViewModel, themeViewModel: ThemeViewModel, onNavigateBack: () -&gt; Unit )</ID>
+    <ID>LongParameterList:SettingsContent.kt$( configuration: AiConfiguration, offlineCapability: OfflineCapability, waitForDebuggerOnNextLaunch: Boolean, onChangeAiMode: (AiMode) -&gt; Unit, onToggleWaitForDebuggerOnNextLaunch: (Boolean) -&gt; Unit, themePrefs: ThemePreferences, onThemeModeChange: (ThemeMode) -&gt; Unit, onDynamicColorChange: (Boolean) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:SettingsContent.kt$@Composable fun SettingsScreenContent( configuration: AiConfiguration, offlineCapability: OfflineCapability, waitForDebuggerOnNextLaunch: Boolean, onChangeAiMode: (AiMode) -&gt; Unit, onToggleWaitForDebuggerOnNextLaunch: (Boolean) -&gt; Unit, themePrefs: ThemePreferences, onThemeModeChange: (ThemeMode) -&gt; Unit, onDynamicColorChange: (Boolean) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:ChatScreenContent.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ChatScreenContent( uiState: ChatUiState, draftMessage: String, snackbarHostState: SnackbarHostState, onEvent: (ChatUiEvent) -&gt; Unit, onDraftMessageChange: (String) -&gt; Unit )</ID>
+    <ID>LongMethod:SendMessageUseCase.kt$SendMessageUseCase$suspend operator fun invoke(messageText: String): Result&lt;Message&gt;</ID>
+    <ID>LongParameterList:SendMessageAsyncUseCase.kt$SendMessageAsyncUseCase$( @param:Named("message_repository_room") private val messageRepository: MessageRepository, private val outboundRequestRepository: OutboundRequestRepository, private val aiRepository: AiRepository, private val preferencesRepository: PreferencesRepository, private val chatObservability: ChatObservability, @param:Named("default_conversation_id") private val defaultConversationId: String )</ID>
+    <ID>LongMethod:SendMessageAsyncUseCase.kt$SendMessageAsyncUseCase$suspend operator fun invoke(messageText: String): Result&lt;Message&gt;</ID>
+    <ID>LongMethod:RetryMessageUseCase.kt$RetryMessageUseCase$suspend operator fun invoke(messageId: MessageId): Result&lt;Message&gt;</ID>
+  </CurrentIssues>
+</SmellBaseline>

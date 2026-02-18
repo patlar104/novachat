@@ -67,7 +67,7 @@ class SettingsViewModelTest {
 
         val state = viewModel.uiState.value
         state.shouldBeInstanceOf<SettingsUiState.Success>()
-        (state as SettingsUiState.Success).waitForDebuggerOnNextLaunch.shouldBe(true)
+        state.waitForDebuggerOnNextLaunch.shouldBe(true)
     }
 
     @Test
@@ -110,7 +110,7 @@ class SettingsViewModelTest {
 
         val effect = effectDeferred.await()
         effect.shouldBeInstanceOf<UiEffect.ShowSnackbar>()
-        (effect as UiEffect.ShowSnackbar).message.contains("Close the app and relaunch with Debug")
+        effect.message.contains("Close the app and relaunch with Debug")
             .shouldBe(true)
     }
 }

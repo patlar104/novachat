@@ -13,6 +13,7 @@ export default tseslint.config(
       parserOptions: {
         sourceType: "module",
         ecmaVersion: 2020,
+        project: true, // Enable type-aware linting by auto-detecting tsconfig.json
       },
       globals: {
         ...globals.node,
@@ -29,6 +30,8 @@ export default tseslint.config(
         },
       ],
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-floating-promises": "warn",
+      "@typescript-eslint/no-misused-promises": "warn",
     },
   }
 );
