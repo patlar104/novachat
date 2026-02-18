@@ -21,7 +21,8 @@ import { enqueueChatWorkerTask } from "../chat/enqueueTask";
 import { DEFAULT_ETA_MS } from "../chat/types";
 import type { RequestState } from "../chat/types";
 
-const db = admin.firestore();
+// Lazy so admin is only used after initializeFunctionsAdmin() in index.
+const getDb = () => admin.firestore();
 
 function getAuthToken(req: Request): string | null {
   const auth = req.headers.authorization;
@@ -116,7 +117,7 @@ export function createChatSubmitHandler(region: string, queueName: string) {
     }
 
     try {
-      const existing = await db.runTransaction(async (tx) => {
+      const existing = await getDb().runTransaction(async (tx) => {
         const dedupeRef = dedupeKeysRef().doc(body.requestId);
         const dedupeSnap = await tx.get(dedupeRef);
         if (dedupeSnap.exists) {

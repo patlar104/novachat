@@ -4,7 +4,7 @@ This directory contains the Firebase Functions backend for the `aiProxy` callabl
 
 ## Runtime
 
-- Node.js 24 (defined by `engines` in package.json and `.nvmrc`)
+- Node.js 24 (defined by `engines` in package.json and `.nvmrc`). Use Node 24 when running the emulator or deploy. If you use Homebrew: `brew install node@24` then run the **Firebase: start emulators** task (it uses `node@24` from Homebrew); or in a terminal run `export PATH="/opt/homebrew/opt/node@24/bin:/usr/local/opt/node@24/bin:$PATH"` (Apple Silicon / Intel) before `npx firebase emulators:start`.
 - TypeScript
 - Firebase Functions v2
 
@@ -31,6 +31,8 @@ npm run lint
 npm test
 npm run serve
 ```
+
+To (re)configure emulators from the project root use `firebase init emulators` (no trailing dot—`emulators.` is invalid).
 
 ## Callable contract summary
 
