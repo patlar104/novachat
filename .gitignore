@@ -13,8 +13,6 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
-*.aab
-*.apk
 output-metadata.json
 
 # IntelliJ
@@ -36,9 +34,9 @@ google-services.json
 
 # Built application files
 *.apk
+*.aab
 *.aar
 *.ap_
-*.aab
 
 # Files for the ART/Dalvik VM
 *.dex
@@ -51,38 +49,6 @@ out/
 # Android Studio Navigation editor temp files
 .navigation/
 
-# Android Studio captures folder
-captures/
-
-# IntelliJ IDEA
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/gradle.xml
-.idea/assetWizardSettings.xml
-.idea/dictionaries
-.idea/libraries
-.idea/jarRepositories.xml
-.idea/caches
-.idea/modules.xml
-.idea/.name
-.idea/compiler.xml
-.idea/copyright
-.idea/encodings.xml
-.idea/misc.xml
-.idea/vcs.xml
-.idea/scopes/scope_settings.xml
-.idea/inspectionProfiles/
-.idea/sonarlint/
-
-# External native build folder generated in Android Studio 2.2 and later
-.externalNativeBuild
-.cxx/
-
-# Freeline
-freeline.py
-freeline/
-freeline_project_description.json
-
 # fastlane
 fastlane/report.xml
 fastlane/Preview.html
@@ -92,6 +58,10 @@ fastlane/readme.md
 
 # Version control
 .svn/
+
+# Git worktrees (project-local)
+.worktrees/
+worktrees/
 
 # OS-specific files
 .DS_Store
@@ -121,6 +91,9 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Firebase (CLI cache at root; per Firebase docs, do not commit)
+.firebase/
 
 # Firebase Functions
 functions/node_modules/

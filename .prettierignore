@@ -6,6 +6,8 @@ node_modules/
 lib/
 **/lib/
 .gradle/
+.worktrees/
+worktrees/
 app/build/
 feature-ai/build/
 core-common/build/

@@ -1,14 +1,14 @@
-# This file is a template for local.properties
-# Copy this file to local.properties (which is gitignored) and configure your local settings.
+# Template for local.properties (machine-specific; do not commit)
+# Copy this file to local.properties and set sdk.dir to your Android SDK path.
+# local.properties is gitignored. See: https://developer.android.com/build/android-build-structure
 
 # Android SDK location (required for Android builds)
-# sdk.dir=/Users/yourusername/Library/Android/sdk
+# macOS default: /Users/YOUR_USERNAME/Library/Android/sdk
+# Linux: $HOME/Android/Sdk or /usr/lib/android-sdk
+sdk.dir=/path/to/your/Android/sdk
 
 # Optional: Override Java home if Gradle picks up an incomplete JDK
-# This is useful if you see "jlink executable does not exist" errors.
-# Example for macOS with Homebrew:
+# (e.g. "jlink executable does not exist"). Uncomment and set one:
 # org.gradle.java.home=/opt/homebrew/opt/openjdk@21
-# Example for macOS with SDKMAN:
 # org.gradle.java.home=$HOME/.sdkman/candidates/java/21.0.x
-# Example for Linux:
 # org.gradle.java.home=/usr/lib/jvm/java-21-openjdk-amd64
