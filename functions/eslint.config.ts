@@ -13,6 +13,7 @@ export default tseslint.config(
       parserOptions: {
         sourceType: "module",
         ecmaVersion: 2020,
+        project: true, // Enable type-aware linting by auto-detecting tsconfig.json
       },
       globals: {
         ...globals.node,
