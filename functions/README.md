@@ -4,7 +4,7 @@ This directory contains the Firebase Functions backend for the `aiProxy` callabl
 
 ## Runtime
 
-- Node.js 24 (defined by `engines` in package.json and `.nvmrc`). Use Node 24 when running the emulator or deploy. If you use Homebrew: `brew install node@24` then run the **Firebase: start emulators** task (it uses `node@24` from Homebrew); or in a terminal run `export PATH="/opt/homebrew/opt/node@24/bin:/usr/local/opt/node@24/bin:$PATH"` (Apple Silicon / Intel) before `npx firebase emulators:start`.
+- Node.js 24 (defined by `engines` in package.json and `.nvmrc`)
 - TypeScript
 - Firebase Functions v2
 
@@ -22,6 +22,21 @@ This directory contains the Firebase Functions backend for the `aiProxy` callabl
 
 - `GEMINI_API_KEY` must be available to the functions runtime.
 
+## Dependencies
+
+Use the package manager for all dependency changes so the lockfile stays in sync and versions resolve correctly. Avoid editing `package.json` by hand.
+
+```bash
+# Add or update a dev dependency (examples)
+npm install -D eslint@^9.0.0
+npm install -D some-pkg@latest
+
+# Add or update a production dependency
+npm install some-pkg@^1.0.0
+```
+
+After any dependency change, run `npm install` and then `npm run build && npm run lint && npm test`.
+
 ## Local commands
 
 ```bash
@@ -31,8 +46,6 @@ npm run lint
 npm test
 npm run serve
 ```
-
-To (re)configure emulators from the project root use `firebase init emulators` (no trailing dot—`emulators.` is invalid).
 
 ## Callable contract summary
 

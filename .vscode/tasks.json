@@ -2,18 +2,6 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Firebase: start emulators",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-lc",
-        "export PATH=\"/opt/homebrew/opt/node@24/bin:/usr/local/opt/node@24/bin:$PATH\" && cd \"${workspaceFolder}\" && npx -y firebase-tools@latest emulators:start --project novachat-13010 --only functions,dataconnect,extensions"
-      ],
-      "options": { "cwd": "${workspaceFolder}" },
-      "group": "none",
-      "presentation": { "reveal": "always" }
-    },
-    {
       "label": "Sync recommended extensions",
       "type": "shell",
       "command": "npm",
