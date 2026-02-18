@@ -1,4 +1,5 @@
 # Base for Cursor cloud/background agents. Do not COPY code; the agent clones the repo.
+# Runtime secrets (e.g. GEMINI_API_KEY) are injected by Cursor from Settings → Cloud Agents → Secrets.
 FROM ubuntu:24.04
 
 # Avoid interactive prompts

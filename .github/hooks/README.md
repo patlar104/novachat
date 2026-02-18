@@ -1,6 +1,6 @@
 # Git Hooks for NovaChat
 
-This directory contains repository-scoped hooks used for local quality gates.
+This directory contains repository-scoped hooks used for local quality gates. See also `docs/CONTRIBUTING.md` for full contributor workflow.
 
 ## Hooks
 

@@ -2,6 +2,8 @@
 
 Applies to: `functions/**`
 
+Architecture: see `specs/NOVACHAT_ARCHITECTURE_SPEC.md`.
+
 1. Keep `functions/src/index.ts` as wiring/exports only.
 2. Keep validation, error mapping, client calls, and analytics in dedicated modules.
 3. Preserve explicit request/response typings.
