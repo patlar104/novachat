@@ -9,7 +9,15 @@
   "scripts": {
     "format": "npm exec -- prettier --write \"**/*.{json,js,ts}\"",
     "format:check": "npm exec -- prettier --check \"**/*.{json,js,ts}\"",
-    "verify:android": "./gradlew :app:assembleDebug :feature-ai:testDebugUnitTest :app:lintDebug :app:detekt :feature-ai:detekt --no-daemon",
+    "android:setup-sdk": "bash ./scripts/ensure-android-sdk.sh",
+    "android:setup-google-services": "bash ./scripts/ensure-google-services.sh",
+    "git:clear-stale-locks": "bash ./scripts/clear-stale-git-locks.sh",
+    "editor:extensions:sync": "bash ./scripts/ensure-editor-extensions.sh",
+    "android:prepare": "npm run git:clear-stale-locks && npm run android:setup-sdk && npm run android:setup-google-services",
+    "cursor:mcp:docker:build": "bash ./scripts/ensure-cursor-mcp-image.sh",
+    "cursor:mcp:playwright": "bash ./scripts/mcp-playwright.sh",
+    "cursor:mcp:context7": "bash ./scripts/mcp-context7.sh",
+    "verify:android": "npm run android:prepare && ./gradlew :app:assembleDebug :feature-ai:testDebugUnitTest :app:lintDebug :app:detekt :feature-ai:detekt --no-daemon",
     "verify:functions": "cd functions && npm ci && npm run build && npm run lint && npm test",
     "verify": "npm run verify:android && npm run verify:functions && npm run format:check"
   },

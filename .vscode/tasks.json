@@ -2,34 +2,55 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Sync recommended extensions",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "editor:extensions:sync"]
+    },
+    {
       "label": "Run feature-ai unit tests",
       "type": "shell",
-      "command": "./gradlew",
-      "args": [":feature-ai:test"]
+      "command": "bash",
+      "args": [
+        "-lc",
+        "bash ./scripts/ensure-android-sdk.sh && bash ./scripts/ensure-google-services.sh && ./gradlew :feature-ai:test"
+      ]
     },
     {
       "label": "Assemble debug APK",
       "type": "shell",
-      "command": "./gradlew",
-      "args": ["assembleDebug"]
+      "command": "bash",
+      "args": [
+        "-lc",
+        "bash ./scripts/ensure-android-sdk.sh && bash ./scripts/ensure-google-services.sh && ./gradlew assembleDebug"
+      ]
     },
     {
       "label": "Run unit tests",
       "type": "shell",
-      "command": "./gradlew",
-      "args": ["test"]
+      "command": "bash",
+      "args": [
+        "-lc",
+        "bash ./scripts/ensure-android-sdk.sh && bash ./scripts/ensure-google-services.sh && ./gradlew test"
+      ]
     },
     {
       "label": "Run lint",
       "type": "shell",
-      "command": "./gradlew",
-      "args": ["lint"]
+      "command": "bash",
+      "args": [
+        "-lc",
+        "bash ./scripts/ensure-android-sdk.sh && bash ./scripts/ensure-google-services.sh && ./gradlew lint"
+      ]
     },
     {
       "label": "Install debug APK",
       "type": "shell",
-      "command": "./gradlew",
-      "args": ["installDebug"]
+      "command": "bash",
+      "args": [
+        "-lc",
+        "bash ./scripts/ensure-android-sdk.sh && bash ./scripts/ensure-google-services.sh && ./gradlew installDebug"
+      ]
     }
   ]
 }

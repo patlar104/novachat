@@ -3,15 +3,15 @@
   "env": {
     "ANDROID_HOME": "/home/ubuntu/android-sdk"
   },
-  "install": "npm install && (cd functions && npm install) || true",
+  "install": "npm ci && (cd functions && npm ci) && bash ./scripts/ensure-android-sdk.sh && (bash ./scripts/ensure-google-services.sh || true)",
   "start": "cd functions && npm run build 2>/dev/null || true",
   "terminals": [
     {
       "name": "emulators",
       "command": "cd functions && npm run serve",
-      "ports": [5001, 8080]
+      "ports": [5002, 4000, 8080]
     }
   ],
-  "persistedDirectories": ["node_modules", "functions/node_modules"],
+  "persistedDirectories": ["node_modules", "functions/node_modules", ".gradle"],
   "requiredSecrets": ["GEMINI_API_KEY"]
 }

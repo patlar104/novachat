@@ -105,6 +105,10 @@ Thumbs.db
 # Playwright CLI session files
 .playwright-cli/
 
+# Local AI agent state/artifacts
+.codex/
+.cursor/plans/
+
 # Secrets
 secrets.properties
 secret.properties
@@ -130,3 +134,6 @@ functions/.env.*
 !functions/.env.example
 functions/*.log
 functions/.firebase/
+
+# Firebase Data Connect local emulator state
+dataconnect/.dataconnect/pgliteData/

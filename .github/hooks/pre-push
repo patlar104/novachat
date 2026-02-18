@@ -6,11 +6,15 @@ set -euo pipefail
 
 echo "Running pre-push checks..."
 
+bash ./scripts/clear-stale-git-locks.sh || true
+
 if [ ! -f "gradlew" ]; then
   echo "gradlew not found"
   exit 1
 fi
 
+bash ./scripts/ensure-android-sdk.sh
+bash ./scripts/ensure-google-services.sh
 chmod +x gradlew
 
 ./gradlew :app:assembleDebug :feature-ai:testDebugUnitTest --no-daemon

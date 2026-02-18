@@ -1,5 +1,7 @@
 # This file is a template for local.properties
 # Copy this file to local.properties (which is gitignored) and configure your local settings.
+# You can also auto-generate sdk.dir with:
+#   bash ./scripts/ensure-android-sdk.sh
 
 # Android SDK location (required for Android builds)
 # sdk.dir=/Users/yourusername/Library/Android/sdk

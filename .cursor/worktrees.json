@@ -1,3 +1,17 @@
 {
-  "setup-worktree": ["npm install"]
+  "setup-worktree": [
+    "bash ./scripts/clear-stale-git-locks.sh || true",
+    "npm ci",
+    "cd functions && npm ci",
+    "bash ./scripts/ensure-android-sdk.sh",
+    "bash ./scripts/ensure-google-services.sh || true",
+    "bash ./scripts/ensure-editor-extensions.sh || true"
+  ],
+  "setup-worktree-windows": [
+    "if (Get-Command bash -ErrorAction SilentlyContinue) { bash ./scripts/clear-stale-git-locks.sh || true }",
+    "npm ci",
+    "cd functions; npm ci",
+    "if (Get-Command bash -ErrorAction SilentlyContinue) { bash -lc './scripts/ensure-android-sdk.sh && ./scripts/ensure-google-services.sh || true' } elseif ($env:ANDROID_HOME) { \"sdk.dir=$env:ANDROID_HOME\" | Set-Content -Path local.properties -Encoding ascii }",
+    "if (Get-Command bash -ErrorAction SilentlyContinue) { bash ./scripts/ensure-editor-extensions.sh || true }"
+  ]
 }

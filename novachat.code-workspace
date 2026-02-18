@@ -1,0 +1,103 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/workspaceConfig.schema.json",
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "files.exclude": {
+      "**/.firebase": true,
+      "**/.gradle": true,
+      "**/build": true
+    },
+    "files.watcherExclude": {
+      "**/.gradle/**": true,
+      "**/build/**": true,
+      "**/node_modules/**": true
+    },
+    "search.exclude": {
+      "**/.gradle": true,
+      "**/build": true,
+      "**/node_modules": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "fwcd.kotlin",
+      "vscjava.vscode-gradle",
+      "vscjava.vscode-java-pack",
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "vymarkov.firebase-explorer"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "NovaChat: Verify (all)",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "verify"
+        ],
+        "group": "build"
+      },
+      {
+        "label": "NovaChat: Sync recommended extensions",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "editor:extensions:sync"
+        ],
+        "group": "build"
+      },
+      {
+        "label": "NovaChat: Android build + feature-ai tests",
+        "type": "shell",
+        "command": "bash",
+        "args": [
+          "-lc",
+          "bash ./scripts/ensure-android-sdk.sh && bash ./scripts/ensure-google-services.sh && ./gradlew :app:assembleDebug :feature-ai:testDebugUnitTest"
+        ],
+        "group": "test"
+      },
+      {
+        "label": "NovaChat: Functions build/lint/test",
+        "type": "shell",
+        "command": "bash",
+        "args": [
+          "-lc",
+          "cd functions && npm run build && npm run lint && npm test"
+        ],
+        "group": "test"
+      },
+      {
+        "label": "NovaChat: Format check",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "format:check"
+        ],
+        "group": "test"
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Install Debug (Gradle)",
+        "type": "gradle",
+        "request": "launch",
+        "task": "Install debug APK"
+      }
+    ]
+  }
+}

@@ -6,6 +6,8 @@ set -euo pipefail
 
 echo "Running pre-commit checks..."
 
+bash ./scripts/clear-stale-git-locks.sh || true
+
 if ! command -v git >/dev/null 2>&1; then
   echo "git is required"
   exit 1
@@ -25,6 +27,8 @@ if echo "$STAGED_FILES" | grep -E '^(app/|feature-ai/|core-common/|core-network/
     exit 1
   fi
 
+  bash ./scripts/ensure-android-sdk.sh
+  bash ./scripts/ensure-google-services.sh
   chmod +x gradlew
   echo "Running :feature-ai:testDebugUnitTest"
   ./gradlew :feature-ai:testDebugUnitTest --no-daemon

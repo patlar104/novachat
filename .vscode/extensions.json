@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "fwcd.kotlin",
+    "vscjava.vscode-gradle",
+    "vscjava.vscode-java-pack",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "vymarkov.firebase-explorer",
+    "googlecloudtools.firebase-dataconnect-vscode",
+    "ms-azuretools.vscode-docker"
+  ],
+  "unwantedRecommendations": []
+}
