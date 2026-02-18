@@ -85,7 +85,7 @@ class ChatViewModelTest {
         // Assert
         val state = viewModel.uiState.value
         state.shouldBeInstanceOf<ChatUiState.Success>()
-        (state as ChatUiState.Success).isProcessing.shouldBe(false)
+        state.isProcessing.shouldBe(false)
 
         coVerify { mockSendMessageUseCase(messageText) }
     }
@@ -117,7 +117,7 @@ class ChatViewModelTest {
         // Assert
         val state = viewModel.uiState.value
         state.shouldBeInstanceOf<ChatUiState.Success>()
-        (state as ChatUiState.Success).error?.shouldBe("Network error")
+        state.error?.shouldBe("Network error")
 
         coVerify { mockSendMessageUseCase(messageText) }
     }
@@ -204,7 +204,7 @@ class ChatViewModelTest {
         // Assert
         val state = viewModel.uiState.value
         state.shouldBeInstanceOf<ChatUiState.Success>()
-        (state as ChatUiState.Success).isProcessing.shouldBe(false)
+        state.isProcessing.shouldBe(false)
 
         coVerify { mockRetryMessageUseCase(messageId) }
     }
@@ -224,7 +224,7 @@ class ChatViewModelTest {
 
         var state = viewModel.uiState.value
         state.shouldBeInstanceOf<ChatUiState.Success>()
-        (state as ChatUiState.Success).error?.shouldBe("test error")
+        state.error?.shouldBe("test error")
 
         // Act: Dismiss error
         viewModel.onEvent(ChatUiEvent.DismissError)
@@ -232,6 +232,6 @@ class ChatViewModelTest {
         // Assert: Error cleared
         state = viewModel.uiState.value
         state.shouldBeInstanceOf<ChatUiState.Success>()
-        (state as ChatUiState.Success).error.shouldBe(null)
+        state.error.shouldBe(null)
     }
 }
