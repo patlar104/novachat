@@ -19,7 +19,7 @@ import {
   DAILY_TOKEN_BUDGET,
 } from "./types";
 
-const db = admin.firestore();
+const getDb = () => admin.firestore();
 const nowMs = () => Date.now();
 const windowMin = () => Math.floor(nowMs() / 60_000);
 
@@ -93,7 +93,7 @@ async function checkBucket(
   const docId = `${key.replace(/[^a-z0-9_]/gi, "_")}_${window}_${shard}`;
   const ref = rateBucketsRef().doc(docId);
 
-  return await db.runTransaction(async (tx) => {
+  return await getDb().runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     const ttlAt = new Date();
     ttlAt.setHours(ttlAt.getHours() + 2);
