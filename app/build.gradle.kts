@@ -130,6 +130,7 @@ dependencies {
     // implementation("androidx.ai.edge.aicore:aicore:1.0.0-alpha01")
     
     // Modules
+    implementation(project(":core-network"))
     implementation(project(":feature-ai"))
 
     // Testing - Android Instrumented Tests
