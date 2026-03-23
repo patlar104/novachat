@@ -1,6 +1,6 @@
 [versions]
 agp = "9.0.1"
-kotlin = "2.3.10"
+kotlin = "2.3.20"
 google-services = "4.4.4"
 ksp = "2.3.6"
 androidx-core = "1.18.0-rc01"
